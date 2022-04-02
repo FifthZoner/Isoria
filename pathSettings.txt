@@ -1,0 +1,2 @@
+font
+gfx/general/anita semi square.ttf

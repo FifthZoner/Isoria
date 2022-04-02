@@ -1,0 +1,3 @@
+version helloThereAgain
+desc
+Just a test datapack to ensure proper functioning of the datapack load order and loading/replacing system no 2

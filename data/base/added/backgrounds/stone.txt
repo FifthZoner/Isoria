@@ -1,0 +1,2 @@
+path 1
+data/base/added/gfx/stoneBack.png

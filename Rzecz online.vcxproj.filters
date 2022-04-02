@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Pliki źródłowe">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Pliki zasobów">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Inne">
+      <UniqueIdentifier>{b0cb10ba-8a5a-4402-b8b0-26ebaec0b52e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Networking">
+      <UniqueIdentifier>{f7588146-0ff0-492c-b8e7-70e4975b7993}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{8ae11a8f-fef9-4cb7-98ad-059bf5ad2ede}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map">
+      <UniqueIdentifier>{63f2638e-8b86-401d-8d39-391b84499cdc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="misc.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="convert.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="quickWrite.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="mapGenerator.h">
+      <Filter>Inne</Filter>
+    </ClInclude>
+    <ClInclude Include="data.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="loadMap.h">
+      <Filter>Inne</Filter>
+    </ClInclude>
+    <ClInclude Include="loadDatapacks.h">
+      <Filter>Inne</Filter>
+    </ClInclude>
+    <ClInclude Include="server.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="client.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="buttons.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="loadMapMisc.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="mapGenerationMisc.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="map.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="serverMisc.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="launcher.h">
+      <Filter>Inne</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,5 @@
+debug 1
+framerate 60
+fontPath
+launcher/gfx/anita semi square.ttf
+textSize 30
