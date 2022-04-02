@@ -26,20 +26,25 @@ const std::string version = "0.0.2.2";
 
 
 
-//		BOOLS
+//				BOOLS
 bool sfDebug = false;
 bool showVersion = true;
 bool letItBe = true;
-bool isFrozen = false;
-	bool isCurrentlyRunning = false;
+
 
 bool isLastWorldPresent = false;
 	str lastWorldPlayed;
 
-//		IMPORTANT VARIABLES
+//		NETWORK RELATED
+bool isFrozen = false;
+	bool isCurrentlyRunning = false;
+bool clientStatus = 1;
+bool serverStatus = 1;
+
+//				IMPORTANT VARIABLES
 ushort currentDimension = 0;
 
-//		MOUSE BUTTONS
+//				MOUSE BUTTONS
 bool isMouseLeftClicked = false;
 bool isMouseRightClicked = false;
 bool isMouseMiddleClicked = false;
@@ -50,8 +55,17 @@ bool clickSwitch = false;
 ushort clickNumber;
 bool isButtonClicked = false;
 
-//		THREADS
+//				THREADS
 std::thread serverThread;
+
+clientClass client;
+
+std::mutex threadLock;
+
+//				NETWORKING
+
+sf::IpAddress mainIp;
+unsigned short mainPort = 21370;
 
 
 const ushort maxClients = 8;
@@ -120,8 +134,6 @@ mapContainer gameMap;
 
 datapackContainer mDatapacks;
 lDatapackPathsContainer mDatapackPathsContainer;
-
-std::mutex threadLock;
 
 //				LOADING PROCESS
 
@@ -256,6 +268,26 @@ void loadMainMenu() {
 	loadMainMenuSettings();
 }
 
+// loads additional data, for example about network
+void loadAdditional() {
+	// loads server info from file
+
+	std::ifstream file;
+	// file in form
+	// <Byte 1> <Byte 2> <Byte 3> <Byte 4>
+	// <port number>
+
+	file.open("serverData.txt");
+
+	// ip adress bytes in that form per sfml wiki recomendation
+	char B1, B2, B3, B4;
+	file >> B1 >> B2 >> B3 >> B4;
+	mainIp = sf::IpAddress(B1, B2, B3, B4);
+
+	file >> mainPort;
+	file.close();
+}
+
 // function to load in game interface elements
 void loadInterface() {
 
@@ -296,6 +328,8 @@ void loadData() {
 	loadInterface();
 
 	setLoadString("Finishing up...");
+
+	loadAdditional();
 }
 
 //				MAIN GRAPHICS

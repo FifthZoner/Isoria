@@ -186,12 +186,12 @@ void stListenerThread() {
 
 //		MAIN
 
-bool stPrepareBaseFunctions() {
+bool stPrepareBaseFunctions(unsigned short port) {
 
 	listener.setBlocking(false);
 
-	// binding the socket to port * 21370 *
-	if (!listener.listen(21370) != sf::Socket::Done) {
+	// binding the socket to port
+	if (!listener.listen(port) != sf::Socket::Done) {
 		return 0;
 
 		if (stDebug) {
@@ -205,7 +205,7 @@ bool stPrepareBaseFunctions() {
 }
 
 // main function thar runs the server in a seperate thread, send serverStatus as a true bool
-void serverFunction(mapContainer* map, bool* serverStatusPtr, bool* isFrozenPtr, bool* isRunningPtr, ushort clientAmount = 8, bool debug = true) {
+void serverFunction(mapContainer* map, bool* serverStatusPtr, bool* isFrozenPtr, bool* isRunningPtr, ushort clientAmount = 8, bool debug = true, unsigned short port = 21370) {
 
 	stIsFrozen = isFrozenPtr;
 	stIsRunning = isRunningPtr;
@@ -219,7 +219,7 @@ void serverFunction(mapContainer* map, bool* serverStatusPtr, bool* isFrozenPtr,
 	}
 
 
-	if (stPrepareBaseFunctions()) {
+	if (stPrepareBaseFunctions(port)) {
 		if (stDebug) {
 			std::cout << "[ MILESTONE ] ST debug: Server functions prepared succesfully, starting the loop... \n";
 		}
