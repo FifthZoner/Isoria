@@ -98,5 +98,8 @@
     <ClInclude Include="map.h">
       <Filter>Map\Main</Filter>
     </ClInclude>
+    <ClInclude Include="transferMisc.h">
+      <Filter>Networking\Transfer functions</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

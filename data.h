@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "quickWrite.h"
+#include "convert.h"
 
 //				DEFINITION
 
@@ -19,8 +20,12 @@ public:
 	vec2f scaleToSet;
 	bool doesObstruct = false;
 	bool isVisible = false;
+	unsigned short datapackId, internalId;
 
-	void create(std::vector <str> paths, ushort baseBlockSize) {
+	void create(std::vector <str> paths, ushort baseBlockSize, unsigned short idOfDatapack, unsigned short idInDatapack) {
+		datapackId = idOfDatapack;
+		internalId = idInDatapack;
+
 		for (ushort n = 0; n < paths.size(); n++) {
 			textures[n].loadFromFile(paths[n]);
 		}
@@ -39,8 +44,12 @@ public:
 	vec2f scaleToSet;
 	bool doesObstruct = false;
 	bool isVisible = false;
+	unsigned short datapackId, internalId;
 
-	void create(std::vector <str> paths, ushort baseBlockSize) {
+	void create(std::vector <str> paths, ushort baseBlockSize, unsigned short idOfDatapack, unsigned short idInDatapack) {
+		datapackId = idOfDatapack;
+		internalId = idInDatapack;
+
 		for (ushort n = 0; n < paths.size(); n++) {
 			textures[n].loadFromFile(paths[n]);
 		}
@@ -59,8 +68,12 @@ public:
 	vec2f scaleToSet;
 	bool doesObstruct = false;
 	bool isVisible = false;
+	unsigned short datapackId, internalId;
 
-	void create(std::vector <str> paths, ushort baseBlockSize) {
+	void create(std::vector <str> paths, ushort baseBlockSize, unsigned short idOfDatapack, unsigned short idInDatapack) {
+		datapackId = idOfDatapack;
+		internalId = idInDatapack;
+
 		for (ushort n = 0; n < paths.size(); n++) {
 			textures[n].loadFromFile(paths[n]);
 		}
@@ -75,6 +88,7 @@ public:
 class datapack {
 public:
 	str name, path;
+	unsigned short number = NULL;
 	std::vector<backgroundBlockInfo> backgroundBlocks;
 	std::vector<floorBlockInfo> floorBlocks;
 	std::vector<wallBlockInfo> wallBlocks;

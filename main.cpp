@@ -571,7 +571,7 @@ void clickedContinue() {
 		std::cout << "[ STARTING ] SF debug: Starting game server... \n";
 	}
 
-	startServer(&serverThread, &gameMap, getDatapackNames(), &serverStatus, &isFrozen, &isCurrentlyRunning, 8, sfDebug, mainPort);
+	startServer(&serverThread, &gameMap, getDatapackNames(), &serverStatus, &isFrozen, &isCurrentlyRunning, &mDatapacks, 8, sfDebug, mainPort);
 
 	if (sfDebug) {
 		std::cout << "[ STARTING ] SF debug: Starting client... \n";

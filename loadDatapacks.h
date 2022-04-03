@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <SFML/Graphics.hpp>
+#include <filesystem>
 
 #include <iostream>
 
@@ -16,6 +17,8 @@ datapackContainer* container;
 lDatapackPathsContainer* paths;
 ushort dlBaseSize = 16;
 bool dlDebug = 1;
+
+namespace fs = std::filesystem;
 
 //				PRELOADING
 
@@ -230,6 +233,7 @@ void preLoadMainGameDatapacks(datapackContainer* datapackVariable, lDatapackPath
 		paths->datapacks.resize(paths->datapacks.size() + 1);
 
 		container->datapacks[container->datapacks.size() - 1].name = input;
+		container->datapacks[container->datapacks.size() - 1].number = container->datapacks.size() - 1;
 
 		dlLoadDatapack("data/" + input + "/", &paths->datapacks[paths->datapacks.size() - 1], &container->datapacks[container->datapacks.size() - 1]);
 	}
@@ -248,17 +252,17 @@ void dlLoadDatapackGraphics(lDatapackPaths* pPointer, datapack* dPointer) {
 
 	// backgrounds
 	for (uint n = 1; n < pPointer->background.texturePaths.size(); n++) {
-		dPointer->backgroundBlocks[n].create(pPointer->background.texturePaths[n], dlBaseSize);
+		dPointer->backgroundBlocks[n].create(pPointer->background.texturePaths[n], dlBaseSize, dPointer->number, n);
 	}
 
 	// floors
 	for (uint n = 1; n < pPointer->floor.texturePaths.size(); n++) {
-		dPointer->floorBlocks[n].create(pPointer->floor.texturePaths[n], dlBaseSize);
+		dPointer->floorBlocks[n].create(pPointer->floor.texturePaths[n], dlBaseSize, dPointer->number, n);
 	}
 
 	// walls
 	for (uint n = 1; n < pPointer->wall.texturePaths.size(); n++) {
-		dPointer->wallBlocks[n].create(pPointer->wall.texturePaths[n], dlBaseSize);
+		dPointer->wallBlocks[n].create(pPointer->wall.texturePaths[n], dlBaseSize, dPointer->number, n);
 	}
 }
 

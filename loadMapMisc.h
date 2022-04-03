@@ -3,6 +3,7 @@
 // a file containing map loading misc objects
 
 #include <string>
+#include <unordered_map>
 
 #include "quickWrite.h"
 

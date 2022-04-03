@@ -6,15 +6,49 @@
 #include "map.h"
 
 bool mrDebug;
-std::size_t received;
+
+std::vector<std::string> mrNames;
+
+// checks if all datapacks required to connect to server wre present
+bool checkNames(datapackContainer* pointer) {
+	for (unsigned short n = 0; n < mrNames.size(); n++) {
+		bool wasFound = false;
+		for (unsigned short m = 0; m < pointer->datapacks.size(); m++) {
+			if (pointer->datapacks[m].name == mrNames[n]) {
+				wasFound = true;
+				break;
+			}
+		}
+		if (!wasFound) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+// false for positive
+bool sendConfirmation(sf::TcpSocket* socket, bool isNegative) {
+	if (mrDebug) {
+		std::cout << "MR Debug: Sending confirmation... \n";
+	}
+	char auth[1] = { isNegative };
+	if (socket->send(auth, 1)) {
+		if (mrDebug) {
+			std::cout << "[ CRITICAL ] MR Debug: Could not send confirmation! \n";
+		}
+		return 1;
+	}
+	return auth[0];
+}
 
 bool getDatapackInfo(sf::TcpSocket* socket, datapackContainer* datapackPtr) {
-	char packet[1024];
+	std::size_t received;
+	char packet[8192];
 
 	// get datapack data
-	if (socket->receive(packet, 1024, received)) {
+	if (socket->receive(packet, 8192, received)) {
 		if (mrDebug) {
-			std::cout << "[ CRITICAL ] CT Debug: Could not receive datapack data packet! \n";
+			std::cout << "[ CRITICAL ] MR Debug: Could not receive datapack data packet! \n";
 		}
 		return 1;
 	}
@@ -31,8 +65,8 @@ bool getDatapackInfo(sf::TcpSocket* socket, datapackContainer* datapackPtr) {
 		len += packet[n];
 	}
 
-	if (len > 1024) {
-		unsigned short count = len / 1024;
+	if (len > 8192) {
+		unsigned short count = len / 8192;
 		if (mrDebug) {
 			std::cout << "MR Debug: " << count << " additional datapack packets detected!\n";
 		}
@@ -60,14 +94,26 @@ bool getDatapackInfo(sf::TcpSocket* socket, datapackContainer* datapackPtr) {
 			std::cout << "MR Debug: " << names[n] << "\n";
 		}
 	}
+
+	mrNames = names;
+
+	return 0;
 }
 
 bool receiveMap(mapContainer* map, sf::TcpSocket* socket, datapackContainer* datapackPtr, bool debug) {
 	mrDebug = debug;
 
-	// checks if all necessary datapacks are present to avoid critical issues
-	getDatapackInfo(socket, datapackPtr);
+	// gets datapack names for ones used on server
+	if (getDatapackInfo(socket, datapackPtr)) {
+		return 1;
+	}
 
+	// sends confirmation or not
+	if (sendConfirmation(socket, checkNames(datapackPtr))) {
+		return 1;
+	}
+
+	// gets conversion<something>.txt file contents
 
 	return 0;
 }

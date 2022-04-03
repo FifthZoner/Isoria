@@ -64,7 +64,7 @@ bool stCommunication(clientStruct* pointer) {
 }
 
 // a main thread of a socket
-bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short number, std::vector<std::string> names) {
+bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short number, std::vector<std::string> names, datapackContainer* datapackPtr) {
 
 	sf::TcpListener socketListener;
 
@@ -140,7 +140,7 @@ bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short num
 	}
 
 
-	sendMap(map, &pointer->socket, stDebug, names);
+	sendMap(map, &pointer->socket, stDebug, names, datapackPtr);
 
 	freezeInstances--;
 	if (!freezeInstances) {
@@ -183,7 +183,7 @@ ushort getSocketToUse() {
 	}
 }
 
-void stListenerThread(mapContainer* map, std::vector<std::string> names) {
+void stListenerThread(mapContainer* map, std::vector<std::string> names, datapackContainer* datapackPtr) {
 	ushort socketToUse = NULL;
 	sf::TcpSocket portSocket;
 	char auth[1];
@@ -211,7 +211,7 @@ void stListenerThread(mapContainer* map, std::vector<std::string> names) {
 					}
 				}
 				else {
-					clientThreads[socketToUse].thread = std::thread(stSocketThread, map, &clientThreads[socketToUse], socketToUse, names);
+					clientThreads[socketToUse].thread = std::thread(stSocketThread, map, &clientThreads[socketToUse], socketToUse, names, datapackPtr);
 					clientThreads[socketToUse].isUsed = true;
 					clientThreads[socketToUse].wasUsed = true;
 				}
@@ -237,7 +237,7 @@ void stListenerThread(mapContainer* map, std::vector<std::string> names) {
 
 //		MAIN
 
-bool stPrepareBaseFunctions(unsigned short port, mapContainer* map, std::vector<std::string> names) {
+bool stPrepareBaseFunctions(unsigned short port, mapContainer* map, std::vector<std::string> names, datapackContainer* datapackPtr) {
 	
 	listener.setBlocking(false);
 
@@ -251,15 +251,15 @@ bool stPrepareBaseFunctions(unsigned short port, mapContainer* map, std::vector<
 		return 0;
 	}
 	
-	masterThread = std::thread(stListenerThread, map, names);
+	masterThread = std::thread(stListenerThread, map, names, datapackPtr);
 
 	return 1;
 }
 
-// main function thar runs the server in a seperate thread, send serverStatus as a true bool
+// main function thar runs the server in a seperate thread, send serverStatus as a true value bool
 void serverFunction(mapContainer* map, std::vector<std::string> names,
 	bool* serverStatusPtr, bool* isFrozenPtr, 
-	bool* isRunningPtr, ushort clientAmount = 8, 
+	bool* isRunningPtr, datapackContainer* datapackPtr, ushort clientAmount = 8,
 	bool debug = true, unsigned short port = 21370) {
 
 	stIsFrozen = isFrozenPtr;
@@ -274,7 +274,7 @@ void serverFunction(mapContainer* map, std::vector<std::string> names,
 	}
 
 
-	if (stPrepareBaseFunctions(port, map, names)) {
+	if (stPrepareBaseFunctions(port, map, names, datapackPtr)) {
 		if (stDebug) {
 			std::cout << "[ MILESTONE ] ST debug: Server functions prepared succesfully, starting the loop... \n";
 		}
@@ -298,12 +298,12 @@ void serverFunction(mapContainer* map, std::vector<std::string> names,
 
 void startServer(std::thread* thread, mapContainer* map, std::vector<std::string> names,
 	bool* serverStatusPtr, bool* isFrozenPtr,
-	bool* isRunningPtr, ushort clientAmount = 8,
+	bool* isRunningPtr, datapackContainer* datapackPtr, ushort clientAmount = 8,
 	bool debug = true, unsigned short port = 21370) {
 
 
 	*thread = std::thread(serverFunction, map, names,
 		serverStatusPtr, isFrozenPtr,
-		isRunningPtr, clientAmount,
+		isRunningPtr, datapackPtr, clientAmount,
 		debug, port);
 }
