@@ -37,7 +37,7 @@ bool sendDatapacks(std::string saveName, sf::TcpSocket* socket, std::vector<std:
 	packet[0] = names.size();
 
 	for (unsigned short n = 1; n <= names.size(); n++) {
-		packet[n] = names[n].size();
+		packet[n] = names[n - 1].size();
 		current = n + 1;
 	}
 
@@ -48,7 +48,6 @@ bool sendDatapacks(std::string saveName, sf::TcpSocket* socket, std::vector<std:
 		for (; current < 1024; current++) {
 			if (names[currentString].size() > currentIndex and currentString != names.size()) {
 				packet[current] = names[currentString][currentIndex];
-				std::cout << names[currentString][currentIndex] << "\n";
 				currentIndex++;
 			}
 			else {
@@ -58,7 +57,7 @@ bool sendDatapacks(std::string saveName, sf::TcpSocket* socket, std::vector<std:
 					current--;
 					if (msDebug) {
 						std::cout << "MS Debug: Packed all datapack info into: " << 1 + current + packetNumber * 1024 << " bytes \n";
-					}
+					}				
 					if (sendDatapackPacket(socket, packet)) {
 						return 1;
 					}
@@ -83,8 +82,6 @@ bool sendMap(mapContainer* map, sf::TcpSocket* socket, bool debug, std::vector<s
 	msDebug = debug;
 
 	sendDatapacks(map->name, socket, names);
-
-
 
 	return 0;
 }

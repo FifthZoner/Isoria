@@ -145,6 +145,13 @@ std::vector<std::string> getDatapackNames(std::vector<std::string> names = {}) {
 		names.push_back(mDatapacks.datapacks[n].name);
 	}
 
+	if (sfDebug) {
+		std::cout << "SF Debug: Scrambled datapack names: \n";
+		for (unsigned short n = 0; n < names.size(); n++) {
+			std::cout << "SF Debug: " << names[n] << "\n";
+		}
+	}
+
 	return names;
 }
 

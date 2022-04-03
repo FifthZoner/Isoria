@@ -150,5 +150,6 @@ struct clientClass {
 };
 
 void around(clientClass* ptr, mapContainer* map, bool external, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr) {
+	
 	ptr->mainFunction(external, map, ctClientStatus, ip, port, datapackPtr);
 }

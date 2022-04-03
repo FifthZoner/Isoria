@@ -138,6 +138,8 @@ bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short num
 	if (stDebug) {
 		std::cout << "[ STARTING ] ST Debug: Starting map transfer from server side... \n";
 	}
+
+
 	sendMap(map, &pointer->socket, stDebug, names);
 
 	freezeInstances--;
