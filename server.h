@@ -28,6 +28,8 @@ bool* stIsFrozen;
 bool* stIsRunning;
 unsigned short freezeInstances = 0;
 
+bool stopListener = true;
+
 ushort connectedSockets = 0;
 ushort maxSockets = 1;
 
@@ -41,18 +43,18 @@ bool stCommunication(clientStruct* pointer) {
 	// temp test packet
 	char packet[5] = { 'h','e','l','l','o' };
 
-	if (!pointer->socket.send(packet, 5)) {
+	if (pointer->socket.send(packet, 5)) {
 		if (stDebug) {
-			"[ CRITICAL ] CT Debug: Could not communicate with client! \n";
+			std::cout << "[ CRITICAL ] ST Debug: Could not communicate with client! \n";
 		}
 		return 1;
 	}
 
 	std::size_t received;
 
-	if (!pointer->socket.receive(packet, 5, received)) {
+	if (pointer->socket.receive(packet, 5, received)) {
 		if (stDebug) {
-			"[ CRITICAL ] CT Debug: Could not communicate with client! \n";
+			std::cout << "[ CRITICAL ] ST Debug: Could not communicate with client! \n";
 		}
 		return 1;
 	}
@@ -61,7 +63,29 @@ bool stCommunication(clientStruct* pointer) {
 }
 
 // a main thread of a socket
-char stSocketThread(clientStruct* pointer) {
+bool stSocketThread(clientStruct* pointer, unsigned short number) {
+
+	sf::TcpListener socketListener;
+
+	// binding the socket to port
+	if (socketListener.listen(21370 + number + 1) != sf::Socket::Done) {
+		if (stDebug) {
+			std::cout << "[ CRITICAL ] ST Debug: Socket listener setup failed! \n";
+		}
+		return 0;
+	}
+
+	if (socketListener.accept(pointer->socket) == sf::Socket::Done) {
+		if (stDebug) {
+			std::cout << "ST Debug: Accepted socket connection... \n";
+		}
+	}
+	else {
+		if (stDebug) {
+			std::cout << "ST Debug: Failed to connect socket! \n";
+		}
+		return 0;
+	}
 
 	// starting a connection with client
 
@@ -71,7 +95,7 @@ char stSocketThread(clientStruct* pointer) {
 
 	char auth[1];
 
-	if (!pointer->socket.receive(auth, 1, received)) {
+	if (pointer->socket.receive(auth, 1, received)) {
 		return 1;
 	}
 
@@ -92,8 +116,12 @@ char stSocketThread(clientStruct* pointer) {
 		std::cout << "ST Debug: Freezing the game... \n";
 	}
 
-	freezeInstances++;
+
+	/*
+	* freezeInstances++;
 	*stIsFrozen = true;
+
+	
 
 	while (*stIsRunning) {
 		sf::sleep(sf::milliseconds(5));
@@ -106,7 +134,7 @@ char stSocketThread(clientStruct* pointer) {
 		}
 	}
 	
-
+	
 
 	freezeInstances--;
 	if (!freezeInstances) {
@@ -115,6 +143,8 @@ char stSocketThread(clientStruct* pointer) {
 		}
 		*stIsFrozen = false;
 	}
+	*/
+	
 
 
 	// main socket loop
@@ -122,7 +152,7 @@ char stSocketThread(clientStruct* pointer) {
 
 		if (stCommunication(pointer)) {
 			if (stDebug) {
-				"[ WARNING ] ST Debug: Could not communicat with client! \n";
+				std::cout << "[ WARNING ] ST Debug: Could not communicate with client! \n";
 			}
 			break;
 		}
@@ -148,26 +178,38 @@ ushort getSocketToUse() {
 }
 
 void stListenerThread() {
-	bool isSocketFound = false;
 	ushort socketToUse = NULL;
+	sf::TcpSocket portSocket;
+	char auth[1];
 
 	while (*isAllAlright) {
 
 		// check if max connection amount was not reached
 		if (connectedSockets < maxSockets) {
-			if (!isSocketFound) {
-				isSocketFound = true;
-				socketToUse = getSocketToUse();
-			}
 
-			if (listener.accept(clientThreads[socketToUse].socket) == sf::Socket::Done) {
+			socketToUse = getSocketToUse();
+
+			if (listener.accept(portSocket) == sf::Socket::Done) {
+				if (stDebug) {
+					std::cout << "ST Debug: Accepting connection at: " << socketToUse << "\n";
+				}
 				if (clientThreads[socketToUse].wasUsed) {
 					clientThreads[socketToUse].wasUsed = false;
 					clientThreads[socketToUse].thread.join();
 				}
-				clientThreads[socketToUse].thread = std::thread(stSocketThread, &clientThreads[socketToUse]);
-				clientThreads[socketToUse].isUsed = true;
-				clientThreads[socketToUse].wasUsed = true;
+				// gives the client port number
+				auth[0] = socketToUse;
+				if (portSocket.send(auth, 1)) {
+					if (stDebug) {
+						std::cout << "[ CRITICAL ] ST Debug: Could not communicate with client! \n";
+					}
+				}
+				else {
+					clientThreads[socketToUse].thread = std::thread(stSocketThread, &clientThreads[socketToUse], socketToUse);
+					clientThreads[socketToUse].isUsed = true;
+					clientThreads[socketToUse].wasUsed = true;
+				}
+				portSocket.disconnect();
 			}
 
 		}
@@ -187,25 +229,29 @@ void stListenerThread() {
 //		MAIN
 
 bool stPrepareBaseFunctions(unsigned short port) {
-
+	
 	listener.setBlocking(false);
 
+	
 	// binding the socket to port
-	if (!listener.listen(port) != sf::Socket::Done) {
-		return 0;
-
+	if (listener.listen(21370) != sf::Socket::Done) {
 		if (stDebug) {
 			std::cout << "[ CRITICAL ] ST Debug: Listener setup failed! \n";
 		}
+		stopListener = false;
+		return 0;
 	}
-
+	
 	masterThread = std::thread(stListenerThread);
 
 	return 1;
 }
 
 // main function thar runs the server in a seperate thread, send serverStatus as a true bool
-void serverFunction(mapContainer* map, bool* serverStatusPtr, bool* isFrozenPtr, bool* isRunningPtr, ushort clientAmount = 8, bool debug = true, unsigned short port = 21370) {
+void serverFunction(mapContainer* map, 
+	bool* serverStatusPtr, bool* isFrozenPtr, 
+	bool* isRunningPtr, ushort clientAmount = 8, 
+	bool debug = true, unsigned short port = 21370) {
 
 	stIsFrozen = isFrozenPtr;
 	stIsRunning = isRunningPtr;
@@ -231,5 +277,20 @@ void serverFunction(mapContainer* map, bool* serverStatusPtr, bool* isFrozenPtr,
 		}
 	}
 
-	masterThread.join();
+	if (stopListener) {
+		masterThread.join();
+	}
+	
+}
+
+void startServer(std::thread* thread, mapContainer* map,
+	bool* serverStatusPtr, bool* isFrozenPtr,
+	bool* isRunningPtr, ushort clientAmount = 8,
+	bool debug = true, unsigned short port = 21370) {
+
+
+	*thread = std::thread(serverFunction, map,
+		serverStatusPtr, isFrozenPtr,
+		isRunningPtr, clientAmount,
+		debug, port);
 }

@@ -490,6 +490,8 @@ void graphicsRenderer() {
 
 				if (event.type == sf::Event::Closed) {
 					gameWindow.close();
+					serverStatus = false;
+					clientStatus = false;
 				}
 			}
 
@@ -544,6 +546,17 @@ void clickedContinue() {
 	}
 
 	// anything else needed here
+	if (sfDebug) {
+		std::cout << "[ STARTING ] SF debug: Starting game server... \n";
+	}
+
+	startServer(&serverThread, &serverMap, &serverStatus, &isFrozen, &isCurrentlyRunning, 8, sfDebug, mainPort);
+
+	if (sfDebug) {
+		std::cout << "[ STARTING ] SF debug: Starting client... \n";
+	}
+
+	client.start(&client, mainIp, &clientStatus, sfDebug, mainPort, 0);
 
 
 	// setting stage
@@ -557,6 +570,12 @@ void clickedContinue() {
 
 void clickedJoin() {
 	// add external connection info
+
+	if (sfDebug) {
+		std::cout << "[ STARTING ] SF debug: Starting client... \n";
+	}
+
+	client.start(&client, mainIp, &clientStatus, sfDebug, mainPort, 1);
 }
 
 //	MAIN MENU MAIN
@@ -680,7 +699,7 @@ void run1x0Menu() {
 					if (sfDebug) {
 						std::cout << "SF debug: Main menu join button clicked, joining external session..." << "\n";
 					}
-
+					clickedJoin();
 				}
 				break;
 			}
@@ -973,6 +992,10 @@ int main() {
 	nonGraphicLoop();
 
 	graphicsThread.join();
+
+	// other threads
+	serverThread.join();
+	client.thread.join();
 
 	if (sfDebug) {
 		std::cout << "[ EXITING ] SF debug: Goodbye!" << "\n";
