@@ -25,6 +25,18 @@
     <Filter Include="Map">
       <UniqueIdentifier>{63f2638e-8b86-401d-8d39-391b84499cdc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Networking\Masters">
+      <UniqueIdentifier>{dc29312e-f727-4352-9a33-960871a86a86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Networking\Transfer functions">
+      <UniqueIdentifier>{edf0afa8-a3c7-4894-84b2-c571f2b9ecb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map\Main">
+      <UniqueIdentifier>{88bc82b1-a4d8-4eeb-a789-29363f40ef7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map\Misc">
+      <UniqueIdentifier>{4bacf274-fb02-4481-a1ea-1be02fa38e5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -47,17 +59,8 @@
     <ClInclude Include="data.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="loadMap.h">
-      <Filter>Inne</Filter>
-    </ClInclude>
     <ClInclude Include="loadDatapacks.h">
       <Filter>Inne</Filter>
-    </ClInclude>
-    <ClInclude Include="server.h">
-      <Filter>Networking</Filter>
-    </ClInclude>
-    <ClInclude Include="client.h">
-      <Filter>Networking</Filter>
     </ClInclude>
     <ClInclude Include="graphics.h">
       <Filter>Graphics</Filter>
@@ -65,20 +68,35 @@
     <ClInclude Include="buttons.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="loadMapMisc.h">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="mapGenerationMisc.h">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="map.h">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="serverMisc.h">
-      <Filter>Networking</Filter>
-    </ClInclude>
     <ClInclude Include="launcher.h">
       <Filter>Inne</Filter>
+    </ClInclude>
+    <ClInclude Include="client.h">
+      <Filter>Networking\Masters</Filter>
+    </ClInclude>
+    <ClInclude Include="server.h">
+      <Filter>Networking\Masters</Filter>
+    </ClInclude>
+    <ClInclude Include="serverMisc.h">
+      <Filter>Networking\Masters</Filter>
+    </ClInclude>
+    <ClInclude Include="mapReceive.h">
+      <Filter>Networking\Transfer functions</Filter>
+    </ClInclude>
+    <ClInclude Include="mapSend.h">
+      <Filter>Networking\Transfer functions</Filter>
+    </ClInclude>
+    <ClInclude Include="loadMapMisc.h">
+      <Filter>Map\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="mapGenerationMisc.h">
+      <Filter>Map\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="loadMap.h">
+      <Filter>Map\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="map.h">
+      <Filter>Map\Main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

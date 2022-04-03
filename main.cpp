@@ -31,6 +31,9 @@ bool sfDebug = false;
 bool showVersion = true;
 bool letItBe = true;
 
+bool terminateServer = false;
+bool terminateClient = false;
+
 
 bool isLastWorldPresent = false;
 	str lastWorldPlayed;
@@ -127,13 +130,23 @@ std::vector <ushort> datapackIds;
 
 // two added for early tests of map download
 
-mapContainer serverMap;
 mapContainer gameMap;
+mapContainer testMap;
 
 //				DATAPACKS
 
 datapackContainer mDatapacks;
 lDatapackPathsContainer mDatapackPathsContainer;
+
+// gives a vector containing names of loaded datapacks
+std::vector<std::string> getDatapackNames(std::vector<std::string> names = {}) {
+
+	for (unsigned short n = 0; n < mDatapacks.datapacks.size(); n++) {
+		names.push_back(mDatapacks.datapacks[n].name);
+	}
+
+	return names;
+}
 
 //				LOADING PROCESS
 
@@ -457,7 +470,7 @@ void render2Gameplay() {
 	switch (subStage) {
 
 	case 0:
-		render2x0(&serverMap.dimensions[currentDimension]);
+		render2x0(&gameMap.dimensions[currentDimension]);
 		break;
 
 	default:
@@ -492,6 +505,7 @@ void graphicsRenderer() {
 					gameWindow.close();
 					serverStatus = false;
 					clientStatus = false;
+					letItBe = false;
 				}
 			}
 
@@ -539,7 +553,7 @@ void clickedContinue() {
 		std::cout << "SF debug: Starting map loading process... \n";
 	}
 
-	loadMap(&serverMap, lastWorldPlayed, &mDatapacks, sfDebug);
+	loadMap(&gameMap, lastWorldPlayed, &mDatapacks, sfDebug);
 
 	if (sfDebug) {
 		std::cout << "SF debug: Loading auxiliary data... \n";
@@ -550,13 +564,14 @@ void clickedContinue() {
 		std::cout << "[ STARTING ] SF debug: Starting game server... \n";
 	}
 
-	startServer(&serverThread, &serverMap, &serverStatus, &isFrozen, &isCurrentlyRunning, 8, sfDebug, mainPort);
+	startServer(&serverThread, &gameMap, getDatapackNames(), &serverStatus, &isFrozen, &isCurrentlyRunning, 8, sfDebug, mainPort);
 
 	if (sfDebug) {
 		std::cout << "[ STARTING ] SF debug: Starting client... \n";
 	}
 
-	client.start(&client, mainIp, &clientStatus, sfDebug, mainPort, 0);
+	// CHANGE TO LOCAL AGAIN
+	client.start(&client, &testMap, mainIp, &clientStatus, &mDatapacks, sfDebug, mainPort, 1);
 
 
 	// setting stage
@@ -575,7 +590,7 @@ void clickedJoin() {
 		std::cout << "[ STARTING ] SF debug: Starting client... \n";
 	}
 
-	client.start(&client, mainIp, &clientStatus, sfDebug, mainPort, 1);
+	client.start(&client, &gameMap, mainIp, &clientStatus, &mDatapacks, sfDebug, mainPort, 1);
 }
 
 //	MAIN MENU MAIN
@@ -985,6 +1000,9 @@ int main() {
 		std::cout << "[ INFO ] SF debug: ST - Server Thread    \n";
 		std::cout << "[ INFO ] SF debug: CT - Client Thread    \n";
 		std::cout << "[ INFO ] SF debug: ML - Map Loading      \n";
+		std::cout << "[ INFO ] SF debug: LT - Launcher	       \n";
+		std::cout << "[ INFO ] SF debug: MS - Map Send         \n";
+		std::cout << "[ INFO ] SF debug: MR - Map Receive      \n";
 		std::cout << "[ INFO ] SF debug: MG - Map Generation \n\n";
 	}
 
@@ -994,8 +1012,13 @@ int main() {
 	graphicsThread.join();
 
 	// other threads
-	serverThread.join();
-	client.thread.join();
+	if (terminateServer) {
+		serverThread.join();
+	}
+
+	if (terminateClient) {
+		client.thread.join();
+	}
 
 	if (sfDebug) {
 		std::cout << "[ EXITING ] SF debug: Goodbye!" << "\n";

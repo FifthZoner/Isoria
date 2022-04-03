@@ -648,7 +648,7 @@ void launcher(std::vector <datapackInfo>* datapacksLPresentLPtr, bool* letItBeLP
 							}
 							else { // activate checkbox, sorting back
 								datapacksLPresentL->at(lButtonNumberSecond).used = !datapacksLPresentL->at(lButtonNumberSecond).used; // switch bool
-								for (unsigned short n = lButtonNumberSecond; n > 0, !datapacksLPresentL->at(n - 1).used; n--) {
+								for (unsigned short n = lButtonNumberSecond; n > 0 and !datapacksLPresentL->at(n - 1).used; n--) {
 									datapackInfo temp = datapacksLPresentL->at(n - 1);
 									datapacksLPresentL->at(n - 1) = datapacksLPresentL->at(n);
 									datapacksLPresentL->at(n) = temp;

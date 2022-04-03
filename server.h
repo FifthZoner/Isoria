@@ -10,6 +10,7 @@
 #include "client.h"
 #include "serverMisc.h"
 #include "map.h"
+#include "mapSend.h"
 
 // the server file, has absolute authority over all gameplay logic and can correct future prediction inaccuracies
 
@@ -63,7 +64,7 @@ bool stCommunication(clientStruct* pointer) {
 }
 
 // a main thread of a socket
-bool stSocketThread(clientStruct* pointer, unsigned short number) {
+bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short number, std::vector<std::string> names) {
 
 	sf::TcpListener socketListener;
 
@@ -72,7 +73,7 @@ bool stSocketThread(clientStruct* pointer, unsigned short number) {
 		if (stDebug) {
 			std::cout << "[ CRITICAL ] ST Debug: Socket listener setup failed! \n";
 		}
-		return 0;
+		return 1;
 	}
 
 	if (socketListener.accept(pointer->socket) == sf::Socket::Done) {
@@ -84,7 +85,7 @@ bool stSocketThread(clientStruct* pointer, unsigned short number) {
 		if (stDebug) {
 			std::cout << "ST Debug: Failed to connect socket! \n";
 		}
-		return 0;
+		return 1;
 	}
 
 	// starting a connection with client
@@ -117,8 +118,8 @@ bool stSocketThread(clientStruct* pointer, unsigned short number) {
 	}
 
 
-	/*
-	* freezeInstances++;
+	
+	freezeInstances++;
 	*stIsFrozen = true;
 
 	
@@ -134,7 +135,10 @@ bool stSocketThread(clientStruct* pointer, unsigned short number) {
 		}
 	}
 	
-	
+	if (stDebug) {
+		std::cout << "[ STARTING ] ST Debug: Starting map transfer from server side... \n";
+	}
+	sendMap(map, &pointer->socket, stDebug, names);
 
 	freezeInstances--;
 	if (!freezeInstances) {
@@ -143,7 +147,7 @@ bool stSocketThread(clientStruct* pointer, unsigned short number) {
 		}
 		*stIsFrozen = false;
 	}
-	*/
+	
 	
 
 
@@ -177,7 +181,7 @@ ushort getSocketToUse() {
 	}
 }
 
-void stListenerThread() {
+void stListenerThread(mapContainer* map, std::vector<std::string> names) {
 	ushort socketToUse = NULL;
 	sf::TcpSocket portSocket;
 	char auth[1];
@@ -205,7 +209,7 @@ void stListenerThread() {
 					}
 				}
 				else {
-					clientThreads[socketToUse].thread = std::thread(stSocketThread, &clientThreads[socketToUse], socketToUse);
+					clientThreads[socketToUse].thread = std::thread(stSocketThread, map, &clientThreads[socketToUse], socketToUse, names);
 					clientThreads[socketToUse].isUsed = true;
 					clientThreads[socketToUse].wasUsed = true;
 				}
@@ -221,6 +225,9 @@ void stListenerThread() {
 	for (unsigned short n = 0; n < clientCap; n++) {
 		if (clientThreads[n].isUsed) {
 			clientThreads[n].thread.join();
+			if (stDebug) {
+				std::cout << "ST Debug: Ended client thread " << n << "\n";
+			}
 		}
 	}
 
@@ -228,7 +235,7 @@ void stListenerThread() {
 
 //		MAIN
 
-bool stPrepareBaseFunctions(unsigned short port) {
+bool stPrepareBaseFunctions(unsigned short port, mapContainer* map, std::vector<std::string> names) {
 	
 	listener.setBlocking(false);
 
@@ -242,13 +249,13 @@ bool stPrepareBaseFunctions(unsigned short port) {
 		return 0;
 	}
 	
-	masterThread = std::thread(stListenerThread);
+	masterThread = std::thread(stListenerThread, map, names);
 
 	return 1;
 }
 
 // main function thar runs the server in a seperate thread, send serverStatus as a true bool
-void serverFunction(mapContainer* map, 
+void serverFunction(mapContainer* map, std::vector<std::string> names,
 	bool* serverStatusPtr, bool* isFrozenPtr, 
 	bool* isRunningPtr, ushort clientAmount = 8, 
 	bool debug = true, unsigned short port = 21370) {
@@ -265,7 +272,7 @@ void serverFunction(mapContainer* map,
 	}
 
 
-	if (stPrepareBaseFunctions(port)) {
+	if (stPrepareBaseFunctions(port, map, names)) {
 		if (stDebug) {
 			std::cout << "[ MILESTONE ] ST debug: Server functions prepared succesfully, starting the loop... \n";
 		}
@@ -280,16 +287,20 @@ void serverFunction(mapContainer* map,
 	if (stopListener) {
 		masterThread.join();
 	}
+
+	if (stDebug) {
+		std::cout << "ST Debug: Ending server thread... \n";
+	}
 	
 }
 
-void startServer(std::thread* thread, mapContainer* map,
+void startServer(std::thread* thread, mapContainer* map, std::vector<std::string> names,
 	bool* serverStatusPtr, bool* isFrozenPtr,
 	bool* isRunningPtr, ushort clientAmount = 8,
 	bool debug = true, unsigned short port = 21370) {
 
 
-	*thread = std::thread(serverFunction, map,
+	*thread = std::thread(serverFunction, map, names,
 		serverStatusPtr, isFrozenPtr,
 		isRunningPtr, clientAmount,
 		debug, port);

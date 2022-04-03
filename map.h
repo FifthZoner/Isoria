@@ -16,35 +16,29 @@ struct renderStruct {
 	bool wall;
 };
 
-//				CLASSES
-
-// class containing background layer of a dimension
-class backgroundLayer {
-public:
+// struct containing background layer of a dimension
+struct backgroundLayer {
 	std::vector <std::vector<backgroundBlock>> blocks;
 };
 
-// class containing floor layer of a dimension
-class floorLayer {
-public:
+// struct containing floor layer of a dimension
+struct floorLayer {
 	std::vector <std::vector<floorBlock>> blocks;
 };
 
-// class containing wall layer of a dimension
-class wallLayer {
-public:
+// struct containing wall layer of a dimension
+struct wallLayer {
 	std::vector <std::vector<wallBlock>> blocks;
 };
 
-// class containing what to draw to optimize rendering
-class renderMap {
-public:
+// struct containing what to draw to optimize rendering
+struct renderMap {
 	std::vector<std::vector<renderStruct>> grid;
 };
 
-// class containing a whole dimension
-class dimension {
-public:
+// struct containing a whole dimension
+struct dimension {
+
 	backgroundLayer backgrounds;
 	floorLayer floors;
 	wallLayer walls;
@@ -87,12 +81,12 @@ public:
 	}
 };
 
-// class containing whole map
-class mapContainer {
-public:
+// struct containing whole map
+struct mapContainer {
+	std::string name = "N/A";
 	std::vector <dimension> dimensions;
 
-	void create(std::vector<vec2i> sizes, std::vector<str> names) {
+	void create(std::vector<vec2i> sizes, std::vector<std::string> names, std::string name) {
 
 		// prepares dimensions
 		dimensions.resize(names.size());

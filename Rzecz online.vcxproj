@@ -171,6 +171,8 @@
     <ClInclude Include="quickWrite.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="serverMisc.h" />
+    <ClInclude Include="mapReceive.h" />
+    <ClInclude Include="mapSend.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

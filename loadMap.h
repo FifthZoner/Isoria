@@ -191,7 +191,7 @@ void mlPrepareBlockStates(dimension* pointer) {
 // prepares tables in mapContainer
 void mlPrepareMapTables() {
 
-	mlMap->create(mlDimensionSizes, mlDimensionNames);
+	mlMap->create(mlDimensionSizes, mlDimensionNames, mlSaveName);
 
 }
 
