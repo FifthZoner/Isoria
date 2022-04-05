@@ -64,12 +64,12 @@ bool stCommunication(clientStruct* pointer) {
 }
 
 // a main thread of a socket
-bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short number, std::vector<std::string> names, datapackContainer* datapackPtr) {
+bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short number, std::vector<std::string> names, datapackContainer* datapackPtr, unsigned short port) {
 
 	sf::TcpListener socketListener;
 
 	// binding the socket to port
-	if (socketListener.listen(21370 + number + 1) != sf::Socket::Done) {
+	if (socketListener.listen(port + number + 1) != sf::Socket::Done) {
 		if (stDebug) {
 			std::cout << "[ CRITICAL ] ST Debug: Socket listener setup failed! \n";
 		}
@@ -125,7 +125,6 @@ bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short num
 	
 
 	while (*stIsRunning) {
-		std::cout << *stIsFrozen << " " << *stIsRunning << "\n";
 		sf::sleep(sf::milliseconds(1));
 	}
 
@@ -138,15 +137,17 @@ bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short num
 		if (stDebug) {
 			std::cout << "ST Debug: Starting map transfer... \n";
 		}
+
+		if (stDebug) {
+			std::cout << "[ STARTING ] ST Debug: Starting map transfer from server side... \n";
+		}
+
+
+		sendMap(map, &pointer->socket, stDebug, names, datapackPtr);
+
 	}
 	
-	if (stDebug) {
-		std::cout << "[ STARTING ] ST Debug: Starting map transfer from server side... \n";
-	}
-
-
-	sendMap(map, &pointer->socket, stDebug, names, datapackPtr);
-
+	
 	freezeInstances--;
 	if (!freezeInstances) {
 		if (stDebug) {
@@ -154,7 +155,6 @@ bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short num
 		}
 		*stIsFrozen = false;
 	}
-	
 	
 
 
@@ -175,6 +175,10 @@ bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short num
 	pointer->socket.disconnect();
 	pointer->isUsed = false;
 
+	if (stDebug) {
+		std::cout << "ST Debug: Ended server thread! \n";
+	}
+
 	return 0;
 }
 
@@ -188,7 +192,7 @@ ushort getSocketToUse() {
 	}
 }
 
-void stListenerThread(mapContainer* map, std::vector<std::string> names, datapackContainer* datapackPtr) {
+void stListenerThread(mapContainer* map, std::vector<std::string> names, datapackContainer* datapackPtr, unsigned short port) {
 	ushort socketToUse = NULL;
 	sf::TcpSocket portSocket;
 	char auth[1];
@@ -216,7 +220,7 @@ void stListenerThread(mapContainer* map, std::vector<std::string> names, datapac
 					}
 				}
 				else {
-					clientThreads[socketToUse].thread = std::thread(stSocketThread, map, &clientThreads[socketToUse], socketToUse, names, datapackPtr);
+					clientThreads[socketToUse].thread = std::thread(stSocketThread, map, &clientThreads[socketToUse], socketToUse, names, datapackPtr, port);
 					clientThreads[socketToUse].isUsed = true;
 					clientThreads[socketToUse].wasUsed = true;
 				}
@@ -248,7 +252,7 @@ bool stPrepareBaseFunctions(unsigned short port, mapContainer* map, std::vector<
 
 	
 	// binding the socket to port
-	if (listener.listen(21370) != sf::Socket::Done) {
+	if (listener.listen(port) != sf::Socket::Done) {
 		if (stDebug) {
 			std::cout << "[ CRITICAL ] ST Debug: Listener setup failed! \n";
 		}
@@ -256,7 +260,7 @@ bool stPrepareBaseFunctions(unsigned short port, mapContainer* map, std::vector<
 		return 0;
 	}
 	
-	masterThread = std::thread(stListenerThread, map, names, datapackPtr);
+	masterThread = std::thread(stListenerThread, map, names, datapackPtr, port);
 
 	return 1;
 }

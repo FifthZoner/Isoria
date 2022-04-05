@@ -11,7 +11,7 @@
 
 // a client side file
 struct clientClass;
-void around(clientClass* ptr, mapContainer* map, bool external, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr, bool* startGame, bool* stIsFrozen, bool* stIsRunning);
+bool around(clientClass* ptr, mapContainer* map, bool external, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr, bool* startGame, bool* stIsFrozen, bool* stIsRunning);
 
 // a class responsible for a single client
 struct clientClass {
@@ -54,7 +54,7 @@ struct clientClass {
 
 	bool mainFunction(bool external, mapContainer* map, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr, bool* startGame, bool* stIsFrozen, bool* stIsRunning) {
 
-		sf::Socket::Status status = socket.connect("192.168.0.245", 21370);
+		sf::Socket::Status status = socket.connect(ip, port);
 
 
 		if (status != sf::Socket::Done)
@@ -66,7 +66,7 @@ struct clientClass {
 		}
 
 		// connection start
-		char auth[1] = { 100 };
+		char auth[1];
 
 		// auth now gives connection number at first
 
@@ -80,7 +80,7 @@ struct clientClass {
 		socket.disconnect();
 		int temp = auth[0];
 		std::cout << "CT Debug: Port addition number: " << temp << "\n";
-		status = socket.connect("192.168.0.245", (21370 + auth[0] + 1));
+		status = socket.connect(ip, (port + auth[0] + 1));
 		if (status != sf::Socket::Done) {
 			if (ctDebug) {
 				std::cout << "[ CRITICAL ] CT Debug: Could not connect to server! \n";
@@ -101,12 +101,16 @@ struct clientClass {
 			return 1;
 		}
 		
-		// map receiving function
-		if (ctDebug) {
-			std::cout << "[ STARTING ] CT Debug: Starting map transfer from client side... \n";
-		}
-		receiveMap(map, &socket, datapackPtr, ctDebug, startGame, stIsFrozen, stIsRunning);
 
+		if (external){
+			// map receiving function
+				if (ctDebug) {
+					std::cout << "[ STARTING ] CT Debug: Starting map transfer from client side... \n";
+				}
+			receiveMap(map, &socket, datapackPtr, ctDebug, startGame, stIsFrozen, stIsRunning);
+		}
+
+		*startGame = true;
 
 
 
@@ -131,6 +135,10 @@ struct clientClass {
 
 		socket.disconnect();
 
+		if (ctDebug) {
+			std::cout << "CT Debug: Ended client thread! \n";
+		}
+
 		return 0;
 	}
 
@@ -149,7 +157,9 @@ struct clientClass {
 	}
 };
 
-void around(clientClass* ptr, mapContainer* map, bool external, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr, bool* startGame, bool* stIsFrozen, bool* stIsRunning) {
+bool around(clientClass* ptr, mapContainer* map, bool external, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr, bool* startGame, bool* stIsFrozen, bool* stIsRunning) {
 	
 	ptr->mainFunction(external, map, ctClientStatus, ip, port, datapackPtr, startGame, stIsFrozen, stIsRunning);
+
+	return 0;
 }

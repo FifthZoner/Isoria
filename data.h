@@ -17,6 +17,7 @@ class backgroundBlockInfo {
 public:
 	std::string name;
 	std::vector <sf::Texture> textures;
+	std::vector <sf::Texture> shadeTextures;
 	vec2f scaleToSet;
 	bool doesObstruct = false;
 	bool isVisible = false;
@@ -28,6 +29,11 @@ public:
 
 		for (ushort n = 0; n < paths.size(); n++) {
 			textures[n].loadFromFile(paths[n]);
+
+			// gets shade file in format xxxxShade.(!)png(!)
+			std::string path = paths[n].erase(paths[n].size() - 4, 4);
+			path += "Shade.png";
+			shadeTextures[n].loadFromFile(path);
 		}
 		doesObstruct = true;
 		isVisible = true;
@@ -41,6 +47,7 @@ class floorBlockInfo {
 public:
 	std::string name;
 	std::vector <sf::Texture> textures;
+	std::vector <sf::Texture> shadeTextures;
 	vec2f scaleToSet;
 	bool doesObstruct = false;
 	bool isVisible = false;
@@ -52,6 +59,11 @@ public:
 
 		for (ushort n = 0; n < paths.size(); n++) {
 			textures[n].loadFromFile(paths[n]);
+
+			// gets shade file in format xxxxShade.(!)png(!)
+			std::string path = paths[n].erase(paths[n].size() - 4, 4);
+			path += "Shade.png";
+			shadeTextures[n].loadFromFile(path);
 		}
 		doesObstruct = true;
 		isVisible = true;
@@ -65,6 +77,7 @@ class wallBlockInfo {
 public:
 	std::string name;
 	std::vector <sf::Texture> textures;
+	std::vector <sf::Texture> shadeTextures;
 	vec2f scaleToSet;
 	bool doesObstruct = false;
 	bool isVisible = false;
@@ -76,6 +89,11 @@ public:
 
 		for (ushort n = 0; n < paths.size(); n++) {
 			textures[n].loadFromFile(paths[n]);
+
+			// gets shade file in format xxxxShade.(!)png(!)
+			std::string path = paths[n].erase(paths[n].size() - 4, 4);
+			path += "Shade.png";
+			shadeTextures[n].loadFromFile(path);
 		}
 		doesObstruct = true;
 		isVisible = true;

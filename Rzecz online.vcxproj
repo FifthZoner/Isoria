@@ -169,11 +169,15 @@
     <ClInclude Include="misc.h" />
     <ClInclude Include="buttons.h" />
     <ClInclude Include="quickWrite.h" />
+    <ClInclude Include="renderer2.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="serverMisc.h" />
     <ClInclude Include="mapReceive.h" />
     <ClInclude Include="mapSend.h" />
     <ClInclude Include="transferMisc.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="globalShader.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

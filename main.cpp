@@ -13,6 +13,7 @@
 #include "loadDatapacks.h"
 #include "server.h"
 #include "launcher.h"
+#include "renderer2.h"
 
 
 
@@ -80,9 +81,7 @@ const ushort maxClients = 8;
 
 //		MAP MAIN GRAPHICS
 
-sf::RenderTexture mapMainTexture;
-sf::View mapMainView;
-sf::Sprite mapMainSprite;
+sf::RenderWindow gameWindow;
 
 //		MAP GLOBAL SHADING GRAPHICS
 
@@ -105,8 +104,7 @@ str mapGeneratorString = "Starting map generation...";
 
 //		GRAPHICAL ELEMENTS
 
-sf::RenderWindow gameWindow;
-sf::RenderTexture globalShadowWindow, localShadowWindow;
+
 
 sf::Font mainFont;
 
@@ -133,7 +131,6 @@ std::vector <ushort> datapackIds;
 // two added for early tests of map download
 
 mapContainer gameMap;
-mapContainer testMap;
 
 //				DATAPACKS
 
@@ -302,7 +299,7 @@ void loadAdditional() {
 	file.open("serverData.txt");
 
 	// ip adress bytes in that form per sfml wiki recomendation
-	char B1, B2, B3, B4;
+	unsigned short B1, B2, B3, B4;
 	file >> B1 >> B2 >> B3 >> B4;
 	mainIp = sf::IpAddress(B1, B2, B3, B4);
 
@@ -358,57 +355,7 @@ void loadData() {
 
 //		SECONDARY FUNCTIONS
 
-renderLimit getRenderLimit(dimension* pointer) {
-	renderLimit value;
 
-	// temp!
-	value.lower = vec2i(0, 0);
-	value.upper = pointer->size;
-
-	return value;
-}
-
-// temp!
-void mainRender(dimension* pointer, renderLimit limit) {
-	mapMainTexture.clear();
-
-	// right now not ready for textures that overlap other blocks
-	for (uint y = limit.lower.y; y < limit.upper.y; y++) {
-		for (uint x = limit.lower.x; x < limit.upper.x; x++) {
-
-			// back
-			if (pointer->renderGrid.grid[y][x].background) {
-				mapMainTexture.draw(pointer->backgrounds.blocks[y][x].sprite);
-			}
-
-			// floor
-			if (pointer->renderGrid.grid[y][x].floor) {
-				mapMainTexture.draw(pointer->floors.blocks[y][x].sprite);
-			}
-
-			// wall
-			if (pointer->renderGrid.grid[y][x].wall) {
-				mapMainTexture.draw(pointer->walls.blocks[y][x].sprite);
-			}
-
-		}
-	}
-
-	mapMainTexture.display();
-}
-
-void render2x0(dimension* pointer) {
-
-	// will be split into threads for simultaneus shading and other things
-
-	renderLimit limit = getRenderLimit(pointer);
-
-	mainRender(pointer, limit);
-
-	mapMainSprite.setTexture(mapMainTexture.getTexture());
-
-	gameWindow.draw(mapMainSprite);
-}
 
 //		MAIN FUNCTIONS
 
@@ -474,22 +421,7 @@ void render1MainMenu() {
 	
 }
 
-// renders gameplay
-void render2Gameplay() {
-	switch (subStage) {
 
-	case 0:
-		render2x0(&testMap.dimensions[currentDimension]);
-		break;
-
-	default:
-		if (sfDebug) {
-			std::cout << "[ CRITICAL ] SF debug: Gameplay graphics loop out of range! Exiting..." << "\n";
-		}
-		letItBe = false;
-		break;
-	}
-}
 
 // renders all graphics
 void graphicsRenderer() {
@@ -531,7 +463,7 @@ void graphicsRenderer() {
 				break;
 
 			case 2:
-				render2Gameplay();
+				render2Gameplay(subStage, &gameWindow, &gameMap, currentDimension, sfDebug, &letItBe);
 				break;
 
 			default:
@@ -547,6 +479,10 @@ void graphicsRenderer() {
 	}
 
 	gameWindow.close();
+
+	if (sfDebug) {
+		std::cout << "SF Debug: Ended render thread! \n";
+	}
 }
 
 //				MAIN NON GRAPHICAL LOOP
@@ -582,7 +518,7 @@ void clickedContinue() {
 	}
 
 	// CHANGE TO LOCAL AGAIN
-	client.start(&client, &testMap, mainIp, &clientStatus, &mDatapacks, &startGame, &isFrozen, &isCurrentlyRunning, sfDebug, mainPort, 1);
+	client.start(&client, &gameMap, sf::IpAddress::getLocalAddress(), &clientStatus, &mDatapacks, &startGame, &isFrozen, &isCurrentlyRunning, sfDebug, mainPort, 0);
 
 	isWaitingForFreeze = true;
 }
@@ -596,7 +532,7 @@ void clickedJoin() {
 		std::cout << "[ STARTING ] SF debug: Starting client... \n";
 	}
 
-	client.start(&client, &testMap, mainIp, &clientStatus, &mDatapacks, &startGame, &isFrozen, &isCurrentlyRunning, sfDebug, mainPort, 1);
+	client.start(&client, &gameMap, mainIp, &clientStatus, &mDatapacks, &startGame, &isFrozen, &isCurrentlyRunning, sfDebug, mainPort, 1);
 
 	isWaitingForFreeze = true;
 
@@ -986,6 +922,10 @@ void nonGraphicLoop() {
 			}
 		}
 	}
+
+	if (sfDebug) {
+		std::cout << "SF Debug: Ended non graphic loop! \n";
+	}
 }
 
 //				MAIN
@@ -1049,6 +989,10 @@ int main() {
 
 	// starts the main game loop
 	nonGraphicLoop();
+
+	if (sfDebug) {
+		std::cout << "SF Debug: Terminated graphic thread! \n";
+	}
 
 	graphicsThread.join();
 

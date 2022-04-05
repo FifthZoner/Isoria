@@ -54,6 +54,7 @@ void dlLoadAddedBackgrounds(str path, lDatapackPaths* pPointer, datapack* dPoint
 				}
 				pPointer->background.texturePaths.push_back(tempPaths);
 				temp.textures.resize(tempPaths.size());
+				temp.shadeTextures.resize(tempPaths.size());
 				if (dlDebug) {
 					std::cout << "DL debug: Loaded background texture paths:" << "\n";
 					for (ushort n = 0; n < number; n++) {
@@ -99,6 +100,7 @@ void dlLoadAddedFloors(str path, lDatapackPaths* pPointer, datapack* dPointer) {
 				}
 				pPointer->floor.texturePaths.push_back(tempPaths);
 				temp.textures.resize(tempPaths.size());
+				temp.shadeTextures.resize(tempPaths.size());
 				if (dlDebug) {
 					std::cout << "DL debug: Loaded floor texture paths:" << "\n";
 					for (ushort n = 0; n < number; n++) {
@@ -144,6 +146,7 @@ void dlLoadAddedWalls (str path, lDatapackPaths* pPointer, datapack* dPointer) {
 				}
 				pPointer->wall.texturePaths.push_back(tempPaths);
 				temp.textures.resize(tempPaths.size());
+				temp.shadeTextures.resize(tempPaths.size());
 				if (dlDebug) {
 					std::cout << "DL debug: Loaded wall texture paths:" << "\n";
 					for (ushort n = 0; n < number; n++) {

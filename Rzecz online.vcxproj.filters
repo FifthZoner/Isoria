@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Pliki źródłowe">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Pliki nagłówkowe">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
@@ -37,6 +33,16 @@
     <Filter Include="Map\Misc">
       <UniqueIdentifier>{4bacf274-fb02-4481-a1ea-1be02fa38e5a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\Main">
+      <UniqueIdentifier>{5e1f1adc-7ffb-4718-b206-2a2249ab1ea5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Misc">
+      <UniqueIdentifier>{5d15353b-5399-498b-bb7a-ac2a05bfd903}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -61,12 +67,6 @@
     </ClInclude>
     <ClInclude Include="loadDatapacks.h">
       <Filter>Inne</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="buttons.h">
-      <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="launcher.h">
       <Filter>Inne</Filter>
@@ -101,5 +101,19 @@
     <ClInclude Include="transferMisc.h">
       <Filter>Networking\Transfer functions</Filter>
     </ClInclude>
+    <ClInclude Include="buttons.h">
+      <Filter>Graphics\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics.h">
+      <Filter>Graphics\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer2.h">
+      <Filter>Graphics\Main</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="globalShader.frag">
+      <Filter>Graphics\Misc</Filter>
+    </None>
   </ItemGroup>
 </Project>
