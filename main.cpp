@@ -41,6 +41,8 @@ bool isLastWorldPresent = false;
 //		NETWORK RELATED
 bool isFrozen = false;
 	bool isCurrentlyRunning = false;
+	bool isWaitingForFreeze = false;
+	bool startGame = false;
 bool clientStatus = 1;
 bool serverStatus = 1;
 
@@ -370,7 +372,7 @@ renderLimit getRenderLimit(dimension* pointer) {
 void mainRender(dimension* pointer, renderLimit limit) {
 	mapMainTexture.clear();
 
-	// right now not ready for textures tahat overlap other blocks
+	// right now not ready for textures that overlap other blocks
 	for (uint y = limit.lower.y; y < limit.upper.y; y++) {
 		for (uint x = limit.lower.x; x < limit.upper.x; x++) {
 
@@ -477,7 +479,7 @@ void render2Gameplay() {
 	switch (subStage) {
 
 	case 0:
-		render2x0(&gameMap.dimensions[currentDimension]);
+		render2x0(&testMap.dimensions[currentDimension]);
 		break;
 
 	default:
@@ -556,6 +558,8 @@ void graphicsRenderer() {
 void clickedContinue() {
 	// with info about local connection
 
+	
+
 	if (sfDebug) {
 		std::cout << "SF debug: Starting map loading process... \n";
 	}
@@ -578,26 +582,24 @@ void clickedContinue() {
 	}
 
 	// CHANGE TO LOCAL AGAIN
-	client.start(&client, &testMap, mainIp, &clientStatus, &mDatapacks, sfDebug, mainPort, 1);
+	client.start(&client, &testMap, mainIp, &clientStatus, &mDatapacks, &startGame, &isFrozen, &isCurrentlyRunning, sfDebug, mainPort, 1);
 
-
-	// setting stage
-
-	setStage(2);
-
-	if (sfDebug) {
-		std::cout << "[ DONE ] SF debug: Gameplay is here! \n";
-	}
+	isWaitingForFreeze = true;
 }
 
 void clickedJoin() {
 	// add external connection info
 
+	
+
 	if (sfDebug) {
 		std::cout << "[ STARTING ] SF debug: Starting client... \n";
 	}
 
-	client.start(&client, &gameMap, mainIp, &clientStatus, &mDatapacks, sfDebug, mainPort, 1);
+	client.start(&client, &testMap, mainIp, &clientStatus, &mDatapacks, &startGame, &isFrozen, &isCurrentlyRunning, sfDebug, mainPort, 1);
+
+	isWaitingForFreeze = true;
+
 }
 
 //	MAIN MENU MAIN
@@ -895,9 +897,24 @@ void loopStage1() {
 
 //	GAMEPLAY
 
+// gameplay variables
+unsigned short timeStep = 10;
+unsigned short timeCounter = 0;
+unsigned short timeCount = 10;
+
 // main gameplay
 void run2x0() {
 
+	timeCounter++;
+	if (timeCount == timeCounter) {
+		timeCounter = 0;
+		
+		gameMap.time += timeStep;
+		if (gameMap.time > 24000) {
+			gameMap.time -= 24000;
+		}
+		
+	}
 }
 
 // function to run internal processes for stage 2 - gameplay (mostly predictions, server takes care of the real logic)
@@ -924,32 +941,49 @@ void nonGraphicLoop() {
 	sf::Clock tickClock;
 
 	float tickTime = 1000000 / tickRate;
-
+	isCurrentlyRunning = true;
 	while (letItBe) {
-		if (tickClock.getElapsedTime().asMicroseconds() > tickTime and !isFrozen) {
+		if (tickClock.getElapsedTime().asMicroseconds() > tickTime) {
 			tickClock.restart();
-			isCurrentlyRunning = true;
+			if (!isFrozen or startGame) {
+				
+				if (startGame) {
+					setStage(2);
 
-			// stages
+					if (sfDebug) {
+						std::cout << "[ DONE ] SF debug: Gameplay is here! \n";
+					}
 
-			switch (stage) {
-
-			case 1:
-				loopStage1();
-				break;
-
-			case 2:
-				loopStage2();
-				break;
-
-			default:
-				if (sfDebug) {
-					std::cout << "SF debug: Main loop stage out of range! Exiting..." << "\n";
+					isFrozen = false;
+					startGame = false;
 				}
-				letItBe = false;
-			}
+				
 
-			isCurrentlyRunning = false;
+				// stages
+
+				switch (stage) {
+
+				case 1:
+					loopStage1();
+					break;
+
+				case 2:
+					loopStage2();
+					break;
+
+				default:
+					if (sfDebug) {
+						std::cout << "SF debug: Main loop stage out of range! Exiting..." << "\n";
+					}
+					letItBe = false;
+				}
+
+			}
+			else {
+				isCurrentlyRunning = false;
+				sf::sleep(sf::milliseconds(5));
+				
+			}
 		}
 	}
 }

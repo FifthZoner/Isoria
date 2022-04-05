@@ -125,7 +125,12 @@ bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short num
 	
 
 	while (*stIsRunning) {
-		sf::sleep(sf::milliseconds(5));
+		std::cout << *stIsFrozen << " " << *stIsRunning << "\n";
+		sf::sleep(sf::milliseconds(1));
+	}
+
+	if (stDebug) {
+		std::cout << "ST Debug: Game frozen! \n";
 	}
 
 	// transfer map only to external clients

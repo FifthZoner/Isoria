@@ -6,8 +6,11 @@
 #include "map.h"
 #include "transferMisc.h"
 #include <unordered_map>
+#include "loadMap.h";
 
 bool mrDebug;
+
+#define bSize 32
 
 std::vector<std::string> mrNames;
 
@@ -508,7 +511,7 @@ bool mrGetWallConversion(sf::TcpSocket* socket, bool* error) {
 }
 
 
-bool getConversionTables(sf::TcpSocket* socket, datapackContainer* datapackPtr) {
+bool mrgetConversionTables(sf::TcpSocket* socket, datapackContainer* datapackPtr) {
 
 	bool isThereAProblem = false;
 
@@ -553,8 +556,267 @@ bool getConversionTables(sf::TcpSocket* socket, datapackContainer* datapackPtr) 
 	return isThereAProblem;
 }
 
-bool receiveMap(mapContainer* map, sf::TcpSocket* socket, datapackContainer* datapackPtr, bool debug) {
+//				MAP TRANSFER
+
+void mrPrepareBlockStates(dimension* pointer) {
+	if (mrDebug) {
+		std::cout << "MR Debug: Creating block states... \n";
+	}
+
+	
+	for (unsigned short y = 0; y < 20; y++) {
+		for (unsigned short x = 0; x < 20; x++) {
+			pointer->backgrounds.blocks[y][x].create();
+			pointer->floors.blocks[y][x].create();
+			pointer->walls.blocks[y][x].create();
+		}
+	}
+	
+
+	if (mrDebug) {
+		std::cout << "MR Debug: Created block states! \n";
+	}
+
+}
+
+bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer* pointer) {
+	// cleans the map container just to be sure
+	map->dimensions.clear();
+
+	if (mrDebug) {
+		std::cout << "[ STARTING ] MR Debug: Getting map content... \n";
+	}
+
+
+	// required packet stuff
+	std::size_t received;
+	unsigned int packet[2048];
+
+	
+
+
+	if (socket->receive(packet, 8192, received)) {
+		if (mrDebug) {
+			std::cout << "[ CRITICAL ] MR Debug: Could not receive map content packet! \n";
+		}
+		return 1;
+	}
+	else if (mrDebug) {
+		std::cout << "MR Debug: Received a packet with: " << packet[1] << " dimensions and time: " << packet[0] << "\n";
+	}
+
+	// base data
+	unsigned short len = packet[1];
+	map->time = packet[0];
+
+	bool ready = false;
+	unsigned short currentIndex = 0;
+	unsigned short currentStringIndex = 0;
+	unsigned short currentStringLen;
+	unsigned short currentPart = 0;
+	unsigned short packetsGotten = 0;
+	bool isInfoReady = false;
+
+	sf::Vector2i mapVec = sf::Vector2i(0, 0);
+
+	std::vector<std::string> names(len, "");
+	std::vector<sf::Vector2i> sizes(len);
+
+	// time, no of dimensions, <name length, string chars, size.x, size.y> * no, converted data tables * no, y: 0 -> n.y, x 0 -> n.x
+	for (unsigned short current = 2; !ready; current++) {
+		// another packet
+		if (current == 2048) {
+			current = 0;
+
+			// gets another packet if size excedded
+			if (socket->receive(packet, 8192, received)) {
+				if (mrDebug) {
+					std::cout << "[ CRITICAL ] MR Debug: Could not receive another map contnet packet! \n";
+				}
+				return 1;
+			}
+
+			packetsGotten++;
+		}
+		// map data
+		if (!isInfoReady) {
+			// str len
+			if (currentPart == 0) {
+				currentStringLen = packet[current];
+				currentPart++;
+			}
+			// str content
+			else if (currentPart == 1) {
+				names[currentIndex] += char(packet[current]);
+
+				currentStringIndex++;
+
+				// if string is done
+				if (currentStringIndex == currentStringLen) {
+					currentStringIndex = 0;
+					currentPart++;
+				}
+			}
+			// size.x
+			else if (currentPart == 2) {
+				sizes[currentIndex].x = packet[current];
+				currentPart++;
+
+			}
+			// size.y
+			else {
+				sizes[currentIndex].y = packet[current];
+
+				currentPart = 0;
+				currentIndex++;
+
+				if (currentIndex == len) {
+					isInfoReady = true;
+					currentIndex = 0;
+
+
+					// prepares map
+
+					if (mrDebug) {
+						std::cout << "[ MILESTONE ] MR Debug: Data acquired, creating map to accomodate for data... \n";
+					}
+
+					map->create(sizes, names, "External", map->time);
+				
+
+					if (mrDebug) {
+						std::cout << "MR Debug: Layer info: \n";
+					}
+
+				}
+
+			}
+		}
+		// map numbers
+		else {
+			if (mrDebug and mapVec.x == 0) {
+				std::cout << "MR Debug: ";
+			}
+
+			// background
+			if (currentPart == 0) {
+				// sorry
+				map->dimensions[currentIndex].backgrounds.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrBackgroundConvert[packet[current]].datapackNumber].backgroundBlocks[mrBackgroundConvert[packet[current]].id], mapVec, bSize);
+
+				mapVec.x++;
+
+				if (mrDebug) {
+					std::cout << "(" << mrBackgroundConvert[packet[current]].datapackNumber << ", " << mrBackgroundConvert[packet[current]].id << ") ";
+				}
+
+				if (mapVec.x == map->dimensions[currentIndex].size.x) {
+					mapVec.x = 0;
+					mapVec.y++;
+
+					if (mrDebug) {
+						std::cout << "\n";
+					}
+
+					if (mapVec.y == map->dimensions[currentIndex].size.y) {
+						mapVec.y = 0;
+						currentPart++;
+
+						if (mrDebug) {
+							std::cout << "MR Debug: Next layer: \n";
+						}
+					}
+				}
+			}
+			// floor
+			else if (currentPart == 1) {
+				// sorry
+				map->dimensions[currentIndex].floors.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrFloorConvert[packet[current]].datapackNumber].floorBlocks[mrFloorConvert[packet[current]].id], mapVec, bSize);
+
+				mapVec.x++;
+
+				if (mrDebug) {
+					std::cout << "(" << mrFloorConvert[packet[current]].datapackNumber << ", " << mrFloorConvert[packet[current]].id << ") ";
+				}
+
+				if (mapVec.x == map->dimensions[currentIndex].size.x) {
+					mapVec.x = 0;
+					mapVec.y++;
+
+					if (mrDebug) {
+						std::cout << "\n";
+					}
+
+					if (mapVec.y == map->dimensions[currentIndex].size.y) {
+						mapVec.y = 0;
+						currentPart++;
+
+						if (mrDebug) {
+							std::cout << "MR Debug: Next layer: \n";
+						}
+					}
+				}
+			}
+			// wall
+			else {
+				// sorry
+				map->dimensions[currentIndex].walls.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrWallConvert[packet[current]].datapackNumber].wallBlocks[mrWallConvert[packet[current]].id], mapVec, bSize);
+
+				mapVec.x++;
+
+				if (mrDebug) {
+					std::cout << "(" << mrWallConvert[packet[current]].datapackNumber << ", " << mrWallConvert[packet[current]].id << ") ";
+				}
+
+				if (mapVec.x == map->dimensions[currentIndex].size.x) {
+					mapVec.x = 0;
+					mapVec.y++;
+
+					if (mrDebug) {
+						std::cout << "\n";
+					}
+
+					if (mapVec.y == map->dimensions[currentIndex].size.y) {
+						mapVec.y = 0;
+
+						mrPrepareBlockStates(&map->dimensions[currentIndex]);
+
+						currentPart = 0;
+						currentIndex++;
+
+						// prepares block states (temp?)
+						
+						if (currentIndex == len) {
+							ready = true;
+
+							if (mrDebug) {
+								std::cout << "MR Debug: Map content sent using: " << (current + 2048 * packetsGotten) * 4 << " bytes, with " << packetsGotten + 1 << " packets \n";
+							}
+
+						}
+						else {
+							if (mrDebug) {
+								std::cout << "MR Debug:	Next Dimension: \n";
+								std::cout << "MR Debug: Next layer: \n";
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+bool receiveMap(mapContainer* map, sf::TcpSocket* socket, datapackContainer* datapackPtr, bool debug, bool* startGame, bool* stIsFrozen, bool* stIsRunning) {
 	mrDebug = debug;
+
+	*stIsFrozen = true;
+
+	while (*stIsRunning) {
+		std::cout << *stIsFrozen << " " << *stIsRunning << "\n";
+		sf::sleep(sf::milliseconds(1));
+	}
 
 	// gets datapack names for ones used on server
 	if (getDatapackInfo(socket, datapackPtr)) {
@@ -567,9 +829,26 @@ bool receiveMap(mapContainer* map, sf::TcpSocket* socket, datapackContainer* dat
 	}
 
 	// confirmation that all conversion tables are correct and present
-	if (sendConfirmation(socket, getConversionTables(socket, datapackPtr))) {
+	if (sendConfirmation(socket, mrgetConversionTables(socket, datapackPtr))) {
 		return 1;
 	}
+
+	// gets the map container filled with delicious pointers
+	if (mrGetMapContent(map, socket, datapackPtr)) {
+		return 1;
+	}
+
+	// temp here probably
+	for (unsigned short n = 0; n < map->dimensions.size(); n++) {
+		mlPrepareDimensionRenderGrid(&map->dimensions[n], mrDebug);
+	}
+
+	// sends confirmation or not
+	if (sendConfirmation(socket, false)) {
+		return 1;
+	}
+
+	*startGame = true;
 
 	return 0;
 }

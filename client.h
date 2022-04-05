@@ -11,7 +11,7 @@
 
 // a client side file
 struct clientClass;
-void around(clientClass* ptr, mapContainer* map, bool external, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr);
+void around(clientClass* ptr, mapContainer* map, bool external, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr, bool* startGame, bool* stIsFrozen, bool* stIsRunning);
 
 // a class responsible for a single client
 struct clientClass {
@@ -52,7 +52,7 @@ struct clientClass {
 		return 0;
 	}
 
-	bool mainFunction(bool external, mapContainer* map, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr) {
+	bool mainFunction(bool external, mapContainer* map, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr, bool* startGame, bool* stIsFrozen, bool* stIsRunning) {
 
 		sf::Socket::Status status = socket.connect("192.168.0.245", 21370);
 
@@ -105,7 +105,7 @@ struct clientClass {
 		if (ctDebug) {
 			std::cout << "[ STARTING ] CT Debug: Starting map transfer from client side... \n";
 		}
-		receiveMap(map, &socket, datapackPtr, ctDebug);
+		receiveMap(map, &socket, datapackPtr, ctDebug, startGame, stIsFrozen, stIsRunning);
 
 
 
@@ -135,7 +135,7 @@ struct clientClass {
 	}
 
 	// start in a new theread with bool coresponding to client status with value of true
-	void start(clientClass* ptr, mapContainer* map, sf::IpAddress ip, bool* ctClientStatus, datapackContainer* datapackPtr, bool ctDebugValue = 1, const unsigned short port = 21370, bool external = 0) {
+	void start(clientClass* ptr, mapContainer* map, sf::IpAddress ip, bool* ctClientStatus, datapackContainer* datapackPtr, bool* startGame, bool* stIsFrozen, bool* stIsRunning, bool ctDebugValue = 1, const unsigned short port = 21370, bool external = 0) {
 		ctDebug = ctDebugValue;
 
 		if (ctDebug) {
@@ -143,13 +143,13 @@ struct clientClass {
 		}
 		
 
-		thread = std::thread(around, ptr, map, external, ctClientStatus, ip, port, datapackPtr);
+		thread = std::thread(around, ptr, map, external, ctClientStatus, ip, port, datapackPtr, startGame, stIsFrozen, stIsRunning);
 
 		
 	}
 };
 
-void around(clientClass* ptr, mapContainer* map, bool external, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr) {
+void around(clientClass* ptr, mapContainer* map, bool external, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr, bool* startGame, bool* stIsFrozen, bool* stIsRunning) {
 	
-	ptr->mainFunction(external, map, ctClientStatus, ip, port, datapackPtr);
+	ptr->mainFunction(external, map, ctClientStatus, ip, port, datapackPtr, startGame, stIsFrozen, stIsRunning);
 }

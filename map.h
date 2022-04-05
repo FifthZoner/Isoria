@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 #include "quickWrite.h"
 #include "data.h"
@@ -86,7 +87,13 @@ struct mapContainer {
 	std::string name = "N/A";
 	std::vector <dimension> dimensions;
 
-	void create(std::vector<vec2i> sizes, std::vector<std::string> names, std::string name) {
+	//	0 - 24000
+	unsigned short time = 8000;
+
+	void create(std::vector<vec2i> sizes, std::vector<std::string> names, std::string savedName, unsigned short savedTime = 8000) {
+
+		time = savedTime;
+		name = savedName;
 
 		// prepares dimensions
 		dimensions.resize(names.size());

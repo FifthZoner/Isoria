@@ -164,28 +164,28 @@ void mlPrepareDimensionWall(wallLayer* pointer, vec2i size) {
 }
 
 // main function for second map block loading
-void mlPrepareBlockStates(dimension* pointer) {
-	if (mlDebug) {
+void mlPrepareBlockStates(dimension* pointer, bool debug) {
+	if (debug) {
 		std::cout << "[ MILESTONE ] ML debug: Preparing block states for dimension: " << pointer->name << "\n";
 	}
 
-	if (mlDebug) {
+	if (debug) {
 		std::cout << "ML debug: Preparing dimension background... " << "\n";
 	}
 
-	mlPrepareDimensionBackground(&pointer->backgrounds, vec2i(pointer->backgrounds.blocks[0].size(), pointer->backgrounds.blocks.size()));
+	mlPrepareDimensionBackground(&pointer->backgrounds, vec2i(pointer->size.x, pointer->size.y));
 
-	if (mlDebug) {
+	if (debug) {
 		std::cout << "ML debug: Preparing dimension floors... " << "\n";
 	}
 
-	mlPrepareDimensionFloor(&pointer->floors, vec2i(pointer->floors.blocks[0].size(), pointer->floors.blocks.size()));
+	mlPrepareDimensionFloor(&pointer->floors, vec2i(pointer->size.x, pointer->size.y));
 
-	if (mlDebug) {
+	if (debug) {
 		std::cout << "ML debug: Preparing dimension walls... " << "\n";
 	}
 
-	mlPrepareDimensionWall(&pointer->walls, vec2i(pointer->walls.blocks[0].size(), pointer->walls.blocks.size()));
+	mlPrepareDimensionWall(&pointer->walls, vec2i(pointer->size.x, pointer->size.y));
 }
 
 // prepares tables in mapContainer
@@ -230,7 +230,7 @@ void mlLoadDimensions() {
 
 		mlLoadDimension(&mlMap->dimensions[n]);
 
-		mlPrepareBlockStates(&mlMap->dimensions[n]);
+		mlPrepareBlockStates(&mlMap->dimensions[n], mlDebug);
 	}
 
 }
@@ -484,15 +484,15 @@ void mlCheckpacks() {
 //				RENDER GRIDS
 
 // a dimension specific function
-void mlPrepareDimensionRenderGrid(dimension* pointer) {
+void mlPrepareDimensionRenderGrid(dimension* pointer, bool debug) {
 	
-	if (mlDebug) {
+	if (debug) {
 		std::cout << "ML debug: Render grid for dimension: " << pointer->name << "\n";
 	}
 
 	for (uint y = 0; y < pointer->size.y; y++) {
 
-		if (mlDebug) {
+		if (debug) {
 			std::cout << "ML debug: ";
 		}
 
@@ -556,21 +556,21 @@ void mlPrepareDimensionRenderGrid(dimension* pointer) {
 					pointer->renderGrid.grid[y][x].background = true;
 				}
 			}
-			if (mlDebug) {
+			if (debug) {
 				std::cout << pointer->renderGrid.grid[y][x].wall << "," << pointer->renderGrid.grid[y][x].floor << "," << pointer->renderGrid.grid[y][x].background << " ";
 			}
 		}
 
-		if (mlDebug) {
+		if (debug) {
 			std::cout << "\n";
 		}
 	}
 }
 
 // main function, render grids fefine what to display to avoid resource usage to render over other things
-void mlPrepareRenderGrids() {
+void mlPrepareRenderGrids(bool debug) {
 	for (ushort n = 0; n < mlMap->dimensions.size(); n++) {
-		mlPrepareDimensionRenderGrid(&mlMap->dimensions[n]);
+		mlPrepareDimensionRenderGrid(&mlMap->dimensions[n], debug);
 	}
 }
 
@@ -608,7 +608,7 @@ void loadMap(mapContainer* pointer, const str saveName, datapackContainer* datap
 	}
 
 	// preparing render grid
-	mlPrepareRenderGrids();
+	mlPrepareRenderGrids(mlDebug);
 
 	// all other things to do before finishing up, invontories, players, etc
 

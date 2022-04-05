@@ -278,6 +278,206 @@ bool sendConversion(sf::TcpSocket* socket, datapackContainer* datapackPtr, std::
 	return 0;
 }
 
+//				MAP TRANSFER
+
+bool sendMapProper(mapContainer* map, sf::TcpSocket* socket) {
+
+	if (msDebug) {
+		std::cout << "MS Debug: Sending map contents... \n";
+	}
+
+	// packet info:
+	// 0 - current time
+	// 1 - no of dimensions
+	// ... length of name, len * char, size x, size y
+	// ... size x * size y converted block types for each dimension, backgrounds, floors, walls
+
+	int packet[2048];
+	packet[0] = map->time;
+	packet[1] = map->dimensions.size();
+
+	bool ready = false;
+	bool wasInfoMade = false;
+	unsigned int len = map->dimensions.size();
+	unsigned short currentIndex = 0;
+	unsigned short currentPart = 0;
+	short currentStringIndex = 0;
+	unsigned short packetsSent = 0;
+	// dimension navigation
+	sf::Vector2i mapVec = sf::Vector2i(0, 0);
+	unsigned short currentLayer = 0;
+
+	for (unsigned short current = 2; !ready; current++) {
+		// resetting current index
+		if (current == 2048) {
+			current = 0;
+			packetsSent++;
+
+			if (sendPacket(socket, packet, msDebug)) {
+				return 1;
+			}
+		}
+
+		// for the first part
+		if (!wasInfoMade) {
+			// name length
+			if (currentPart == 0) {
+				packet[current] = map->dimensions[currentIndex].name.size();
+				currentPart++;
+
+			}
+			// name chars
+			else if (currentPart == 1) {
+				packet[current] = map->dimensions[currentIndex].name[currentStringIndex];
+				currentStringIndex++;
+
+
+				if (currentStringIndex == map->dimensions[currentIndex].name.size()) {
+					currentStringIndex = 0;
+					currentPart++;
+				}
+			}
+			// size x
+			else if(currentPart == 2) {
+				packet[current] = map->dimensions[currentIndex].size.x;
+				currentPart++;
+
+			}
+			// size y
+			else {
+				packet[current] = map->dimensions[currentIndex].size.y;
+				currentPart = 0;
+				currentIndex++;
+
+
+				// ends info writing and starts block writing
+				if (currentIndex == len) {
+					wasInfoMade = true;
+					currentIndex = 0;
+
+					if (msDebug) {
+						std::cout << "MS Debug: Layer info: \n";
+					}
+				}
+			}
+		}
+		// for map content
+		else {
+			if (msDebug and mapVec.x == 0) {
+				std::cout << "MS Debug: ";
+			}
+
+			// background
+			if (currentLayer == 0) {
+
+				// gets converted number from datapack number and internal id
+				packet[current] = msConvert.backgrounds[map->dimensions[currentIndex].backgrounds.blocks[mapVec.y][mapVec.x].pointer->datapackId][map->dimensions[currentIndex].backgrounds.blocks[mapVec.y][mapVec.x].pointer->internalId];
+				mapVec.x++;
+
+				if (msDebug) {
+					std::cout << packet[current] << " ";
+				}
+
+				if (mapVec.x == map->dimensions[currentIndex].size.x) {
+					mapVec.x = 0;
+					mapVec.y++;
+
+					if (msDebug) {
+						std::cout << "\n";
+					}
+
+					if (mapVec.y == map->dimensions[currentIndex].size.y) {
+						mapVec.y = 0;
+						currentLayer++;
+
+						if (msDebug) {
+							std::cout << "MS Debug: Next layer: \n";
+						}
+					}
+				}
+			}
+			// floor
+			else if (currentLayer == 1) {
+
+				// gets converted number from datapack number and internal id
+				packet[current] = msConvert.floors[map->dimensions[currentIndex].floors.blocks[mapVec.y][mapVec.x].pointer->datapackId][map->dimensions[currentIndex].floors.blocks[mapVec.y][mapVec.x].pointer->internalId];
+				mapVec.x++;
+
+				if (msDebug) {
+					std::cout << packet[current] << " ";
+				}
+
+				if (mapVec.x == map->dimensions[currentIndex].size.x) {
+					mapVec.x = 0;
+					mapVec.y++;
+
+					if (msDebug) {
+						std::cout << "\n";
+					}
+
+					if (mapVec.y == map->dimensions[currentIndex].size.y) {
+						mapVec.y = 0;
+						currentLayer++;
+
+						if (msDebug) {
+							std::cout << "MS Debug: Next layer: \n";
+						}
+					}
+				}
+			}
+			// wall
+			else {
+
+				// gets converted number from datapack number and internal id
+				packet[current] = msConvert.walls[map->dimensions[currentIndex].walls.blocks[mapVec.y][mapVec.x].pointer->datapackId][map->dimensions[currentIndex].walls.blocks[mapVec.y][mapVec.x].pointer->internalId];
+				mapVec.x++;
+
+				if (msDebug) {
+					std::cout << packet[current] << " ";
+				}
+
+				if (mapVec.x == map->dimensions[currentIndex].size.x) {
+					mapVec.x = 0;
+					mapVec.y++;
+
+					if (msDebug) {
+						std::cout << "\n";
+					}
+
+					if (mapVec.y == map->dimensions[currentIndex].size.y) {
+						mapVec.y = 0;
+						currentLayer = 0;
+						currentIndex++;
+
+						if (currentIndex == len) {
+							ready = true;
+
+							// send final packet
+							if (sendPacket(socket, packet, msDebug)) {
+								return 1;
+							}
+
+							if (msDebug) {
+								std::cout << "MS Debug: Map content sent using: " << (current + 2048 * packetsSent) * 4 << " bytes, with " << packetsSent + 1 << " packets \n";
+							}
+
+						}
+						else {
+							if (msDebug) {
+								std::cout << "MS Debug: Next layer: \n";
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	return 0;
+}
+
 bool sendMap(mapContainer* map, sf::TcpSocket* socket, bool debug, std::vector<std::string> names, datapackContainer* datapackPtr) {
 	msDebug = debug;
 
@@ -292,6 +492,16 @@ bool sendMap(mapContainer* map, sf::TcpSocket* socket, bool debug, std::vector<s
 	}
 
 	if (sendConversion(socket, datapackPtr, names)) {
+		return 1;
+	}
+
+	// get a compability confirmation byte
+	if (getConfirmation(socket, msDebug)) {
+		return 1;
+	}
+
+	// sends map content to client
+	if (sendMapProper(map, socket)) {
 		return 1;
 	}
 
