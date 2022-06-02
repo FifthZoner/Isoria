@@ -44,8 +44,8 @@ bool isFrozen = false;
 	bool isCurrentlyRunning = false;
 	bool isWaitingForFreeze = false;
 	bool startGame = false;
-bool clientStatus = 1;
-bool serverStatus = 1;
+bool clientStatus = true;
+bool serverStatus = true;
 
 //				IMPORTANT VARIABLES
 ushort currentDimension = 0;
@@ -318,8 +318,26 @@ void loadPrimaryGraphics() {
 		std::cout << "SF debug: Preparing graphics textures... \n";
 	}
 
+
+	// render textures
+	globalShadowWindow.create(gameRes.x + (2 * 25 * angleMultiplier), gameRes.y + (2 * 25 * angleMultiplier));
+	mapShadeSprite.setPosition(vec2f(-1 * 25 * angleMultiplier, -1 * 25 * angleMultiplier));
 	mapMainTexture.create(gameRes.x, gameRes.y);
 	mapMainSprite.setPosition(vec2f(0, 0));
+
+	// shaders
+	if (globalShader.loadFromFile("globalShader.frag", sf::Shader::Fragment) and sfDebug) {
+		std::cout << "SF Debug: Global shader loaded!\n";
+	}
+
+	globalShader.setUniform("resolution", gameRes);
+	globalShader.setUniform("lowerLimit", sf::Vector2i((25 * angleMultiplier) / (gameRes.x + (2 * 25 * angleMultiplier)), (25 * angleMultiplier) / (gameRes.y + (2 * 25 * angleMultiplier))));
+	globalShader.setUniform("upperLimit", sf::Vector2i((25 * angleMultiplier + gameRes.x) / (gameRes.x + (2 * 25 * angleMultiplier)), (25 * angleMultiplier + gameRes.y) / (gameRes.y + (2 * 25 * angleMultiplier))));
+	globalShader.setUniform("range", sf::Vector2i(gameRes.x / (gameRes.x + (2 * 25 * angleMultiplier)), gameRes.y / (gameRes.y + (2 * 25 * angleMultiplier))));
+	globalShader.setUniform("steps", angleMultiplier * 25);
+	globalShader.setUniform("angle", sf::Vector2i(1,1)); // for start
+	globalShader.setUniform("shadeColor", sf::Glsl::Vec4(0, 0, 0, 0.5));
+	globalShader.setUniform("sunColor", sf::Glsl::Vec4(0, 0, 0, 0.0));
 }
 
 // collective function to load most of game's data

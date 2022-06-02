@@ -1,2 +1,2 @@
 resolution 3
-framerate 4
+framerate 3
