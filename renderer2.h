@@ -67,7 +67,7 @@ void mainRender(dimension* pointer, renderLimit limit) {
 }
 
 void shadeRender(dimension* pointer, renderLimit limit) {
-	globalShadowWindow.clear();
+	globalShadowWindow.clear(sf::Color::Red);
 
 	// shadows are a mess lmao
 	for (uint y = limit.lower.y; y < limit.upper.y; y++) {
@@ -75,7 +75,7 @@ void shadeRender(dimension* pointer, renderLimit limit) {
 
 			// floor
 			if (pointer->renderGrid.grid[y][x].floor) {
-				globalShadowWindow.draw(pointer->floors.blocks[y][x].shadeSprite);
+				globalShadowWindow.draw(pointer->floors.blocks[y][x].shadeSprite, sf::RenderStates::Default);
 			}
 
 			// wall
@@ -101,9 +101,11 @@ void render2x0(dimension* pointer, sf::RenderWindow* window) {
 
 	shadeRender(pointer, getShadeRenderLimit(pointer));
 
-	mapShadeSprite.setTexture(globalShadowWindow.getTexture());
+	window->draw(mapMainSprite);
 
-	window->draw(mapShadeSprite);
+	globalShader.setUniform("shade", globalShadowWindow.getTexture());
+
+	window->draw(mapMainSprite, &globalShader);
 
 }
 
