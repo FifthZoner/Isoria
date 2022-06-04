@@ -330,6 +330,9 @@ void loadPrimaryGraphics() {
 		std::cout << "SF Debug: Global shader loaded!\n";
 	}
 
+	shaderShape.setSize(sf::Vector2f(gameRes.x, gameRes.y));
+	shaderShape.setPosition(0, 0);
+
 	globalShader.setUniform("resolution", gameRes);
 	globalShader.setUniform("lowerLimit", sf::Vector2i((25 * angleMultiplier) / (gameRes.x + (2 * 25 * angleMultiplier)), (25 * angleMultiplier) / (gameRes.y + (2 * 25 * angleMultiplier))));
 	globalShader.setUniform("upperLimit", sf::Vector2i((25 * angleMultiplier + gameRes.x) / (gameRes.x + (2 * 25 * angleMultiplier)), (25 * angleMultiplier + gameRes.y) / (gameRes.y + (2 * 25 * angleMultiplier))));

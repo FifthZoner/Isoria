@@ -38,35 +38,23 @@ uniform float heightStep;
 // res / res + 2 * additional
 uniform vec2 range;
 
-vec2 position;
+
 
 // returns position on shade texture, might delete later for performance
-vec2 texturePosition( ){
-	return lowerLimit + (position * range);
-}
+//vec2 texturePosition( ){
+//	return lowerLimit + (position * range);
+//}
 
 
 
 
 void main( void ) {
 
-	position = ( gl_FragCoord.xy / resolution.xy );
+	vec2 position = ( gl_FragCoord.xy / resolution.xy );
+
 	
-	vec2 shadePosition = texturePosition();
-	float currentHeight = 0.0;
 
-
-
-	//for (int n = 0; n < steps; n++){
-		
-		if (texture2D(shade, shadePosition)[0] > 0.0){
-			gl_FragColor = shadeColor;
-		}
-		else{
-			gl_FragColor = sunColor;
-		}	
-		currentHeight += heightStep;
-	//}
+	gl_FragColor = vec4(position.x,position.y,0.,1.);
 
 	
 	

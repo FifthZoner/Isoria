@@ -16,6 +16,7 @@ sf::View mapMainView;
 sf::Sprite mapMainSprite;
 sf::Sprite mapShadeSprite;
 sf::Shader globalShader;
+sf::RectangleShape shaderShape;
 
 renderLimit getRenderLimit(dimension* pointer) {
 	renderLimit value;
@@ -67,7 +68,7 @@ void mainRender(dimension* pointer, renderLimit limit) {
 }
 
 void shadeRender(dimension* pointer, renderLimit limit) {
-	globalShadowWindow.clear(sf::Color::Red);
+	globalShadowWindow.clear(sf::Color::Black);
 
 	// shadows are a mess lmao
 	for (uint y = limit.lower.y; y < limit.upper.y; y++) {
@@ -105,7 +106,9 @@ void render2x0(dimension* pointer, sf::RenderWindow* window) {
 
 	globalShader.setUniform("shade", globalShadowWindow.getTexture());
 
-	window->draw(mapMainSprite, &globalShader);
+	mapShadeSprite.setTexture(globalShadowWindow.getTexture());
+
+	window->draw(shaderShape, &globalShader);
 
 }
 
