@@ -321,7 +321,6 @@ void loadPrimaryGraphics() {
 
 	// render textures
 	globalShadowWindow.create(gameRes.x + (2 * 25 * angleMultiplier), gameRes.y + (2 * 25 * angleMultiplier));
-	mapShadeSprite.setPosition(vec2f(-1 * 25 * angleMultiplier, -1 * 25 * angleMultiplier));
 	mapMainTexture.create(gameRes.x, gameRes.y);
 	mapMainSprite.setPosition(vec2f(0, 0));
 
@@ -333,17 +332,17 @@ void loadPrimaryGraphics() {
 	shaderShape.setSize(sf::Vector2f(gameRes.x, gameRes.y));
 	shaderShape.setPosition(0, 0);
 
-	globalShader.setUniform("resolution", gameRes);
-	globalShader.setUniform("lowerLimit", sf::Vector2i((25 * angleMultiplier) / (gameRes.x + (2 * 25 * angleMultiplier)), (25 * angleMultiplier) / (gameRes.y + (2 * 25 * angleMultiplier))));
-	globalShader.setUniform("upperLimit", sf::Vector2i((25 * angleMultiplier + gameRes.x) / (gameRes.x + (2 * 25 * angleMultiplier)), (25 * angleMultiplier + gameRes.y) / (gameRes.y + (2 * 25 * angleMultiplier))));
+	globalShader.setUniform("resolution", sf::Vector2f(float(gameRes.x), float(gameRes.y)));
+	globalShader.setUniform("lowerLimit", sf::Vector2f(0, 2 * double(25 * angleMultiplier) / double(gameRes.y + (2 * 25 * angleMultiplier))));
+	globalShader.setUniform("upperLimit", sf::Vector2f((25 * angleMultiplier + gameRes.x) / (gameRes.x + (2 * 25 * angleMultiplier)), (25 * angleMultiplier + gameRes.y) / (gameRes.y + (2 * 25 * angleMultiplier))));
 	globalShader.setUniform("steps", angleMultiplier * 25);
-	globalShader.setUniform("angle", sf::Vector2i(1,1)); // for start
+	globalShader.setUniform("angle", sf::Vector2f(1,1)); // for start
 	globalShader.setUniform("shadeColor", sf::Glsl::Vec4(0, 0, 0, 0.5));
 	globalShader.setUniform("sunColor", sf::Glsl::Vec4(0, 0, 0, 0.0));
 	globalShader.setUniform("mainStep", sf::Vector2f(1.0 / float(gameRes.x), 1.0 / float(gameRes.y)));
 	globalShader.setUniform("shadeStep", sf::Vector2f(1.0 / float(gameRes.x + (2 * 25 * angleMultiplier)), 1.0 / float(gameRes.y + (2 * 25 * angleMultiplier))));
 	globalShader.setUniform("heightStep", float(1) / float(25 * angleMultiplier));
-	globalShader.setUniform("range", sf::Vector2i(gameRes.x / (gameRes.x + (2 * 25 * angleMultiplier)), gameRes.y / (gameRes.y + (2 * 25 * angleMultiplier))));
+	globalShader.setUniform("range", sf::Vector2f(float(gameRes.x) / float(gameRes.x + (2 * 25 * angleMultiplier)), float(gameRes.y) / float(gameRes.y + (2 * 25 * angleMultiplier))));
 }
 
 // collective function to load most of game's data

@@ -108,7 +108,7 @@ void render2x0(dimension* pointer, sf::RenderWindow* window) {
 
 	mapShadeSprite.setTexture(globalShadowWindow.getTexture());
 
-	window->draw(shaderShape, &globalShader);
+	window->draw(mapMainSprite, &globalShader);
 
 }
 
