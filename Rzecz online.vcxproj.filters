@@ -110,6 +110,9 @@
     <ClInclude Include="renderer2.h">
       <Filter>Graphics\Main</Filter>
     </ClInclude>
+    <ClInclude Include="declarations.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="globalShader.frag">

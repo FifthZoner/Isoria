@@ -158,6 +158,7 @@
     <ClInclude Include="client.h" />
     <ClInclude Include="convert.h" />
     <ClInclude Include="data.h" />
+    <ClInclude Include="declarations.h" />
     <ClInclude Include="graphics.h" />
     <ClInclude Include="launcher.h" />
     <ClInclude Include="loadDatapacks.h" />

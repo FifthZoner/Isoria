@@ -4,19 +4,55 @@
 #include <SFML/Graphics.hpp>
 #include "map.h"
 #include "misc.h"
+#include "declarations.h"
+#include "math.h"
 
-// defines horizontal to vertical ratio of the global shadows
-const unsigned short angleMultiplier = 6;
+// updates shader for given time with given time value
+void updateShadowAngle(unsigned short* value) {
+	// 0 - 24000
+
+	// globalShader.setUniform("shadeColor", sf::Glsl::Vec4(0, 0, 0, 0.5));
+	// globalShader.setUniform("sunColor", sf::Glsl::Vec4(0, 0, 0, 0.0));
+	// globalShader.setUniform("moveValue", sf::Vector2f(1.0 / float(gameRes.x + (2 * 25 * angleMultiplier)) / angleMultiplier, 1.0 / float(gameRes.y + (2 * 25 * angleMultiplier)) / angleMultiplier));
 
 
-sf::RenderTexture globalShadowWindow, localShadowWindow; 
+	// day
+	if (*value >= 5000 and *value < 19000) {
+		// sun rising
+		if (*value < 6000) {
+			// 0 - pi/2
 
-sf::RenderTexture mapMainTexture;
-sf::View mapMainView;
-sf::Sprite mapMainSprite;
-sf::Sprite mapShadeSprite;
-sf::Shader globalShader;
-sf::RectangleShape shaderShape;
+			globalShader.setUniform("sunColor", sf::Glsl::Vec4(0.25 * sin((*value - 5000) * PI / 500), 0.125 * sin((*value - 5000) * PI / 500), 0, 0.8 * cos((*value - 5000) * PI / 2000)));
+			globalShader.setUniform("shadeColor", sf::Glsl::Vec4(0, 0, 0, 0.5 + (0.45 * cos((*value - 5000) * PI / 2000))));
+
+			globalShader.setUniform("moveValue", sf::Vector2f(cos((*value - 5000) * PI / 14000) * angleHelperValue.x, abs(cos((*value - 5000) * PI / 14000) * angleHelperValue.y)));
+		}
+		// evening
+		else if (*value > 18000) {
+			globalShader.setUniform("sunColor", sf::Glsl::Vec4(0.25 * sin((*value - 18000) * PI / 500), 0.125 * sin((*value - 18000) * PI / 500), 0, 0.8 * sin((*value - 18000) * PI / 2000)));
+			globalShader.setUniform("shadeColor", sf::Glsl::Vec4(0, 0, 0, 0.5 + (0.45 * sin((*value - 18000) * PI / 2000))));
+
+			globalShader.setUniform("moveValue", sf::Vector2f(cos((*value - 5000) * PI / 14000) * angleHelperValue.x, abs(cos((*value - 5000) * PI / 14000) * angleHelperValue.y)));
+		}
+		// midday
+		else {
+			globalShader.setUniform("moveValue", sf::Vector2f(cos((*value - 5000) * PI / 14000) * angleHelperValue.x, abs(cos((*value - 5000) * PI / 14000) * angleHelperValue.y)));
+		}
+	}
+	// night
+	else {
+
+		unsigned short temp = *value + 5000;
+		if (temp > 24000) {
+			temp -= 24000;
+		}
+
+		globalShader.setUniform("moveValue", sf::Vector2f(-cos(temp * PI / 10000) * angleHelperValue.x, -abs(cos(temp * PI / 10000) * angleHelperValue.y)));
+	}
+
+
+
+}
 
 renderLimit getRenderLimit(dimension* pointer) {
 	renderLimit value;

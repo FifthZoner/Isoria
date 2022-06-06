@@ -32,17 +32,20 @@ uniform vec2 mainStep;
 // 1 / shadow res
 uniform vec2 shadeStep;
 
-// 1 / step amount
+// 250 / 255 / 25 / maxAngle
 uniform float heightStep;
 
 // res / res + 2 * additional
 uniform vec2 range;
 
+// angle * shadeStep / maxAngle;
+uniform vec2 moveValue;
+
 //		MAIN PART
 
 // local things not uniforms
 vec2 position;
-vec2 shadePosition;
+vec2 shadePosition, initialShadePosition;
 
 // returns position on shade texture, might delete later for performance
 vec2 texturePosition( ){
@@ -50,9 +53,17 @@ vec2 texturePosition( ){
 }
 
 vec4 getColor(){
+
+float currentR = texture2D(shade, shadePosition).r;
 	
-	if (texture2D(shade, shadePosition).r > 0.0){
-		return shadeColor;
+	while (currentR <= 2.5 / 2.55){
+		if(texture2D(shade, shadePosition).r > currentR){
+			return shadeColor;
+		}
+
+		// increases curent height and moves by specified amount
+		currentR += heightStep;
+		shadePosition += moveValue;
 	}
 
 	return sunColor;
@@ -67,6 +78,7 @@ void main( void ) {
 
 	// gets position relative to extended shadow screen
 	shadePosition = texturePosition();
+	initialShadePosition = shadePosition;
 
 	gl_FragColor = getColor();
 

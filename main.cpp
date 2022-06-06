@@ -14,128 +14,10 @@
 #include "server.h"
 #include "launcher.h"
 #include "renderer2.h"
+#include "declarations.h"
 
 
 
-namespace fs = std::filesystem;
-
-
-
-const std::string version = "0.0.2.2";
-
-
-
-
-
-//				BOOLS
-bool sfDebug = false;
-bool showVersion = true;
-bool letItBe = true;
-
-bool terminateServer = false;
-bool terminateClient = false;
-
-
-bool isLastWorldPresent = false;
-	str lastWorldPlayed;
-
-//		NETWORK RELATED
-bool isFrozen = false;
-	bool isCurrentlyRunning = false;
-	bool isWaitingForFreeze = false;
-	bool startGame = false;
-bool clientStatus = true;
-bool serverStatus = true;
-
-//				IMPORTANT VARIABLES
-ushort currentDimension = 0;
-
-//				MOUSE BUTTONS
-bool isMouseLeftClicked = false;
-bool isMouseRightClicked = false;
-bool isMouseMiddleClicked = false;
-
-//		MOUSE CLICK VALUES
-// whether main or secondary button was clicked, false - main, true - secondary
-bool clickSwitch = false;
-ushort clickNumber;
-bool isButtonClicked = false;
-
-//				THREADS
-std::thread serverThread;
-
-clientClass client;
-
-std::mutex threadLock;
-
-//				NETWORKING
-
-sf::IpAddress mainIp;
-unsigned short mainPort = 21370;
-
-
-const ushort maxClients = 8;
-
-
-//				GRAPHICS
-
-//		MAP MAIN GRAPHICS
-
-sf::RenderWindow gameWindow;
-
-//		MAP GLOBAL SHADING GRAPHICS
-
-//		MAP LOCAL SHADING GRAPHICS
-
-//		USER INTERFACE GRAPHICS
-
-//		MISC
-
-sf::Vector2i gameRes = sf::Vector2i(1920, 1080);
-
-ushort stage = 0;
-ushort subStage = 0;
-ushort framerate = 60;
-ushort tickRate = 240;
-
-bool gThreadSetLoadString = false;
-str gThreadStringToSet;
-str mapGeneratorString = "Starting map generation...";
-
-//		GRAPHICAL ELEMENTS
-
-
-
-sf::Font mainFont;
-
-centeredTextbox lsText;
-centeredTextbox versionTextbox;
-
-//		MAIN MENU BUTTONS
-buttonTextOnly mmContinue, mmNewWorld, mmLoadGame, mmSettings, mmExit, mmJoin;
-buttonTextOnly mmsBack;
-buttonTextOnly mmlgBack;
-buttonTextOnly mmnwBack, mmnwStart;
-
-spriteBackgroundChangeable lsBackground;
-spriteBackgroundChangeable mmBackground;
-
-//				FILE STRUCTURE
-
-std::vector <datapackInfo> datapacksPresent;
-std::vector <str> datapacks;
-std::vector <ushort> datapackIds;
-
-//				MAP
-
-// two added for early tests of map download
-
-mapContainer gameMap;
-
-//				DATAPACKS
-
-datapackContainer mDatapacks;
-lDatapackPathsContainer mDatapackPathsContainer;
 
 // gives a vector containing names of loaded datapacks
 std::vector<std::string> getDatapackNames(std::vector<std::string> names = {}) {
@@ -333,16 +215,17 @@ void loadPrimaryGraphics() {
 	shaderShape.setPosition(0, 0);
 
 	globalShader.setUniform("resolution", sf::Vector2f(float(gameRes.x), float(gameRes.y)));
-	globalShader.setUniform("lowerLimit", sf::Vector2f(0, 2 * double(25 * angleMultiplier) / double(gameRes.y + (2 * 25 * angleMultiplier))));
-	globalShader.setUniform("upperLimit", sf::Vector2f((25 * angleMultiplier + gameRes.x) / (gameRes.x + (2 * 25 * angleMultiplier)), (25 * angleMultiplier + gameRes.y) / (gameRes.y + (2 * 25 * angleMultiplier))));
-	globalShader.setUniform("steps", angleMultiplier * 25);
-	globalShader.setUniform("angle", sf::Vector2f(1,1)); // for start
+	globalShader.setUniform("lowerLimit", sf::Vector2f(double(25 * angleMultiplier) / double(gameRes.x + (2 * 25 * angleMultiplier)), double(25 * angleMultiplier) / double(gameRes.y + (2 * 25 * angleMultiplier))));
 	globalShader.setUniform("shadeColor", sf::Glsl::Vec4(0, 0, 0, 0.5));
 	globalShader.setUniform("sunColor", sf::Glsl::Vec4(0, 0, 0, 0.0));
-	globalShader.setUniform("mainStep", sf::Vector2f(1.0 / float(gameRes.x), 1.0 / float(gameRes.y)));
-	globalShader.setUniform("shadeStep", sf::Vector2f(1.0 / float(gameRes.x + (2 * 25 * angleMultiplier)), 1.0 / float(gameRes.y + (2 * 25 * angleMultiplier))));
-	globalShader.setUniform("heightStep", float(1) / float(25 * angleMultiplier));
+	globalShader.setUniform("heightStep", (float(250.0) / float(255.0) / float(angleMultiplier) / float(25.0)));
 	globalShader.setUniform("range", sf::Vector2f(float(gameRes.x) / float(gameRes.x + (2 * 25 * angleMultiplier)), float(gameRes.y) / float(gameRes.y + (2 * 25 * angleMultiplier))));
+	globalShader.setUniform("moveValue", sf::Vector2f(1.0 / float(gameRes.x + (2 * 25 * angleMultiplier)) / angleMultiplier, 1.0 / float(gameRes.y + (2 * 25 * angleMultiplier)) / angleMultiplier));
+
+	// view for shade RenderTexture
+	shadeView.setSize(gameRes.x + (2 * 25 * angleMultiplier), gameRes.y + (2 * 25 * angleMultiplier));
+	shadeView.setCenter(sf::Vector2f(gameRes.x / 2, gameRes.y / 2));
+	globalShadowWindow.setView(shadeView);
 }
 
 // collective function to load most of game's data
@@ -854,12 +737,7 @@ void loopStage1() {
 	}
 }
 
-//	GAMEPLAY
 
-// gameplay variables
-unsigned short timeStep = 10;
-unsigned short timeCounter = 0;
-unsigned short timeCount = 10;
 
 // main gameplay
 void run2x0() {
@@ -872,6 +750,9 @@ void run2x0() {
 		if (gameMap.time > 24000) {
 			gameMap.time -= 24000;
 		}
+
+
+		updateShadowAngle(&gameMap.time);
 		
 	}
 }
@@ -939,8 +820,9 @@ void nonGraphicLoop() {
 
 			}
 			else {
+				std::cout << "FOR FUCK'S SAKE\n";
 				isCurrentlyRunning = false;
-				sf::sleep(sf::milliseconds(5));
+				sf::sleep(sf::milliseconds(10));
 				
 			}
 		}

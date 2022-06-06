@@ -9,6 +9,7 @@
 #include "map.h"
 #include "mapReceive.h"
 
+
 // a client side file
 struct clientClass;
 bool around(clientClass* ptr, bool external, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr, bool* startGame, bool* stIsFrozen, bool* stIsRunning);
@@ -113,6 +114,9 @@ struct clientClass {
 					std::cout << "[ STARTING ] CT Debug: Starting map transfer from client side... \n";
 				}
 			receiveMap(map, &socket, datapackPtr, ctDebug, startGame, stIsFrozen, stIsRunning);
+		}
+		else {
+			sf::sleep(sf::milliseconds(100));
 		}
 
 		*startGame = true;
