@@ -11,43 +11,54 @@
 void updateShadowAngle(unsigned short* value) {
 	// 0 - 24000
 
-	// globalShader.setUniform("shadeColor", sf::Glsl::Vec4(0, 0, 0, 0.5));
-	// globalShader.setUniform("sunColor", sf::Glsl::Vec4(0, 0, 0, 0.0));
-	// globalShader.setUniform("moveValue", sf::Vector2f(1.0 / float(gameRes.x + (2 * 25 * angleMultiplier)) / angleMultiplier, 1.0 / float(gameRes.y + (2 * 25 * angleMultiplier)) / angleMultiplier));
-
-
 	// day
-	if (*value >= 5000 and *value < 19000) {
+	if (*value >= 5000 and *value <= 19000) {
 		// sun rising
 		if (*value < 6000) {
 			// 0 - pi/2
 
-			globalShader.setUniform("sunColor", sf::Glsl::Vec4(0.25 * sin((*value - 5000) * PI / 500), 0.125 * sin((*value - 5000) * PI / 500), 0, 0.8 * cos((*value - 5000) * PI / 2000)));
+			globalShader.setUniform("sunColor", sf::Glsl::Vec4(0.125 * sin((*value - 5000) * PI / 500), 0.0625 * sin((*value - 5000) * PI / 500), 0, 0.85 * cos((*value - 5000) * PI / 2000)));
 			globalShader.setUniform("shadeColor", sf::Glsl::Vec4(0, 0, 0, 0.5 + (0.45 * cos((*value - 5000) * PI / 2000))));
-
-			globalShader.setUniform("moveValue", sf::Vector2f(cos((*value - 5000) * PI / 14000) * angleHelperValue.x, abs(cos((*value - 5000) * PI / 14000) * angleHelperValue.y)));
+			
 		}
 		// evening
 		else if (*value > 18000) {
-			globalShader.setUniform("sunColor", sf::Glsl::Vec4(0.25 * sin((*value - 18000) * PI / 500), 0.125 * sin((*value - 18000) * PI / 500), 0, 0.8 * sin((*value - 18000) * PI / 2000)));
+			globalShader.setUniform("sunColor", sf::Glsl::Vec4(0.125 * sin((*value - 18000) * PI / 500), 0.0625 * sin((*value - 18000) * PI / 500), 0, 0.85 * sin((*value - 18000) * PI / 2000)));
 			globalShader.setUniform("shadeColor", sf::Glsl::Vec4(0, 0, 0, 0.5 + (0.45 * sin((*value - 18000) * PI / 2000))));
 
-			globalShader.setUniform("moveValue", sf::Vector2f(cos((*value - 5000) * PI / 14000) * angleHelperValue.x, abs(cos((*value - 5000) * PI / 14000) * angleHelperValue.y)));
 		}
 		// midday
 		else {
-			globalShader.setUniform("moveValue", sf::Vector2f(cos((*value - 5000) * PI / 14000) * angleHelperValue.x, abs(cos((*value - 5000) * PI / 14000) * angleHelperValue.y)));
+			
 		}
+
+		// sun angle
+
+		short revert = 1;
+		if (*value > 12000) {
+			revert = -1;
+		}
+
+		globalShader.setUniform("moveValue", sf::Vector2f(revert * angleHelperValue.x * abs(cos((*value - 5000) * PI / 14000)), 0.5 * abs(cos((*value + 2000) * PI / 28000)) * angleHelperValue.y));
 	}
 	// night
 	else {
+
+		globalShader.setUniform("sunColor", sf::Glsl::Vec4(0, 0, 0, 0.85));
+		globalShader.setUniform("shadeColor", sf::Glsl::Vec4(0, 0, 0, 0.95));
 
 		unsigned short temp = *value + 5000;
 		if (temp > 24000) {
 			temp -= 24000;
 		}
 
-		globalShader.setUniform("moveValue", sf::Vector2f(-cos(temp * PI / 10000) * angleHelperValue.x, -abs(cos(temp * PI / 10000) * angleHelperValue.y)));
+		// moon angle
+		short revert = -1;
+		if (temp > 5000) {
+			revert = 1;
+		}
+
+		globalShader.setUniform("moveValue", sf::Vector2f(revert * angleHelperValue.x * abs(cos(temp * PI / 10000)), 0.5 * abs(cos((temp + 5000) * PI / 20000)) * angleHelperValue.y));
 	}
 
 

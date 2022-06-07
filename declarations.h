@@ -14,13 +14,13 @@
 #include "renderer2.h"
 #include "declarations.h" 
 
-// moved declarations here to have then avalaible everywhere
+// moved declarations here to have them apply everywhere
 
 namespace fs = std::filesystem;
 
 
 
-const std::string version = "0.0.2.2";
+const std::string version = "0.0.3.0";
 
 
 
