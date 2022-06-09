@@ -1,17 +1,11 @@
 #pragma once
 
 #include "misc.h"
-#include "buttons.h"
-#include "graphics.h"
 #include "convert.h"
 #include "map.h"
 #include "data.h"
 #include "mapGenerator.h"
-#include "loadMap.h"
-#include "loadDatapacks.h"
 #include "server.h"
-#include "launcher.h"
-#include "renderer2.h"
 #include "declarations.h" 
 
 // moved declarations here to have them apply everywhere
@@ -24,7 +18,7 @@ const std::string version = "0.0.3.0";
 
 
 
-
+unsigned short blockBaseSize = 24;
 
 //				BOOLS
 bool sfDebug = false;

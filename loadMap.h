@@ -13,6 +13,7 @@
 #include "data.h"
 #include "quickWrite.h"
 #include "loadMapMisc.h"
+#include "declarations.h"
 
 bool mlDebug;
 
@@ -36,22 +37,13 @@ mlSecondaryConversionTableContainer mlSecondConvert;
 // loads background layer using conversion tables
 void mlLoadDimensionBackground(backgroundLayer* pointer, std::ifstream* file, vec2i size) {
 	if (mlDebug) {
-		std::cout << "ML debug: Loading background blocks: \n";
+		std::cout << "ML debug: Loading background blocks \n";
 	}
 	for (uint y = 0; y < size.y; y++) {
-		if (mlDebug) {
-			std::cout << "ML debug: ";
-		}
 		for (uint x = 0; x < size.x; x++) {
 			ulong temp;
 			*file >> temp;
-			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.background[temp].datapackNumber].backgroundBlocks[mlSecondConvert.background[temp].objectID], vec2i(x, y), bSize);
-			if (mlDebug) {
-				std::cout << "(" << mlSecondConvert.background[temp].datapackNumber << "," << mlSecondConvert.background[temp].objectID << ") ";
-			}
-		}
-		if (mlDebug) {
-			std::cout << "\n";
+			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.background[temp].datapackNumber].backgroundBlocks[mlSecondConvert.background[temp].objectID], vec2i(x, y), blockBaseSize);
 		}
 	}
 }
@@ -59,22 +51,13 @@ void mlLoadDimensionBackground(backgroundLayer* pointer, std::ifstream* file, ve
 // loads floor layer using conversion tables
 void mlLoadDimensionFloor(floorLayer* pointer, std::ifstream* file, vec2i size) {
 	if (mlDebug) {
-		std::cout << "ML debug: Loading floor blocks: \n";
+		std::cout << "ML debug: Loading floor blocks \n";
 	}
 	for (uint y = 0; y < size.y; y++) {
-		if (mlDebug) {
-			std::cout << "ML debug: ";
-		}
 		for (uint x = 0; x < size.x; x++) {
 			ulong temp;
 			*file >> temp;
-			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.floor[temp].datapackNumber].floorBlocks[mlSecondConvert.floor[temp].objectID], vec2i(x, y), bSize);
-			if (mlDebug) {
-				std::cout << "(" << mlSecondConvert.floor[temp].datapackNumber << "," << mlSecondConvert.floor[temp].objectID << ") ";
-			}
-		}
-		if (mlDebug) {
-			std::cout << "\n";
+			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.floor[temp].datapackNumber].floorBlocks[mlSecondConvert.floor[temp].objectID], vec2i(x, y), blockBaseSize);
 		}
 	}
 }
@@ -82,22 +65,13 @@ void mlLoadDimensionFloor(floorLayer* pointer, std::ifstream* file, vec2i size) 
 // loads wall layer using conversion tables
 void mlLoadDimensionWall(wallLayer* pointer, std::ifstream* file, vec2i size) {
 	if (mlDebug) {
-		std::cout << "ML debug: Loading wall blocks: \n";
+		std::cout << "ML debug: Loading wall blocks \n";
 	}
 	for (uint y = 0; y < size.y; y++) {
-		if (mlDebug) {
-			std::cout << "ML debug: ";
-		}
 		for (uint x = 0; x < size.x; x++) {
 			ulong temp;
 			*file >> temp;
-			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.wall[temp].datapackNumber].wallBlocks[mlSecondConvert.wall[temp].objectID], vec2i(x, y), bSize);
-			if (mlDebug) {
-				std::cout << "(" << mlSecondConvert.wall[temp].datapackNumber << "," << mlSecondConvert.wall[temp].objectID << ") ";
-			}
-		}
-		if (mlDebug) {
-			std::cout << "\n";
+			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.wall[temp].datapackNumber].wallBlocks[mlSecondConvert.wall[temp].objectID], vec2i(x, y), blockBaseSize);
 		}
 	}
 }
@@ -487,14 +461,10 @@ void mlCheckpacks() {
 void mlPrepareDimensionRenderGrid(dimension* pointer, bool debug) {
 	
 	if (debug) {
-		std::cout << "ML debug: Render grid for dimension: " << pointer->name << "\n";
+		std::cout << "ML debug: Preparing render grid for dimension: " << pointer->name << "\n";
 	}
 
 	for (uint y = 0; y < pointer->size.y; y++) {
-
-		if (debug) {
-			std::cout << "ML debug: ";
-		}
 
 		for (uint x = 0; x < pointer->size.x; x++) {
 
@@ -556,13 +526,6 @@ void mlPrepareDimensionRenderGrid(dimension* pointer, bool debug) {
 					pointer->renderGrid.grid[y][x].background = true;
 				}
 			}
-			if (debug) {
-				std::cout << pointer->renderGrid.grid[y][x].wall << "," << pointer->renderGrid.grid[y][x].floor << "," << pointer->renderGrid.grid[y][x].background << " ";
-			}
-		}
-
-		if (debug) {
-			std::cout << "\n";
 		}
 	}
 }

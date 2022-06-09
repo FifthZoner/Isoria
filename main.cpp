@@ -623,7 +623,7 @@ void run1x1NewWorld() {
 						if (sfDebug) {
 							std::cout << "SF debug: Main menu new world start button clicked" << "\n";
 						}
-						generateMap("test", &mapGeneratorString);
+						generateMap("test", &mapGeneratorString, sf::Vector2i(150, 150));
 					}
 					break;
 				}
@@ -820,7 +820,6 @@ void nonGraphicLoop() {
 
 			}
 			else {
-				std::cout << "FOR FUCK'S SAKE\n";
 				isCurrentlyRunning = false;
 				sf::sleep(sf::milliseconds(10));
 				

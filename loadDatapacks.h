@@ -12,6 +12,7 @@
 
 #include "data.h"
 #include "quickWrite.h"
+#include "declarations.h" 
 
 datapackContainer* container;
 lDatapackPathsContainer* paths;
@@ -269,7 +270,7 @@ void dlLoadDatapackGraphics(lDatapackPaths* pPointer, datapack* dPointer) {
 }
 
 // main function for datapack graphics loading
-void loadMainGameDatapacks(datapackContainer* datapackVariable, lDatapackPathsContainer* datapackPaths, ushort blockBaseSize = 16) {
+void loadMainGameDatapacks(datapackContainer* datapackVariable, lDatapackPathsContainer* datapackPaths) {
 
 	if (dlDebug) {
 		std::cout << "[ STARTING ] DL debug: Second stage starting..." << "\n";

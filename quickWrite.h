@@ -31,6 +31,3 @@
 
 // shortened from std::string
 #define str std::string
-
-// temp base block size
-#define bSize 32

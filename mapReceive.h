@@ -840,7 +840,7 @@ bool receiveMap(mapContainer* map, sf::TcpSocket* socket, datapackContainer* dat
 
 	// temp here probably
 	for (unsigned short n = 0; n < map->dimensions.size(); n++) {
-		mlPrepareDimensionRenderGrid(&map->dimensions[n], mrDebug);
+		//mlPrepareDimensionRenderGrid(&map->dimensions[n], mrDebug);
 	}
 
 	// sends confirmation or not

@@ -51,10 +51,6 @@ struct clientClass {
 			return 1;
 		}
 
-		if (ctDebug) {
-			std::cout << "CT Debug: Current client time value: " << map->time << "\n";
-		}
-
 		return 0;
 	}
 

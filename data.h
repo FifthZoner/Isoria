@@ -34,7 +34,7 @@ public:
 		doesObstruct = true;
 		isVisible = true;
 
-		scaleToSet = vec2f(asFloat(baseBlockSize) / asFloat(textures[0].getSize().x) * 2, asFloat(baseBlockSize) / asFloat(textures[0].getSize().y) * 2);
+		scaleToSet = vec2f(asFloat(baseBlockSize) / asFloat(textures[0].getSize().x), asFloat(baseBlockSize) / asFloat(textures[0].getSize().y));
 	}
 };
 
@@ -64,7 +64,7 @@ public:
 		doesObstruct = true;
 		isVisible = true;
 
-		scaleToSet = vec2f(asFloat(baseBlockSize) / asFloat(textures[0].getSize().x) * 2, asFloat(baseBlockSize) / asFloat(textures[0].getSize().y) * 2);
+		scaleToSet = vec2f(asFloat(baseBlockSize) / asFloat(textures[0].getSize().x), asFloat(baseBlockSize) / asFloat(textures[0].getSize().y));
 	}
 };
 
@@ -94,7 +94,7 @@ public:
 		doesObstruct = true;
 		isVisible = true;
 
-		scaleToSet = vec2f(asFloat(baseBlockSize) / asFloat(textures[0].getSize().x) * 2, asFloat(baseBlockSize) / asFloat(textures[0].getSize().y) * 2);
+		scaleToSet = vec2f(asFloat(baseBlockSize) / asFloat(textures[0].getSize().x), asFloat(baseBlockSize) / asFloat(textures[0].getSize().y));
 	}
 };
 

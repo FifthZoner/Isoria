@@ -25,6 +25,8 @@ std::vector<MGDatapack> mgConversionDatapacks;
 
 MGMap map;
 
+sf::Vector2i mgMapSize;
+
 //				LOADING DATA
 
 // classes to get empty infos with names without unnecessary hustle
@@ -174,7 +176,8 @@ void loadMGDatapacks() {
 
 // main map preparation function
 void prepareMGMap() {
-	map.create(std::vector<vec2i>{vec2i(20, 20)}, std::vector <str>{"Forest"});
+	// temp before introducing flexible generation
+	map.create(std::vector<vec2i>{mgMapSize}, std::vector <str>{"Forest"});
 }
 
 //				PROPER GENERATION
@@ -478,8 +481,9 @@ void MGSaveMap(str saveName) {
 //				MAIN FUNCTION
 
 // a main function to generate a map, almost completely independent from source file, status string gives current status of generator, only creates a file, needs to be loaded later!
-void generateMap(str name, str* statusString, bool debugMode = true) {
+void generateMap(str name, str* statusString, sf::Vector2i size, bool debugMode = true) {
 	mgDebug = debugMode;
+	mgMapSize = size;
 
 	if (mgDebug) {
 		std::cout << "[ STARTING ] MG debug: Starting world generation..." << "\n";
