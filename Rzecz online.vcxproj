@@ -112,7 +112,7 @@
       <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\SFML-2.5.1\include</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,6 +160,7 @@
     <ClInclude Include="data.h" />
     <ClInclude Include="declarations.h" />
     <ClInclude Include="graphics.h" />
+    <ClInclude Include="keyboard.h" />
     <ClInclude Include="launcher.h" />
     <ClInclude Include="loadDatapacks.h" />
     <ClInclude Include="loadMap.h" />

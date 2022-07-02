@@ -24,6 +24,8 @@ unsigned short blockBaseSize = 24;
 bool sfDebug = false;
 bool showVersion = true;
 bool letItBe = true;
+bool isInFocus = true;
+bool isSingleplayer = true;
 
 bool terminateServer = false;
 bool terminateClient = false;

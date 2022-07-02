@@ -343,18 +343,31 @@ void graphicsRenderer() {
 
 	while (gameWindow.isOpen() and letItBe) {
 
-		if (gameClock.getElapsedTime().asMicroseconds() > frameTime) {
+		for (sf::Event event; gameWindow.pollEvent(event);) {
+
+			switch (event.type) {
+
+			case sf::Event::Closed:
+				gameWindow.close();
+				serverStatus = false;
+				clientStatus = false;
+				letItBe = false;
+				break;
+
+			case sf::Event::GainedFocus:
+				isInFocus = true;
+				break;
+
+			case sf::Event::LostFocus:
+				isInFocus = false;
+				break;
+			}
+		}
+
+		if (gameClock.getElapsedTime().asMicroseconds() > frameTime and isInFocus) {
 			gameClock.restart();
 
-			for (sf::Event event; gameWindow.pollEvent(event);) {
-
-				if (event.type == sf::Event::Closed) {
-					gameWindow.close();
-					serverStatus = false;
-					clientStatus = false;
-					letItBe = false;
-				}
-			}
+			
 
 			gameWindow.clear();
 
@@ -784,45 +797,50 @@ void nonGraphicLoop() {
 	isCurrentlyRunning = true;
 	while (letItBe) {
 		if (tickClock.getElapsedTime().asMicroseconds() > tickTime) {
-			tickClock.restart();
-			if (!isFrozen or startGame) {
-				
-				if (startGame) {
-					setStage(2);
-
-					if (sfDebug) {
-						std::cout << "[ DONE ] SF debug: Gameplay is here! \n";
-					}
-
-					isFrozen = false;
-					startGame = false;
-				}
-				
-
-				// stages
-
-				switch (stage) {
-
-				case 1:
-					loopStage1();
-					break;
-
-				case 2:
-					loopStage2();
-					break;
-
-				default:
-					if (sfDebug) {
-						std::cout << "SF debug: Main loop stage out of range! Exiting..." << "\n";
-					}
-					letItBe = false;
-				}
-
+			if (!isInFocus and isSingleplayer) {
+				sf::sleep(sf::microseconds(100));
 			}
 			else {
-				isCurrentlyRunning = false;
-				sf::sleep(sf::milliseconds(10));
-				
+				tickClock.restart();
+				if (!isFrozen or startGame) {
+
+					if (startGame) {
+						setStage(2);
+
+						if (sfDebug) {
+							std::cout << "[ DONE ] SF debug: Gameplay is here! \n";
+						}
+
+						isFrozen = false;
+						startGame = false;
+					}
+
+
+					// stages
+
+					switch (stage) {
+
+					case 1:
+						loopStage1();
+						break;
+
+					case 2:
+						loopStage2();
+						break;
+
+					default:
+						if (sfDebug) {
+							std::cout << "SF debug: Main loop stage out of range! Exiting..." << "\n";
+						}
+						letItBe = false;
+					}
+
+				}
+				else {
+					isCurrentlyRunning = false;
+					sf::sleep(sf::milliseconds(10));
+
+				}
 			}
 		}
 	}
