@@ -122,6 +122,9 @@
     <ClInclude Include="shared.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="renderer0.h">
+      <Filter>Graphics\Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="globalShader.frag">

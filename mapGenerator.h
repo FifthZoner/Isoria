@@ -15,6 +15,7 @@
 #include "map.h"
 #include "quickWrite.h"
 #include "mapGenerationMisc.h"
+#include "declarations.h"
 
 namespace fs = std::filesystem;
 
@@ -440,6 +441,8 @@ void generateMap(str name, str* statusString, sf::Vector2i size, bool debugMode 
 	mgDebug = debugMode;
 	mgMapSize = size;
 
+	setStage(0, 1);
+
 	if (mgDebug) {
 		std::cout << "[ STARTING ] MG debug: Starting world generation..." << "\n";
 	}
@@ -476,4 +479,6 @@ void generateMap(str name, str* statusString, sf::Vector2i size, bool debugMode 
 	if (mgDebug) {
 		std::cout << "MG debug: Map ready!" << "\n";
 	}
+
+	setStage(1, 0);
 }

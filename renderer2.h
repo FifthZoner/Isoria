@@ -113,7 +113,6 @@ renderLimit getRenderLimit(dimension* pointer) {
 	}
 	
 	
-	
 
 	return value;
 }
@@ -172,6 +171,7 @@ void mainRender(dimension* pointer, renderLimit limit) {
 			// back
 			if (pointer->renderGrid.grid[y][x].background) {
 				mapMainTexture.draw(pointer->backgrounds.blocks[y][x].sprite);
+				
 			}
 
 			// floor
@@ -223,16 +223,15 @@ void render2x0(dimension* pointer, sf::RenderWindow* window) {
 
 	// and here comes the shading to handle in another heretic thread
 
-	shadeRender(pointer, getShadeRenderLimit(pointer));
-
 	window->draw(mapMainSprite);
+
+	shadeRender(pointer, getShadeRenderLimit(pointer));
 
 	globalShader.setUniform("shade", globalShadowWindow.getTexture());
 
 	mapShadeSprite.setTexture(globalShadowWindow.getTexture());
 
 	window->draw(mapMainSprite, &globalShader);
-
 }
 
 // renders gameplay

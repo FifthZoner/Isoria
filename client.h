@@ -60,7 +60,7 @@ struct clientClass {
 
 		sf::Socket::Status status = socket.connect(ip, port);
 
-		gameWindow.setActive(false);
+		//gameWindow.setActive(false);
 
 		if (status != sf::Socket::Done)
 		{

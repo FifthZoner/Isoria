@@ -43,10 +43,18 @@ std::vector <ushort> datapackIds;
 
 mapContainer gameMap;
 
+mapContainer debugMap;
+
 //				DATAPACKS
 
 datapackContainer mDatapacks;
 lDatapackPathsContainer mDatapackPathsContainer;
 
 
-
+// sets current stage safely
+void setStage(ushort setStage, ushort setSubStage = 0) {
+	threadLock.lock();
+	stage = setStage;
+	subStage = setSubStage;
+	threadLock.unlock();
+}

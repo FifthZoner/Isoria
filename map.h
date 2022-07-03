@@ -51,18 +51,20 @@ struct dimension {
 
 		name = nameToSet;
 		size = dimSize;
-
+		
 		// resizes tables
 		backgrounds.blocks.resize(size.y);
 		floors.blocks.resize(size.y);
 		walls.blocks.resize(size.y);
 		renderGrid.grid.resize(size.y);
+		
 		for (ushort n = 0; n < size.y; n++) {
 			backgrounds.blocks[n].resize(size.x);
 			floors.blocks[n].resize(size.x);
 			walls.blocks[n].resize(size.x);
 			renderGrid.grid[n].resize(size.x);
 		}
+		
 	}
 
 	void draw(sf::RenderWindow* window, vec2i lowBorder, vec2i highBorder) {

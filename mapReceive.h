@@ -6,11 +6,11 @@
 #include "map.h"
 #include "transferMisc.h"
 #include <unordered_map>
-#include "loadMap.h";
+#include "loadMap.h"
+#include "shared.h"
+#include "declarations.h"
 
 bool mrDebug;
-
-#define bSize 32
 
 std::vector<std::string> mrNames;
 
@@ -564,8 +564,8 @@ void mrPrepareBlockStates(dimension* pointer) {
 	}
 
 	
-	for (unsigned short y = 0; y < 20; y++) {
-		for (unsigned short x = 0; x < 20; x++) {
+	for (unsigned short y = 0; y < pointer->size.y; y++) {
+		for (unsigned short x = 0; x < pointer->size.x; x++) {
 			pointer->backgrounds.blocks[y][x].create();
 			pointer->floors.blocks[y][x].create();
 			pointer->walls.blocks[y][x].create();
@@ -631,7 +631,7 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 			// gets another packet if size excedded
 			if (socket->receive(packet, 8192, received)) {
 				if (mrDebug) {
-					std::cout << "[ CRITICAL ] MR Debug: Could not receive another map contnet packet! \n";
+					std::cout << "[ CRITICAL ] MR Debug: Could not receive another map content packet! \n";
 				}
 				return 1;
 			}
@@ -682,7 +682,7 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 					}
 
 					map->create(sizes, names, "External", map->time);
-			
+					std::cout << "HERE\n";
 
 				}
 
@@ -693,8 +693,9 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 
 			// background
 			if (currentPart == 0) {
+				
 				// sorry
-				map->dimensions[currentIndex].backgrounds.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrBackgroundConvert[packet[current]].datapackNumber].backgroundBlocks[mrBackgroundConvert[packet[current]].id], mapVec, bSize);
+				map->dimensions[currentIndex].backgrounds.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrBackgroundConvert[packet[current]].datapackNumber].backgroundBlocks[mrBackgroundConvert[packet[current]].id], mapVec, blockBaseSize);
 
 				mapVec.x++;
 
@@ -713,7 +714,7 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 			// floor
 			else if (currentPart == 1) {
 				// sorry
-				map->dimensions[currentIndex].floors.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrFloorConvert[packet[current]].datapackNumber].floorBlocks[mrFloorConvert[packet[current]].id], mapVec, bSize);
+				map->dimensions[currentIndex].floors.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrFloorConvert[packet[current]].datapackNumber].floorBlocks[mrFloorConvert[packet[current]].id], mapVec, blockBaseSize);
 
 				mapVec.x++;
 
@@ -721,10 +722,6 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {
 					mapVec.x = 0;
 					mapVec.y++;
-
-					if (mrDebug) {
-						std::cout << "\n";
-					}
 
 					if (mapVec.y == map->dimensions[currentIndex].size.y) {
 						mapVec.y = 0;
@@ -736,7 +733,7 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 			// wall
 			else {
 				// sorry
-				map->dimensions[currentIndex].walls.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrWallConvert[packet[current]].datapackNumber].wallBlocks[mrWallConvert[packet[current]].id], mapVec, bSize);
+				map->dimensions[currentIndex].walls.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrWallConvert[packet[current]].datapackNumber].wallBlocks[mrWallConvert[packet[current]].id], mapVec, blockBaseSize);
 
 				mapVec.x++;
 
@@ -772,6 +769,9 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 	return 0;
 }
 
+// declared here due to parsing, compilation or some other minor shit
+void mlPrepareDimensionRenderGrid(dimension* pointer, bool debug);
+
 bool receiveMap(mapContainer* map, sf::TcpSocket* socket, datapackContainer* datapackPtr, bool debug, bool* startGame, bool* stIsFrozen, bool* stIsRunning) {
 	mrDebug = debug;
 
@@ -804,13 +804,15 @@ bool receiveMap(mapContainer* map, sf::TcpSocket* socket, datapackContainer* dat
 
 	// temp here probably
 	for (unsigned short n = 0; n < map->dimensions.size(); n++) {
-		//mlPrepareDimensionRenderGrid(&map->dimensions[n], mrDebug);
+		mlPrepareDimensionRenderGrid(&map->dimensions[n], mrDebug);
+		debugMsg(std::string("MR Debug: Finished preparing dimension with size of: " + std::to_string(map->dimensions[n].size.x) + " " + std::to_string(map->dimensions[n].size.y)));
 	}
 
 	// sends confirmation or not
 	if (sendConfirmation(socket, false)) {
 		return 1;
 	}
+
 
 	*startGame = true;
 

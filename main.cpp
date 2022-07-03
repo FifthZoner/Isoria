@@ -13,6 +13,7 @@
 #include "loadDatapacks.h"
 #include "server.h"
 #include "launcher.h"
+#include "renderer0.h"
 #include "renderer2.h"
 #include "declarations.h"
 
@@ -48,13 +49,7 @@ void setLoadString(str string) {
 	threadLock.unlock();
 }
 
-// sets current stage safely
-void setStage(ushort setStage, ushort setSubStage = 0) {
-	threadLock.lock();
-	stage = setStage;
-	subStage = setSubStage;
-	threadLock.unlock();
-}
+
 
 //		PRELOADING
 
@@ -268,21 +263,7 @@ void loadData() {
 
 //		MAIN FUNCTIONS
 
-// renders loading screen graphics
-void render0LoadingScreen() {
-	lsBackground.draw(&gameWindow);
 
-	if (gThreadSetLoadString) {
-		lsText.setString(gThreadStringToSet);
-		threadLock.lock();
-		gThreadSetLoadString = false;
-		threadLock.unlock();
-	}
-
-	lsText.draw(&gameWindow);
-	versionTextbox.draw(&gameWindow);
-
-}
 
 // renders main menu graphics
 void render1MainMenu() {
@@ -387,7 +368,7 @@ void graphicsRenderer() {
 			switch (stage) {
 				
 			case 0:
-				render0LoadingScreen();
+				render0LoadingScreens();
 				break;
 
 			case 1:
@@ -395,7 +376,7 @@ void graphicsRenderer() {
 				break;
 
 			case 2:
-				render2Gameplay(subStage, &gameWindow, &gameMap, currentDimension, sfDebug, &letItBe);
+				render2Gameplay(subStage, &gameWindow, &debugMap, currentDimension, sfDebug, &letItBe);
 				break;
 
 			default:
@@ -450,7 +431,7 @@ void clickedContinue() {
 	}
 
 	// CHANGE TO LOCAL AGAIN
-	client.start(&client, &gameMap, sf::IpAddress::getLocalAddress(), &clientStatus, &mDatapacks, &startGame, &isFrozen, &isCurrentlyRunning, sfDebug, mainPort, 0);
+	client.start(&client, &debugMap, sf::IpAddress::getLocalAddress(), &clientStatus, &mDatapacks, &startGame, &isFrozen, &isCurrentlyRunning, sfDebug, mainPort, 1);
 
 	isWaitingForFreeze = true;
 }
@@ -649,7 +630,7 @@ void run1x1NewWorld() {
 						if (sfDebug) {
 							std::cout << "SF debug: Main menu new world start button clicked" << "\n";
 						}
-						generateMap("test", &mapGeneratorString, sf::Vector2i(100, 100));
+						generateMap("test", &mapGeneratorString, sf::Vector2i(500, 500));
 					}
 					break;
 				}

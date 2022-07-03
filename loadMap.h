@@ -14,6 +14,7 @@
 #include "quickWrite.h"
 #include "loadMapMisc.h"
 #include "declarations.h"
+#include "shared.h"
 
 bool mlDebug;
 

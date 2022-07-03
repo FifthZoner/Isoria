@@ -69,7 +69,7 @@ bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short num
 
 	sf::TcpListener socketListener;
 
-	gameWindow.setActive(false);
+	//gameWindow.setActive(false);
 
 	// binding the socket to port
 	if (socketListener.listen(port + number + 1) != sf::Socket::Done) {
