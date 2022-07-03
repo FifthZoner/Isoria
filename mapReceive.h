@@ -682,11 +682,7 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 					}
 
 					map->create(sizes, names, "External", map->time);
-				
-
-					if (mrDebug) {
-						std::cout << "MR Debug: Layer info: \n";
-					}
+			
 
 				}
 
@@ -694,9 +690,6 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 		}
 		// map numbers
 		else {
-			if (mrDebug and mapVec.x == 0) {
-				std::cout << "MR Debug: ";
-			}
 
 			// background
 			if (currentPart == 0) {
@@ -705,25 +698,15 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 
 				mapVec.x++;
 
-				if (mrDebug) {
-					std::cout << "(" << mrBackgroundConvert[packet[current]].datapackNumber << ", " << mrBackgroundConvert[packet[current]].id << ") ";
-				}
 
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {
 					mapVec.x = 0;
 					mapVec.y++;
 
-					if (mrDebug) {
-						std::cout << "\n";
-					}
-
 					if (mapVec.y == map->dimensions[currentIndex].size.y) {
 						mapVec.y = 0;
 						currentPart++;
 
-						if (mrDebug) {
-							std::cout << "MR Debug: Next layer: \n";
-						}
 					}
 				}
 			}
@@ -734,9 +717,6 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 
 				mapVec.x++;
 
-				if (mrDebug) {
-					std::cout << "(" << mrFloorConvert[packet[current]].datapackNumber << ", " << mrFloorConvert[packet[current]].id << ") ";
-				}
 
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {
 					mapVec.x = 0;
@@ -750,9 +730,6 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 						mapVec.y = 0;
 						currentPart++;
 
-						if (mrDebug) {
-							std::cout << "MR Debug: Next layer: \n";
-						}
 					}
 				}
 			}
@@ -763,17 +740,10 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 
 				mapVec.x++;
 
-				if (mrDebug) {
-					std::cout << "(" << mrWallConvert[packet[current]].datapackNumber << ", " << mrWallConvert[packet[current]].id << ") ";
-				}
 
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {
 					mapVec.x = 0;
 					mapVec.y++;
-
-					if (mrDebug) {
-						std::cout << "\n";
-					}
 
 					if (mapVec.y == map->dimensions[currentIndex].size.y) {
 						mapVec.y = 0;
@@ -792,12 +762,6 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 								std::cout << "MR Debug: Map content sent using: " << (current + 2048 * packetsGotten) * 4 << " bytes, with " << packetsGotten + 1 << " packets \n";
 							}
 
-						}
-						else {
-							if (mrDebug) {
-								std::cout << "MR Debug:	Next Dimension: \n";
-								std::cout << "MR Debug: Next layer: \n";
-							}
 						}
 					}
 				}

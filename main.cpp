@@ -226,6 +226,9 @@ void loadPrimaryGraphics() {
 	shadeView.setSize(gameRes.x + (2 * 25 * angleMultiplier), gameRes.y + (2 * 25 * angleMultiplier));
 	shadeView.setCenter(sf::Vector2f(gameRes.x / 2, gameRes.y / 2));
 	globalShadowWindow.setView(shadeView);
+
+	// prepares render distance for rendering range optimization
+	prepareRenderLimits();
 }
 
 // collective function to load most of game's data
@@ -646,7 +649,7 @@ void run1x1NewWorld() {
 						if (sfDebug) {
 							std::cout << "SF debug: Main menu new world start button clicked" << "\n";
 						}
-						generateMap("test", &mapGeneratorString, sf::Vector2i(150, 150));
+						generateMap("test", &mapGeneratorString, sf::Vector2i(100, 100));
 					}
 					break;
 				}

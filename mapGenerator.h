@@ -186,23 +186,10 @@ void prepareMGMap() {
 void MGGenerateBackground(MGLayer* layer) {
 	vec2i size = vec2i(layer->blocks.size(), layer->blocks[0].size());
 
-	if (mgDebug) {
-		std::cout << "MG debug: Background layer:" << "\n";
-	}
-
 	// filling with base stone
 	for (ushort y = 0; y < size.y; y++) {
-		if (mgDebug) {
-			std::cout << "MG debug: ";
-		}
 		for (ushort x = 0; x < size.x; x++) {
-			if (mgDebug) {
-				std::cout << "0:1 ";
-			}
 			layer->blocks[y][x] = getMGBlock(0, 1);
-		}
-		if (mgDebug) {
-			std::cout << "\n";
 		}
 	}
 }
@@ -211,31 +198,15 @@ void MGGenerateBackground(MGLayer* layer) {
 void MGGenerateFloor(MGLayer* layer) {
 	vec2i size = vec2i(layer->blocks.size(), layer->blocks[0].size());
 
-	if (mgDebug) {
-		std::cout << "MG debug: Wall layer:" << "\n";
-	}
-
 	// filling with base grass and air
 	for (ushort y = 0; y < size.y; y++) {
-		if (mgDebug) {
-			std::cout << "MG debug: ";
-		}
 		for (ushort x = 0; x < size.x; x++) {
 			if (rand() % 2) {
-				if (mgDebug) {
-					std::cout << "0:1 ";
-				}
 				layer->blocks[y][x] = getMGBlock(0, 1);
 			}
 			else {
-				if (mgDebug) {
-					std::cout << "0:0 ";
-				}
 				layer->blocks[y][x] = getMGBlock(0, 0);
 			}
-		}
-		if (mgDebug) {
-			std::cout << "\n";
 		}
 	}
 }
@@ -244,31 +215,15 @@ void MGGenerateFloor(MGLayer* layer) {
 void MGGenerateWall(MGLayer* layer) {
 	vec2i size = vec2i(layer->blocks.size(), layer->blocks[0].size());
 
-	if (mgDebug) {
-		std::cout << "MG debug: Wall layer:" << "\n";
-	}
-
 	// filling with base wood and air
 	for (ushort y = 0; y < size.y; y++) {
-		if (mgDebug) {
-			std::cout << "MG debug: ";
-		}
 		for (ushort x = 0; x < size.x; x++) {
 			if (!(rand() % 4)) {
-				if (mgDebug) {
-					std::cout << "0:1 ";
-				}
 				layer->blocks[y][x] = getMGBlock(0, 1);
 			}
 			else {
-				if (mgDebug) {
-					std::cout << "0:0 ";
-				}
 				layer->blocks[y][x] = getMGBlock(0, 0);
 			}
-		}
-		if (mgDebug) {
-			std::cout << "\n";
 		}
 	}
 }

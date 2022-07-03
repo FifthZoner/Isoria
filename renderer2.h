@@ -7,6 +7,9 @@
 #include "declarations.h"
 #include "math.h"
 
+sf::Vector2i mainRenderDistance = sf::Vector2i(0, 0);
+sf::Vector2i shadeRenderDistance = sf::Vector2i(0, 0);
+
 // updates shader for given time with given time value
 void updateShadowAngle(unsigned short* value) {
 	// 0 - 24000
@@ -65,12 +68,52 @@ void updateShadowAngle(unsigned short* value) {
 
 }
 
+// do not input value or do it, it makes no difference and just makes code cleaner
+sf::Vector2i getViewCoodrinates(sf::Vector2i value = sf::Vector2i(0, 0)) {
+
+	value.x = mapMainView.getCenter().x / blockBaseSize;
+	value.y = mapMainView.getCenter().y / blockBaseSize;
+
+	return value;
+}
+
 renderLimit getRenderLimit(dimension* pointer) {
 	renderLimit value;
 
 	// temp!
 	value.lower = vec2i(0, 0);
 	value.upper = pointer->size;
+
+
+	
+	// proper code
+	sf::Vector2i coord = getViewCoodrinates();
+
+	value.lower.x = coord.x - mainRenderDistance.x;
+	value.lower.y = coord.y - mainRenderDistance.y;
+	value.upper.x = coord.x + mainRenderDistance.x;
+	value.upper.y = coord.y + mainRenderDistance.y;
+
+	// out of range checks
+
+	if (value.lower.x < 0) {
+		value.lower.x = 0;
+	}
+
+	if (value.lower.y < 0) {
+		value.lower.y = 0;
+	}
+
+	if (value.upper.x >= pointer->size.x) {
+		value.upper.x = pointer->size.x - 1;
+	}
+
+	if (value.upper.y >= pointer->size.y) {
+		value.upper.y = pointer->size.y - 1;
+	}
+	
+	
+	
 
 	return value;
 }
@@ -82,7 +125,40 @@ renderLimit getShadeRenderLimit(dimension* pointer) {
 	value.lower = vec2i(0, 0);
 	value.upper = pointer->size;
 
+	// proper code
+	sf::Vector2i coord = getViewCoodrinates();
+
+	value.lower.x = coord.x - shadeRenderDistance.x;
+	value.lower.y = coord.y - shadeRenderDistance.y;
+	value.upper.x = coord.x + shadeRenderDistance.x;
+	value.upper.y = coord.y + shadeRenderDistance.y;
+
+	// out of range checks
+
+	if (value.lower.x < 0) {
+		value.lower.x = 0;
+	}
+
+	if (value.lower.y < 0) {
+		value.lower.y = 0;
+	}
+
+	if (value.upper.x >= pointer->size.x) {
+		value.upper.x = pointer->size.x - 1;
+	}
+
+	if (value.upper.y >= pointer->size.y) {
+		value.upper.y = pointer->size.y - 1;
+	}
+
 	return value;
+}
+
+// calculates and saves basic render distances to limit the amount of rendered blocks, makes maps of any reasonable size possible without causing massive framerate decreases
+void prepareRenderLimits() {
+
+	mainRenderDistance = sf::Vector2i(gameRes.x / blockBaseSize + 1, gameRes.y / blockBaseSize + 1);
+	shadeRenderDistance = sf::Vector2i((gameRes.x + (angleMultiplier * 25)) / blockBaseSize + 1, (gameRes.y + (angleMultiplier * 25)) / blockBaseSize + 1);
 }
 
 // temp!

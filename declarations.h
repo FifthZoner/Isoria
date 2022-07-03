@@ -11,89 +11,7 @@
 
 // moved declarations here to have them apply everywhere
 
-namespace fs = std::filesystem;
-
-
-
-const std::string version = "0.0.3.0";
-
-
-
-unsigned short blockBaseSize = 24;
-
-
-
-
-bool isLastWorldPresent = false;
-str lastWorldPlayed;
-
-//		NETWORK RELATED
-bool isFrozen = false;
-bool isCurrentlyRunning = false;
-bool isWaitingForFreeze = false;
-bool startGame = false;
-bool clientStatus = true;
-bool serverStatus = true;
-
-//				IMPORTANT VARIABLES
-ushort currentDimension = 0;
-
-//				MOUSE BUTTONS
-bool isMouseLeftClicked = false;
-bool isMouseRightClicked = false;
-bool isMouseMiddleClicked = false;
-
-//		MOUSE CLICK VALUES
-// whether main or secondary button was clicked, false - main, true - secondary
-bool clickSwitch = false;
-ushort clickNumber;
-bool isButtonClicked = false;
-
-//				THREADS
-std::thread serverThread;
-
 clientClass client;
-
-std::mutex threadLock;
-
-//				GAMEPLAY
-
-// gameplay variables
-unsigned short timeStep = 20;
-unsigned short timeCounter = 0;
-unsigned short timeCount = 10;
-
-//				NETWORKING
-
-sf::IpAddress mainIp;
-unsigned short mainPort = 21370;
-
-
-const ushort maxClients = 8;
-
-
-//				GRAPHICS
-
-
-
-//		MAP GLOBAL SHADING GRAPHICS
-
-//		MAP LOCAL SHADING GRAPHICS
-
-//		USER INTERFACE GRAPHICS
-
-//		MISC
-
-sf::Vector2i gameRes = sf::Vector2i(1920, 1080);
-
-ushort stage = 0;
-ushort subStage = 0;
-ushort framerate = 60;
-ushort tickRate = 240;
-
-bool gThreadSetLoadString = false;
-str gThreadStringToSet;
-str mapGeneratorString = "Starting map generation...";
 
 //		GRAPHICAL ELEMENTS
 
@@ -132,21 +50,3 @@ lDatapackPathsContainer mDatapackPathsContainer;
 
 
 
-// from render2
-
-// defines horizontal to vertical ratio of the global shadows
-const unsigned short angleMultiplier = 6;
-
-sf::Vector2f angleHelperValue = sf::Vector2f(1.0 / float(gameRes.x + (2 * 25 * angleMultiplier)), 1.0 / float(gameRes.y + (2 * 25 * angleMultiplier)));
-
-
-sf::RenderTexture globalShadowWindow, localShadowWindow;
-
-sf::RenderTexture mapMainTexture;
-sf::View mapMainView, shadeView;
-sf::Sprite mapMainSprite;
-sf::Sprite mapShadeSprite;
-sf::Shader globalShader;
-sf::RectangleShape shaderShape;
-
-#define PI 3.141592
