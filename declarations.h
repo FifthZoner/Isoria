@@ -6,7 +6,8 @@
 #include "data.h"
 #include "mapGenerator.h"
 #include "server.h"
-#include "declarations.h" 
+#include "shared.h"
+#include "keyboard.h"
 
 // moved declarations here to have them apply everywhere
 
@@ -20,15 +21,7 @@ const std::string version = "0.0.3.0";
 
 unsigned short blockBaseSize = 24;
 
-//				BOOLS
-bool sfDebug = false;
-bool showVersion = true;
-bool letItBe = true;
-bool isInFocus = true;
-bool isSingleplayer = true;
 
-bool terminateServer = false;
-bool terminateClient = false;
 
 
 bool isLastWorldPresent = false;
@@ -81,9 +74,7 @@ const ushort maxClients = 8;
 
 //				GRAPHICS
 
-//		MAP MAIN GRAPHICS
 
-sf::RenderWindow gameWindow;
 
 //		MAP GLOBAL SHADING GRAPHICS
 

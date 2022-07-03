@@ -333,8 +333,9 @@ void render1MainMenu() {
 void graphicsRenderer() {
 
 	// creates window
-	gameWindow.setActive();
+	
 	gameWindow.create(sf::VideoMode(gameRes.x, gameRes.y, 32), "Isoria", sf::Style::Fullscreen);
+	gameWindow.setActive();
 
 	// main loop
 	sf::Clock gameClock;
@@ -360,6 +361,15 @@ void graphicsRenderer() {
 
 			case sf::Event::LostFocus:
 				isInFocus = false;
+				break;
+
+			case sf::Event::TextEntered:
+				if (isKeyboardActive) {
+					getPressedKey(&event);
+				}
+
+
+			default:
 				break;
 			}
 		}
@@ -816,6 +826,15 @@ void nonGraphicLoop() {
 					}
 
 
+					if (isKeyboardActive) {
+						if (isKeyboardInTypeMode) {
+							updateText();
+						}
+						else {
+							// put things like inventory keys etc here
+						}
+					}
+
 					// stages
 
 					switch (stage) {
@@ -878,6 +897,8 @@ int main() {
 
 	// start graphics thread
 	std::thread graphicsThread(graphicsRenderer);
+
+	gameWindow.setActive(false);
 
 	loadData();
 

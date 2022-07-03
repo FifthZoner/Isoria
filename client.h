@@ -8,6 +8,8 @@
 #include "quickWrite.h"
 #include "map.h"
 #include "mapReceive.h"
+#include "shared.h"
+#include "keyboard.h"
 
 
 // a client side file
@@ -58,6 +60,7 @@ struct clientClass {
 
 		sf::Socket::Status status = socket.connect(ip, port);
 
+		gameWindow.setActive(false);
 
 		if (status != sf::Socket::Done)
 		{
@@ -122,6 +125,9 @@ struct clientClass {
 		if (ctDebug) {
 			std::cout << "[ STARTING ] CT Debug: Connected to server! \n";
 		}
+
+		debugMsg("CT Debug: Preparing keyboard...");
+		prepareKeyboard();
 
 		while (*ctClientStatus) {
 

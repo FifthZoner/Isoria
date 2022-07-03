@@ -119,6 +119,9 @@
     <ClInclude Include="keyboard.h">
       <Filter>Input</Filter>
     </ClInclude>
+    <ClInclude Include="shared.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="globalShader.frag">

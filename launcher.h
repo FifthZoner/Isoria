@@ -211,6 +211,7 @@ void launcher(std::vector <datapackInfo>* datapacksLPresentLPtr, bool* letItBeLP
 		if (inputString == "debug") {
 			file >> laDebug;
 			*mainDebugPtr = laDebug;
+			debug = laDebug;
 			if (laDebug) {
 				std::cout << "LA debug: Debug mode active! Have a nice spam filled console!" << "\n";
 			}

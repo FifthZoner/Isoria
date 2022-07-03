@@ -11,6 +11,7 @@
 #include "serverMisc.h"
 #include "map.h"
 #include "mapSend.h"
+#include "shared.h"
 
 // the server file, has absolute authority over all gameplay logic and can correct future prediction inaccuracies
 
@@ -67,6 +68,8 @@ bool stCommunication(clientStruct* pointer) {
 bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short number, std::vector<std::string> names, datapackContainer* datapackPtr, unsigned short port) {
 
 	sf::TcpListener socketListener;
+
+	gameWindow.setActive(false);
 
 	// binding the socket to port
 	if (socketListener.listen(port + number + 1) != sf::Socket::Done) {
@@ -196,6 +199,8 @@ void stListenerThread(mapContainer* map, std::vector<std::string> names, datapac
 	ushort socketToUse = NULL;
 	sf::TcpSocket portSocket;
 	char auth[1];
+
+	gameWindow.setActive(false);
 
 	while (*isAllAlright) {
 
