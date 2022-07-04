@@ -160,59 +160,6 @@ void prepareRenderLimits() {
 	shadeRenderDistance = sf::Vector2i((gameRes.x + (angleMultiplier * 25)) / blockBaseSize + 1, (gameRes.y + (angleMultiplier * 25)) / blockBaseSize + 1);
 }
 
-// temp!
-void mainRender(dimension* pointer, renderLimit limit) {
-	mapMainTexture.clear();
-
-	// right now not ready for textures that overlap other blocks
-	for (uint y = limit.lower.y; y < limit.upper.y; y++) {
-		for (uint x = limit.lower.x; x < limit.upper.x; x++) {
-
-			// back
-			if (pointer->renderGrid.grid[y][x].background) {
-				mapMainTexture.draw(pointer->backgrounds.blocks[y][x].sprite);
-				
-			}
-
-			// floor
-			if (pointer->renderGrid.grid[y][x].floor) {
-				mapMainTexture.draw(pointer->floors.blocks[y][x].sprite);
-			}
-
-			// wall
-			if (pointer->renderGrid.grid[y][x].wall) {
-				mapMainTexture.draw(pointer->walls.blocks[y][x].sprite);
-			}
-
-		}
-	}
-
-	mapMainTexture.display();
-}
-
-void shadeRender(dimension* pointer, renderLimit limit) {
-	globalShadowWindow.clear(sf::Color::Black);
-
-	// shadows are a mess lmao
-	for (uint y = limit.lower.y; y < limit.upper.y; y++) {
-		for (uint x = limit.lower.x; x < limit.upper.x; x++) {
-
-			// floor
-			if (pointer->renderGrid.grid[y][x].floor) {
-				globalShadowWindow.draw(pointer->floors.blocks[y][x].shadeSprite, sf::RenderStates::Default);
-			}
-
-			// wall
-			if (pointer->renderGrid.grid[y][x].wall) {
-				globalShadowWindow.draw(pointer->walls.blocks[y][x].shadeSprite);
-			}
-
-		}
-	}
-
-	globalShadowWindow.display();
-}
-
 void render2x0(dimension* pointer, sf::RenderWindow* window) {
 
 	// will be split into threads for simultaneus shading and other things

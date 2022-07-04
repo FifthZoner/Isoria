@@ -682,7 +682,7 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 					}
 
 					map->create(sizes, names, "External", map->time);
-					std::cout << "HERE\n";
+					
 
 				}
 
@@ -690,7 +690,7 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 		}
 		// map numbers
 		else {
-
+			
 			// background
 			if (currentPart == 0) {
 				
@@ -778,7 +778,7 @@ bool receiveMap(mapContainer* map, sf::TcpSocket* socket, datapackContainer* dat
 	*stIsFrozen = true;
 
 	while (*stIsRunning) {
-		std::cout << *stIsFrozen << " " << *stIsRunning << "\n";
+		//std::cout << *stIsFrozen << " " << *stIsRunning << "\n";
 		sf::sleep(sf::milliseconds(1));
 	}
 

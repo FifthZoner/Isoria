@@ -7,6 +7,7 @@
 
 #include "quickWrite.h"
 #include "convert.h"
+#include "shared.h"
 
 //				DEFINITION
 
@@ -165,26 +166,18 @@ public:
 	backgroundBlockInfo* pointer;
 	bool isVisible = false;
 	unsigned short variant = 0;
-
-	// old to retire
-	sf::Sprite sprite;
+	sf::Vector2f position = sf::Vector2f(0, 0);
 
 	// creates given background block at given coordinates
 	void prepare(backgroundBlockInfo* blockInfoPointer, sf::Vector2i gridCoords, ushort baseSize) {
 		pointer = blockInfoPointer;
-		sprite.setPosition(vec2f(gridCoords.x * baseSize, gridCoords.y * baseSize));
-		if (pointer->textures.size()) {
-			isVisible = true;
-		}
+		position.x = gridCoords.x * blockBaseSize;
+		position.y = gridCoords.y * blockBaseSize;
 	}
 
 	// sets right texture depending on neighboring blocks etc
 	void create(ushort state = 0) {
 		variant = state;
-		if (isVisible) {
-			sprite.setTexture(pointer->textures[state]);
-			sprite.setScale(pointer->scaleToSet);
-		}
 	}
 };
 
@@ -192,69 +185,45 @@ public:
 class floorBlock {
 public:
 
-	// old to retire
-	sf::Sprite sprite;
-	sf::Sprite shadeSprite;
-
-
-
 	floorBlockInfo* pointer;
 	bool isVisible = false;
 	unsigned short variant = 0;
+	sf::Vector2f position = sf::Vector2f(0, 0);
 
 
 	// creates given background block at given coordinates
 	void prepare(floorBlockInfo* blockInfoPointer, sf::Vector2i gridCoords, ushort baseSize) {
 		pointer = blockInfoPointer;
-		sprite.setPosition(vec2f(gridCoords.x * baseSize, gridCoords.y * baseSize));
-		if (pointer->textures.size()) {
-			isVisible = true;
-		}
+		position.x = gridCoords.x * blockBaseSize;
+		position.y = gridCoords.y * blockBaseSize;
+
 	}
 
 	// sets right texture depending on neighboring blocks etc
 	void create(ushort state = 0) {
 		variant = state;
-		if (isVisible) {
-			sprite.setTexture(pointer->textures[state]);
-			sprite.setScale(pointer->scaleToSet);
-			shadeSprite.setTexture(pointer->shadeTextures[state]);
-			shadeSprite.setScale(pointer->scaleToSet);
-		}
 	}
 };
 
 // a class containing information about a single wall block
 class wallBlock {
 public:
-	// old to retire
-	sf::Sprite sprite;
-	sf::Sprite shadeSprite;
-
-
 	wallBlockInfo* pointer;
 	bool isVisible = false;
 	unsigned short variant = 0;
+	sf::Vector2f position = sf::Vector2f(0, 0);
 
 
 	// creates given background block at given coordinates
 	void prepare(wallBlockInfo* blockInfoPointer, sf::Vector2i gridCoords, ushort baseSize) {
 		pointer = blockInfoPointer;
-		sprite.setPosition(vec2f(gridCoords.x * baseSize, gridCoords.y * baseSize));
-		shadeSprite.setPosition(vec2f(gridCoords.x * baseSize, gridCoords.y * baseSize));
-		if (pointer->textures.size()) {
-			isVisible = true;
-		}
+		position.x = gridCoords.x * blockBaseSize;
+		position.y = gridCoords.y * blockBaseSize;
 	}
+
 
 	// sets right texture depending on neighboring blocks etc
 	void create(ushort state = 0) {
 		variant = state;
-		if (isVisible) {
-			sprite.setTexture(pointer->textures[state]);
-			sprite.setScale(pointer->scaleToSet);
-			shadeSprite.setTexture(pointer->shadeTextures[state]);
-			shadeSprite.setScale(pointer->scaleToSet);
-		}
 	}
 };
