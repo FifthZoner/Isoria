@@ -16,6 +16,7 @@
 class backgroundBlockInfo {
 public:
 	std::string name;
+	std::vector <sf::Sprite> sprites;
 	std::vector <sf::Texture> textures;
 	vec2f scaleToSet;
 	bool doesObstruct = false;
@@ -26,15 +27,19 @@ public:
 		datapackId = idOfDatapack;
 		internalId = idInDatapack;
 
+		sprites.resize(paths.size());
+
 		for (ushort n = 0; n < paths.size(); n++) {
 			textures[n].loadFromFile(paths[n]);
+			sprites[n].setTexture(textures[n]);
+			sprites[n].setScale(vec2f(float(baseBlockSize) / float(textures[n].getSize().x), float(baseBlockSize) / float(textures[n].getSize().y)));
 
 			// background blocks are excluded from shading to improve performance
 		}
 		doesObstruct = true;
 		isVisible = true;
 
-		scaleToSet = vec2f(asFloat(baseBlockSize) / asFloat(textures[0].getSize().x), asFloat(baseBlockSize) / asFloat(textures[0].getSize().y));
+		scaleToSet = vec2f(float(baseBlockSize) / float(textures[0].getSize().x), float(baseBlockSize) / float(textures[0].getSize().y));
 	}
 };
 
@@ -42,6 +47,8 @@ public:
 class floorBlockInfo {
 public:
 	std::string name;
+	std::vector <sf::Sprite> sprites;
+	std::vector <sf::Sprite> shadeSprites;
 	std::vector <sf::Texture> textures;
 	std::vector <sf::Texture> shadeTextures;
 	vec2f scaleToSet;
@@ -53,13 +60,20 @@ public:
 		datapackId = idOfDatapack;
 		internalId = idInDatapack;
 
+		sprites.resize(paths.size());
+		shadeSprites.resize(paths.size());
+
 		for (ushort n = 0; n < paths.size(); n++) {
 			textures[n].loadFromFile(paths[n]);
+			sprites[n].setTexture(textures[n]);
+			sprites[n].setScale(vec2f(float(baseBlockSize) / float(textures[n].getSize().x), float(baseBlockSize) / float(textures[n].getSize().y)));
 
 			// gets shade file in format xxxxShade.(!)png(!)
 			std::string path = paths[n].erase(paths[n].size() - 4, 4);
 			path += "Shade.png";
 			shadeTextures[n].loadFromFile(path);
+			shadeSprites[n].setTexture(shadeTextures[n]);
+			shadeSprites[n].setScale(vec2f(float(baseBlockSize) / float(shadeTextures[n].getSize().x), float(baseBlockSize) / float(shadeTextures[n].getSize().y)));
 		}
 		doesObstruct = true;
 		isVisible = true;
@@ -72,6 +86,8 @@ public:
 class wallBlockInfo {
 public:
 	std::string name;
+	std::vector <sf::Sprite> sprites;
+	std::vector <sf::Sprite> shadeSprites;
 	std::vector <sf::Texture> textures;
 	std::vector <sf::Texture> shadeTextures;
 	vec2f scaleToSet;
@@ -83,13 +99,20 @@ public:
 		datapackId = idOfDatapack;
 		internalId = idInDatapack;
 
+		sprites.resize(paths.size());
+		shadeSprites.resize(paths.size());
+
 		for (ushort n = 0; n < paths.size(); n++) {
 			textures[n].loadFromFile(paths[n]);
+			sprites[n].setTexture(textures[n]);
+			sprites[n].setScale(vec2f(float(baseBlockSize) / float(textures[n].getSize().x), float(baseBlockSize) / float(textures[n].getSize().y)));
 
 			// gets shade file in format xxxxShade.(!)png(!)
 			std::string path = paths[n].erase(paths[n].size() - 4, 4);
 			path += "Shade.png";
 			shadeTextures[n].loadFromFile(path);
+			shadeSprites[n].setTexture(shadeTextures[n]);
+			shadeSprites[n].setScale(vec2f(float(baseBlockSize) / float(shadeTextures[n].getSize().x), float(baseBlockSize) / float(shadeTextures[n].getSize().y)));
 		}
 		doesObstruct = true;
 		isVisible = true;
@@ -137,11 +160,13 @@ struct lDatapackPathsContainer {
 
 // a class containing information about a single background block
 class backgroundBlock {
-private:
-	bool isVisible = false;
-
 public:
+
 	backgroundBlockInfo* pointer;
+	bool isVisible = false;
+	unsigned short variant = 0;
+
+	// old to retire
 	sf::Sprite sprite;
 
 	// creates given background block at given coordinates
@@ -155,6 +180,7 @@ public:
 
 	// sets right texture depending on neighboring blocks etc
 	void create(ushort state = 0) {
+		variant = state;
 		if (isVisible) {
 			sprite.setTexture(pointer->textures[state]);
 			sprite.setScale(pointer->scaleToSet);
@@ -164,13 +190,18 @@ public:
 
 // a class containing information about a single floor block
 class floorBlock {
-private:
-	bool isVisible = false;
-
 public:
+
+	// old to retire
 	sf::Sprite sprite;
 	sf::Sprite shadeSprite;
+
+
+
 	floorBlockInfo* pointer;
+	bool isVisible = false;
+	unsigned short variant = 0;
+
 
 	// creates given background block at given coordinates
 	void prepare(floorBlockInfo* blockInfoPointer, sf::Vector2i gridCoords, ushort baseSize) {
@@ -183,6 +214,7 @@ public:
 
 	// sets right texture depending on neighboring blocks etc
 	void create(ushort state = 0) {
+		variant = state;
 		if (isVisible) {
 			sprite.setTexture(pointer->textures[state]);
 			sprite.setScale(pointer->scaleToSet);
@@ -194,13 +226,16 @@ public:
 
 // a class containing information about a single wall block
 class wallBlock {
-private:
-	bool isVisible = false;
-
 public:
+	// old to retire
 	sf::Sprite sprite;
 	sf::Sprite shadeSprite;
+
+
 	wallBlockInfo* pointer;
+	bool isVisible = false;
+	unsigned short variant = 0;
+
 
 	// creates given background block at given coordinates
 	void prepare(wallBlockInfo* blockInfoPointer, sf::Vector2i gridCoords, ushort baseSize) {
@@ -214,6 +249,7 @@ public:
 
 	// sets right texture depending on neighboring blocks etc
 	void create(ushort state = 0) {
+		variant = state;
 		if (isVisible) {
 			sprite.setTexture(pointer->textures[state]);
 			sprite.setScale(pointer->scaleToSet);

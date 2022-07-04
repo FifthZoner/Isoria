@@ -8,6 +8,7 @@
 
 #include "quickWrite.h"
 #include "data.h"
+#include "shared.h"
 
 //				STRUCTS
 
@@ -43,7 +44,11 @@ struct dimension {
 	backgroundLayer backgrounds;
 	floorLayer floors;
 	wallLayer walls;
+
+	// to be retired
 	renderMap renderGrid;
+
+
 	vec2i size = vec2i(0, 0);
 	str name;
 
@@ -67,20 +72,53 @@ struct dimension {
 		
 	}
 
-	void draw(sf::RenderWindow* window, vec2i lowBorder, vec2i highBorder) {
-		for (ushort y = lowBorder.y; y <= highBorder.y; y++) {
-			for (ushort x = lowBorder.x; x <= highBorder.x; x++) {
-				if (renderGrid.grid[y][x].background) {
-					window->draw(backgrounds.blocks[y][x].sprite);
+	void draw(sf::RenderWindow* window, renderLimit border, 
+		sf::RenderTexture* shadeTexture, renderLimit shadeBorder) {
+		for (ushort y = border.lower.y; y < border.upper.y; y++) {
+			for (ushort x = border.lower.x; x < border.upper.x; x++) {
+				if (backgrounds.blocks[y][x].isVisible) {
+					backgrounds.blocks[y][x].pointer->sprites[backgrounds.blocks[y][x].variant].setPosition(sf::Vector2f(x * blockBaseSize, y * blockBaseSize));
+					window->draw(backgrounds.blocks[y][x].pointer->sprites[backgrounds.blocks[y][x].variant]);
 				}
-				if (renderGrid.grid[y][x].floor) {
-					window->draw(floors.blocks[y][x].sprite);
+				if (floors.blocks[y][x].isVisible) {
+
+					floors.blocks[y][x].pointer->sprites[floors.blocks[y][x].variant].setPosition(sf::Vector2f(x * blockBaseSize, y * blockBaseSize));
+
+					window->draw(floors.blocks[y][x].pointer->sprites[floors.blocks[y][x].variant]);
+					
 				}
-				if (renderGrid.grid[y][x].wall) {
-					window->draw(walls.blocks[y][x].sprite);
+				if (walls.blocks[y][x].isVisible) {
+
+					walls.blocks[y][x].pointer->sprites[walls.blocks[y][x].variant].setPosition(sf::Vector2f(x * blockBaseSize, y * blockBaseSize));
+
+					window->draw(walls.blocks[y][x].pointer->sprites[walls.blocks[y][x].variant]);
 				}
 			}
 		 }
+
+		for (ushort y = shadeBorder.lower.y; y < shadeBorder.upper.y; y++) {
+			for (ushort x = shadeBorder.lower.x; x < shadeBorder.upper.x; x++) {
+				if (backgrounds.blocks[y][x].isVisible) {
+					backgrounds.blocks[y][x].pointer->sprites[backgrounds.blocks[y][x].variant].setPosition(sf::Vector2f(x * blockBaseSize, y * blockBaseSize));
+					window->draw(backgrounds.blocks[y][x].pointer->sprites[backgrounds.blocks[y][x].variant]);
+				}
+				if (floors.blocks[y][x].isVisible) {
+
+					floors.blocks[y][x].pointer->shadeSprites[floors.blocks[y][x].variant].setPosition(sf::Vector2f(x * blockBaseSize, y * blockBaseSize));
+
+					shadeTexture->draw(floors.blocks[y][x].pointer->shadeSprites[floors.blocks[y][x].variant]);
+
+
+				}
+				if (walls.blocks[y][x].isVisible) {
+
+					walls.blocks[y][x].pointer->shadeSprites[walls.blocks[y][x].variant].setPosition(sf::Vector2f(x * blockBaseSize, y * blockBaseSize));
+
+					shadeTexture->draw(walls.blocks[y][x].pointer->shadeSprites[walls.blocks[y][x].variant]);
+				}
+			}
+		}
+
 	}
 };
 

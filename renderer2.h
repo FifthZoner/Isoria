@@ -217,7 +217,11 @@ void render2x0(dimension* pointer, sf::RenderWindow* window) {
 
 	// will be split into threads for simultaneus shading and other things
 
-	mainRender(pointer, getRenderLimit(pointer));
+	// pls work
+	pointer->draw(window, getRenderLimit(pointer), &globalShadowWindow, getShadeRenderLimit(pointer));
+
+
+	//mainRender(pointer, getRenderLimit(pointer));
 
 	mapMainSprite.setTexture(mapMainTexture.getTexture());
 
@@ -225,11 +229,9 @@ void render2x0(dimension* pointer, sf::RenderWindow* window) {
 
 	window->draw(mapMainSprite);
 
-	shadeRender(pointer, getShadeRenderLimit(pointer));
+	//shadeRender(pointer, getShadeRenderLimit(pointer));
 
 	globalShader.setUniform("shade", globalShadowWindow.getTexture());
-
-	mapShadeSprite.setTexture(globalShadowWindow.getTexture());
 
 	window->draw(mapMainSprite, &globalShader);
 }

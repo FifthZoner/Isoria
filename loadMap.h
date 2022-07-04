@@ -473,58 +473,76 @@ void mlPrepareDimensionRenderGrid(dimension* pointer, bool debug) {
 				pointer->renderGrid.grid[y][x].wall = true;
 				pointer->renderGrid.grid[y][x].floor = false;
 				pointer->renderGrid.grid[y][x].background = false;
+				pointer->walls.blocks[y][x].isVisible = true;
+				pointer->floors.blocks[y][x].isVisible = false;
+				pointer->backgrounds.blocks[y][x].isVisible = false;
 			}
 			else if (pointer->floors.blocks[y][x].pointer->isVisible and pointer->floors.blocks[y][x].pointer->doesObstruct) {
 
 				if (!pointer->walls.blocks[y][x].pointer->isVisible) {
 					pointer->renderGrid.grid[y][x].wall = false;
+					pointer->walls.blocks[y][x].isVisible = false;
 				}
 				else {
 					pointer->renderGrid.grid[y][x].wall = true;
+					pointer->walls.blocks[y][x].isVisible = true;
 				}
 
 				pointer->renderGrid.grid[y][x].floor = true;
+				pointer->floors.blocks[y][x].isVisible = true;
 				pointer->renderGrid.grid[y][x].background = false;
+				pointer->backgrounds.blocks[y][x].isVisible = false;
 			}
 			else if (pointer->backgrounds.blocks[y][x].pointer->isVisible and pointer->backgrounds.blocks[y][x].pointer->doesObstruct) {
 
 				if (!pointer->walls.blocks[y][x].pointer->isVisible) {
 					pointer->renderGrid.grid[y][x].wall = false;
+					pointer->walls.blocks[y][x].isVisible = false;
 				}
 				else {
 					pointer->renderGrid.grid[y][x].wall = true;
+					pointer->walls.blocks[y][x].isVisible = true;
 				}
 
 				if (!pointer->floors.blocks[y][x].pointer->isVisible) {
 					pointer->renderGrid.grid[y][x].floor = false;
+					pointer->floors.blocks[y][x].isVisible = false;
 				}
 				else {
 					pointer->renderGrid.grid[y][x].floor = true;
+					pointer->floors.blocks[y][x].isVisible = true;
 				}
 
 				pointer->renderGrid.grid[y][x].background = true;
+				pointer->backgrounds.blocks[y][x].isVisible = true;
 			}
 			else {
 
 				if (!pointer->walls.blocks[y][x].pointer->isVisible) {
 					pointer->renderGrid.grid[y][x].wall = false;
+					pointer->walls.blocks[y][x].isVisible = false;
 				}
 				else {
 					pointer->renderGrid.grid[y][x].wall = true;
+					pointer->walls.blocks[y][x].isVisible = true;
 				}
 
 				if (!pointer->floors.blocks[y][x].pointer->isVisible) {
 					pointer->renderGrid.grid[y][x].floor = false;
+					pointer->floors.blocks[y][x].isVisible = false;
 				}
 				else {
 					pointer->renderGrid.grid[y][x].floor = true;
+					pointer->floors.blocks[y][x].isVisible = true;
 				}
 
 				if (!pointer->backgrounds.blocks[y][x].pointer->isVisible) {
 					pointer->renderGrid.grid[y][x].background = false;
+					pointer->backgrounds.blocks[y][x].isVisible = false;
 				}
 				else {
 					pointer->renderGrid.grid[y][x].background = true;
+					pointer->backgrounds.blocks[y][x].isVisible = true;
 				}
 			}
 		}
