@@ -35,7 +35,8 @@ public:
 //		AUXILIARY
 
 struct renderLimit {
-	vec2i lower, upper;
+	sf::Vector2i lower = sf::Vector2i(0, 0);
+	sf::Vector2i upper = sf::Vector2i(0, 0);
 };
 
 //		DATAPACKS

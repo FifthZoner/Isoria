@@ -38,7 +38,7 @@ void dlLoadAddedBackgrounds(str path, lDatapackPaths* pPointer, datapack* dPoint
 
 		temp.name = name;
 
-		if (dlDebug) {
+		if (debug) {
 			std::cout << "DL debug: Loaded background named: " << name << "\n";
 		}
 		
@@ -55,10 +55,11 @@ void dlLoadAddedBackgrounds(str path, lDatapackPaths* pPointer, datapack* dPoint
 				}
 				pPointer->background.texturePaths.push_back(tempPaths);
 				temp.textures.resize(tempPaths.size());
-				if (dlDebug) {
+				temp.variants.resize(tempPaths.size());
+				if (debug) {
 					std::cout << "DL debug: Loaded background texture paths:" << "\n";
 					for (ushort n = 0; n < number; n++) {
-						std::cout << "DL debug:" << tempPaths[n] << "\n";
+						std::cout << "DL debug: " << tempPaths[n] << "\n";
 					}
 				}
 			}
@@ -84,7 +85,7 @@ void dlLoadAddedFloors(str path, lDatapackPaths* pPointer, datapack* dPointer) {
 
 		temp.name = name;
 		
-		if (dlDebug) {
+		if (debug) {
 			std::cout << "DL debug: Loaded floor named: " << name << "\n";
 		}
 
@@ -101,10 +102,11 @@ void dlLoadAddedFloors(str path, lDatapackPaths* pPointer, datapack* dPointer) {
 				pPointer->floor.texturePaths.push_back(tempPaths);
 				temp.textures.resize(tempPaths.size());
 				temp.shadeTextures.resize(tempPaths.size());
-				if (dlDebug) {
+				temp.variants.resize(tempPaths.size());
+				if (debug) {
 					std::cout << "DL debug: Loaded floor texture paths:" << "\n";
 					for (ushort n = 0; n < number; n++) {
-						std::cout << "DL debug:" << tempPaths[n] << "\n";
+						std::cout << "DL debug: " << tempPaths[n] << "\n";
 					}
 				}
 			}
@@ -130,7 +132,7 @@ void dlLoadAddedWalls (str path, lDatapackPaths* pPointer, datapack* dPointer) {
 
 		temp.name = name;
 		
-		if (dlDebug) {
+		if (debug) {
 			std::cout << "DL debug: Loaded wall named: " << name << "\n";
 		}
 
@@ -147,10 +149,11 @@ void dlLoadAddedWalls (str path, lDatapackPaths* pPointer, datapack* dPointer) {
 				pPointer->wall.texturePaths.push_back(tempPaths);
 				temp.textures.resize(tempPaths.size());
 				temp.shadeTextures.resize(tempPaths.size());
-				if (dlDebug) {
+				temp.variants.resize(tempPaths.size());
+				if (debug) {
 					std::cout << "DL debug: Loaded wall texture paths:" << "\n";
 					for (ushort n = 0; n < number; n++) {
-						std::cout << "DL debug:" << tempPaths[n] << "\n";
+						std::cout << "DL debug: " << tempPaths[n] << "\n";
 					}
 				}
 			}

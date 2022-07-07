@@ -50,6 +50,13 @@ mapContainer debugMap;
 datapackContainer mDatapacks;
 lDatapackPathsContainer mDatapackPathsContainer;
 
+std::queue<renderContainer*> renderContainerQueue;
+std::vector<renderContainer> renderContainerTable;
+
+// hybrid renderer expansion to avoid bugs
+const unsigned short hybridRenderOffset = 2;
+renderLimit hybridRenderBorder;
+renderLimit hybridRenderCurrent;
 
 // sets current stage safely
 void setStage(ushort setStage, ushort setSubStage = 0) {

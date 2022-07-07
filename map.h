@@ -41,6 +41,9 @@ struct renderMap {
 // struct containing a whole dimension
 struct dimension {
 
+	std::vector<std::vector<cellContainer>> grid;
+
+	// this to be retired to as I have a proper solution now that for all 3 is smaller than 1 of those
 	backgroundLayer backgrounds;
 	floorLayer floors;
 	wallLayer walls;
@@ -58,12 +61,16 @@ struct dimension {
 		size = dimSize;
 		
 		// resizes tables
+		grid.resize(size.y);
+
 		backgrounds.blocks.resize(size.y);
 		floors.blocks.resize(size.y);
 		walls.blocks.resize(size.y);
 		renderGrid.grid.resize(size.y);
 		
 		for (ushort n = 0; n < size.y; n++) {
+			grid[n].resize(size.x);
+
 			backgrounds.blocks[n].resize(size.x);
 			floors.blocks[n].resize(size.x);
 			walls.blocks[n].resize(size.x);

@@ -77,6 +77,20 @@ sf::Vector2i getViewCoodrinates(sf::Vector2i value = sf::Vector2i(0, 0)) {
 	return value;
 }
 
+// creates viewing distance and render tables, they reduce amount of sprites from x * y so for example 1,000,000 to just 4,806 for full hd with offset 2
+void createRenderTables() {
+
+	// resizing the table
+	renderContainerTable.resize((shadeRenderDistance.x + hybridRenderOffset) * (shadeRenderDistance.y + hybridRenderOffset));
+
+	// filling the queue
+	for (unsigned short n = 0; n < renderContainerTable.size(); n++) {
+		renderContainerQueue.push(&renderContainerTable[n]);
+	}
+
+	debugMsg(std::string("R2 Debug: Created render container table with: " + std::to_string(renderContainerTable.size()) + " elements"));
+}
+
 renderLimit getRenderLimit(dimension* pointer) {
 	renderLimit value;
 
@@ -158,6 +172,8 @@ void prepareRenderLimits() {
 
 	mainRenderDistance = sf::Vector2i(gameRes.x / blockBaseSize + 1, gameRes.y / blockBaseSize + 1);
 	shadeRenderDistance = sf::Vector2i((gameRes.x + (angleMultiplier * 25)) / blockBaseSize + 1, (gameRes.y + (angleMultiplier * 25)) / blockBaseSize + 1);
+
+	createRenderTables();
 }
 
 void render2x0(dimension* pointer, sf::RenderWindow* window) {

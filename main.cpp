@@ -759,8 +759,7 @@ void run2x0() {
 		}
 
 
-		updateShadowAngle(&gameMap.time);
-		
+		updateShadowAngle(&gameMap.time);	
 	}
 }
 

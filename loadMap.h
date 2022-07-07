@@ -36,7 +36,7 @@ mlSecondaryConversionTableContainer mlSecondConvert;
 //				MAP CONTENT LOADING
 
 // loads background layer using conversion tables
-void mlLoadDimensionBackground(backgroundLayer* pointer, std::ifstream* file, vec2i size) {
+void mlLoadDimensionBackground(backgroundLayer* pointer, std::ifstream* file, vec2i size, dimension* dimPointer) {
 	if (mlDebug) {
 		std::cout << "ML debug: Loading background blocks \n";
 	}
@@ -45,12 +45,15 @@ void mlLoadDimensionBackground(backgroundLayer* pointer, std::ifstream* file, ve
 			ulong temp;
 			*file >> temp;
 			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.background[temp].datapackNumber].backgroundBlocks[mlSecondConvert.background[temp].objectID], vec2i(x, y), blockBaseSize);
+			// variant is 0 for now, to be changed later
+			dimPointer->grid[y][x].createBackground(&mlDatapack->datapacks[mlSecondConvert.background[temp].datapackNumber].backgroundBlocks[mlSecondConvert.background[temp].objectID].variants[0]);
+
 		}
 	}
 }
 
 // loads floor layer using conversion tables
-void mlLoadDimensionFloor(floorLayer* pointer, std::ifstream* file, vec2i size) {
+void mlLoadDimensionFloor(floorLayer* pointer, std::ifstream* file, vec2i size, dimension* dimPointer) {
 	if (mlDebug) {
 		std::cout << "ML debug: Loading floor blocks \n";
 	}
@@ -59,12 +62,15 @@ void mlLoadDimensionFloor(floorLayer* pointer, std::ifstream* file, vec2i size) 
 			ulong temp;
 			*file >> temp;
 			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.floor[temp].datapackNumber].floorBlocks[mlSecondConvert.floor[temp].objectID], vec2i(x, y), blockBaseSize);
+			// variant is 0 for now, to be changed
+			dimPointer->grid[y][x].createFloor(&mlDatapack->datapacks[mlSecondConvert.floor[temp].datapackNumber].floorBlocks[mlSecondConvert.floor[temp].objectID].variants[0]);
+
 		}
 	}
 }
 
 // loads wall layer using conversion tables
-void mlLoadDimensionWall(wallLayer* pointer, std::ifstream* file, vec2i size) {
+void mlLoadDimensionWall(wallLayer* pointer, std::ifstream* file, vec2i size, dimension* dimPointer) {
 	if (mlDebug) {
 		std::cout << "ML debug: Loading wall blocks \n";
 	}
@@ -73,6 +79,8 @@ void mlLoadDimensionWall(wallLayer* pointer, std::ifstream* file, vec2i size) {
 			ulong temp;
 			*file >> temp;
 			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.wall[temp].datapackNumber].wallBlocks[mlSecondConvert.wall[temp].objectID], vec2i(x, y), blockBaseSize);
+			// variant is 0 for now, to be changed
+			dimPointer->grid[y][x].createWall(&mlDatapack->datapacks[mlSecondConvert.wall[temp].datapackNumber].wallBlocks[mlSecondConvert.wall[temp].objectID].variants[0]);
 		}
 	}
 }
@@ -91,19 +99,19 @@ void mlLoadDimension(dimension* pointer) {
 			std::cout << "ML debug: Loading dimension background... " << "\n";
 		}
 
-		mlLoadDimensionBackground(&pointer->backgrounds, &file, vec2i(pointer->backgrounds.blocks[0].size(), pointer->backgrounds.blocks.size()));
+		mlLoadDimensionBackground(&pointer->backgrounds, &file, vec2i(pointer->backgrounds.blocks[0].size(), pointer->backgrounds.blocks.size()), pointer);
 
 		if (mlDebug) {
 			std::cout << "ML debug: Loading dimension floors... " << "\n";
 		}
 
-		mlLoadDimensionFloor(&pointer->floors, &file, vec2i(pointer->floors.blocks[0].size(), pointer->floors.blocks.size()));
+		mlLoadDimensionFloor(&pointer->floors, &file, vec2i(pointer->floors.blocks[0].size(), pointer->floors.blocks.size()), pointer);
 
 		if (mlDebug) {
 			std::cout << "ML debug: Loading dimension walls... " << "\n";
 		}
 
-		mlLoadDimensionWall(&pointer->walls, &file, vec2i(pointer->walls.blocks[0].size(), pointer->walls.blocks.size()));
+		mlLoadDimensionWall(&pointer->walls, &file, vec2i(pointer->walls.blocks[0].size(), pointer->walls.blocks.size()), pointer);
 
 		file.close();
 	}
