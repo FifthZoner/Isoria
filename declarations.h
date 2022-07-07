@@ -8,6 +8,8 @@
 #include "server.h"
 #include "shared.h"
 #include "keyboard.h"
+#include "buttons.h"
+#include "graphics.h"
 
 // moved declarations here to have them apply everywhere
 
@@ -45,6 +47,9 @@ mapContainer gameMap;
 
 mapContainer debugMap;
 
+dimension* currentDimensionPointer;
+mapContainer* currentMap;
+
 //				DATAPACKS
 
 datapackContainer mDatapacks;
@@ -58,10 +63,22 @@ const unsigned short hybridRenderOffset = 2;
 renderLimit hybridRenderBorder;
 renderLimit hybridRenderCurrent;
 
+
+std::thread hybridRenderServiceThread;
+
 // sets current stage safely
 void setStage(ushort setStage, ushort setSubStage = 0) {
 	threadLock.lock();
 	stage = setStage;
 	subStage = setSubStage;
 	threadLock.unlock();
+}
+
+
+sf::Vector2i getViewCoodrinates(sf::Vector2i value = sf::Vector2i(0, 0)) {
+
+	value.x = mapMainView.getCenter().x / blockBaseSize;
+	value.y = mapMainView.getCenter().y / blockBaseSize;
+
+	return value;
 }

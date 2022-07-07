@@ -7,8 +7,7 @@
 #include "declarations.h"
 #include "math.h"
 
-sf::Vector2i mainRenderDistance = sf::Vector2i(0, 0);
-sf::Vector2i shadeRenderDistance = sf::Vector2i(0, 0);
+
 
 // updates shader for given time with given time value
 void updateShadowAngle(unsigned short* value) {
@@ -68,28 +67,6 @@ void updateShadowAngle(unsigned short* value) {
 
 }
 
-// do not input value or do it, it makes no difference and just makes code cleaner
-sf::Vector2i getViewCoodrinates(sf::Vector2i value = sf::Vector2i(0, 0)) {
-
-	value.x = mapMainView.getCenter().x / blockBaseSize;
-	value.y = mapMainView.getCenter().y / blockBaseSize;
-
-	return value;
-}
-
-// creates viewing distance and render tables, they reduce amount of sprites from x * y so for example 1,000,000 to just 4,806 for full hd with offset 2
-void createRenderTables() {
-
-	// resizing the table
-	renderContainerTable.resize((shadeRenderDistance.x + hybridRenderOffset) * (shadeRenderDistance.y + hybridRenderOffset));
-
-	// filling the queue
-	for (unsigned short n = 0; n < renderContainerTable.size(); n++) {
-		renderContainerQueue.push(&renderContainerTable[n]);
-	}
-
-	debugMsg(std::string("R2 Debug: Created render container table with: " + std::to_string(renderContainerTable.size()) + " elements"));
-}
 
 renderLimit getRenderLimit(dimension* pointer) {
 	renderLimit value;
@@ -164,6 +141,8 @@ renderLimit getShadeRenderLimit(dimension* pointer) {
 		value.upper.y = pointer->size.y - 1;
 	}
 
+	//std::cout << value.lower.x << " " << value.lower.y << " " << value.upper.x << " " << value.upper.y << "\n";
+
 	return value;
 }
 
@@ -173,7 +152,7 @@ void prepareRenderLimits() {
 	mainRenderDistance = sf::Vector2i(gameRes.x / blockBaseSize + 1, gameRes.y / blockBaseSize + 1);
 	shadeRenderDistance = sf::Vector2i((gameRes.x + (angleMultiplier * 25)) / blockBaseSize + 1, (gameRes.y + (angleMultiplier * 25)) / blockBaseSize + 1);
 
-	createRenderTables();
+	
 }
 
 void render2x0(dimension* pointer, sf::RenderWindow* window) {
@@ -181,8 +160,10 @@ void render2x0(dimension* pointer, sf::RenderWindow* window) {
 	// will be split into threads for simultaneus shading and other things
 
 	// pls work
-	pointer->draw(window, getRenderLimit(pointer), &globalShadowWindow, getShadeRenderLimit(pointer));
+	pointer->draw(&mapMainTexture, getRenderLimit(pointer), &globalShadowWindow, getShadeRenderLimit(pointer));
 
+	mapMainTexture.setView(mapMainView);
+	globalShadowWindow.setView(shadeView);
 
 	//mainRender(pointer, getRenderLimit(pointer));
 
@@ -194,9 +175,14 @@ void render2x0(dimension* pointer, sf::RenderWindow* window) {
 
 	//shadeRender(pointer, getShadeRenderLimit(pointer));
 
+	globalShadowWindow.display();
+
 	globalShader.setUniform("shade", globalShadowWindow.getTexture());
 
+
 	window->draw(mapMainSprite, &globalShader);
+
+	globalShadowWindow.clear(sf::Color::Black);
 }
 
 // renders gameplay

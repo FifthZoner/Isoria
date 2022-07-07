@@ -95,6 +95,16 @@ const unsigned short maxClients = 8;
 
 //				GRAPHICS
 
+// render distance for all to use
+sf::Vector2i mainRenderDistance = sf::Vector2i(0, 0);
+sf::Vector2i shadeRenderDistance = sf::Vector2i(0, 0);
+
+
+// hybrid renderer
+bool isHybridRenderServiceActive = false;
+bool isHybridRenderServiceReady = false;
+bool canHybridRenderServiceStartWorking = false;
+
 
 
 //		MAP GLOBAL SHADING GRAPHICS

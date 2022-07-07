@@ -10,6 +10,7 @@
 #include "shared.h"
 #include "declarations.h"
 
+
 bool mrDebug;
 
 std::vector<std::string> mrNames;
@@ -697,6 +698,11 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 				// sorry
 				map->dimensions[currentIndex].backgrounds.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrBackgroundConvert[packet[current]].datapackNumber].backgroundBlocks[mrBackgroundConvert[packet[current]].id], mapVec, blockBaseSize);
 
+				// new and better, temp variant
+				map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].createBackground(&pointer->datapacks[mrBackgroundConvert[packet[current]].datapackNumber].backgroundBlocks[mrBackgroundConvert[packet[current]].id].variants[0]);
+
+
+
 				mapVec.x++;
 
 
@@ -715,6 +721,10 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 			else if (currentPart == 1) {
 				// sorry
 				map->dimensions[currentIndex].floors.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrFloorConvert[packet[current]].datapackNumber].floorBlocks[mrFloorConvert[packet[current]].id], mapVec, blockBaseSize);
+
+				// new and better, temp variant
+				map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].createFloor(&pointer->datapacks[mrFloorConvert[packet[current]].datapackNumber].floorBlocks[mrFloorConvert[packet[current]].id].variants[0]);
+
 
 				mapVec.x++;
 
@@ -735,8 +745,10 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 				// sorry
 				map->dimensions[currentIndex].walls.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrWallConvert[packet[current]].datapackNumber].wallBlocks[mrWallConvert[packet[current]].id], mapVec, blockBaseSize);
 
-				mapVec.x++;
+				// new and better, temp variant
+				map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].createWall(&pointer->datapacks[mrWallConvert[packet[current]].datapackNumber].wallBlocks[mrWallConvert[packet[current]].id].variants[0]);
 
+				mapVec.x++;
 
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {
 					mapVec.x = 0;
@@ -808,13 +820,21 @@ bool receiveMap(mapContainer* map, sf::TcpSocket* socket, datapackContainer* dat
 		debugMsg(std::string("MR Debug: Finished preparing dimension with size of: " + std::to_string(map->dimensions[n].size.x) + " " + std::to_string(map->dimensions[n].size.y)));
 	}
 
+
+	// waits for hybrid render
+	canHybridRenderServiceStartWorking = true;
+
+
+	while (!isHybridRenderServiceReady) {
+		sf::sleep(sf::microseconds(100));
+	}
+
 	// sends confirmation or not
 	if (sendConfirmation(socket, false)) {
 		return 1;
 	}
 
-
-	*startGame = true;
+	
 
 	return 0;
 }

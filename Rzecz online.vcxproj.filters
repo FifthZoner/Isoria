@@ -125,6 +125,9 @@
     <ClInclude Include="renderer0.h">
       <Filter>Graphics\Main</Filter>
     </ClInclude>
+    <ClInclude Include="hybridRenderingSpecific.h">
+      <Filter>Graphics\Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="globalShader.frag">

@@ -118,6 +118,14 @@ struct clientClass {
 			sf::sleep(sf::milliseconds(100));
 		}
 
+		// waits for hybrid render
+		canHybridRenderServiceStartWorking = true;
+
+		while (!isHybridRenderServiceReady) {
+			sf::sleep(sf::microseconds(100));
+		}
+
+
 		*startGame = true;
 
 
@@ -140,15 +148,14 @@ struct clientClass {
 		}
 
 
-		if (ctDebug) {
-			std::cout << "CT Debug: Disconnecting client... \n";
-		}
+		debugMsg("CT Debug: Disconnecting client... \n");
+		
 
 		socket.disconnect();
 
-		if (ctDebug) {
-			std::cout << "CT Debug: Ended client thread! \n";
-		}
+		
+		debugMsg("CT Debug: Ended client thread! \n");
+		
 
 		return 0;
 	}

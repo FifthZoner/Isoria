@@ -16,6 +16,7 @@
 #include "renderer0.h"
 #include "renderer2.h"
 #include "declarations.h"
+#include "hybridRenderingSpecific.h"
 
 
 
@@ -222,8 +223,20 @@ void loadPrimaryGraphics() {
 	shadeView.setCenter(sf::Vector2f(gameRes.x / 2, gameRes.y / 2));
 	globalShadowWindow.setView(shadeView);
 
+	mapMainView.setSize(sf::Vector2f(gameRes));
+	mapMainView.setCenter(sf::Vector2f(gameRes.x / 2, gameRes.y / 2));
+	mapMainTexture.setView(mapMainView);
+
+	mapMainSprite.setScale(1.f, -1.f);
+	mapMainSprite.setPosition(0, gameRes.y);
+
 	// prepares render distance for rendering range optimization
 	prepareRenderLimits();
+
+	// prepares hybrid renderer tables
+	createRenderTables();
+
+
 }
 
 // collective function to load most of game's data
@@ -320,6 +333,10 @@ void graphicsRenderer() {
 	
 	gameWindow.create(sf::VideoMode(gameRes.x, gameRes.y, 32), "Isoria", sf::Style::Fullscreen);
 	gameWindow.setActive();
+	
+	// hybrid render service start
+	hybridRenderServiceThread = std::thread(hybridRenderingService);
+
 
 	// main loop
 	sf::Clock gameClock;
@@ -358,12 +375,13 @@ void graphicsRenderer() {
 			}
 		}
 
-		if (gameClock.getElapsedTime().asMicroseconds() > frameTime and isInFocus) {
+		// temp due to some bug os something
+		//if (gameClock.getElapsedTime().asMicroseconds() > frameTime and isInFocus) {
 			gameClock.restart();
 
 			
 
-			gameWindow.clear();
+			gameWindow.clear(sf::Color::Black);
 
 			switch (stage) {
 				
@@ -388,10 +406,17 @@ void graphicsRenderer() {
 			}
 
 			gameWindow.display();
-		}
+		//}
 	}
 
 	gameWindow.close();
+
+	if (isHybridRenderServiceActive) {
+		isHybridRenderServiceActive = false;
+		isHybridRenderServiceReady = false;
+
+		hybridRenderServiceThread.join();
+	}
 
 	if (sfDebug) {
 		std::cout << "SF Debug: Ended render thread! \n";
@@ -407,7 +432,7 @@ void graphicsRenderer() {
 void clickedContinue() {
 	// with info about local connection
 
-	
+	currentMap = &debugMap;
 
 	if (sfDebug) {
 		std::cout << "SF debug: Starting map loading process... \n";
@@ -439,7 +464,7 @@ void clickedContinue() {
 void clickedJoin() {
 	// add external connection info
 
-	
+	currentMap = &debugMap;
 
 	if (sfDebug) {
 		std::cout << "[ STARTING ] SF debug: Starting client... \n";
@@ -756,6 +781,24 @@ void run2x0() {
 		gameMap.time += timeStep;
 		if (gameMap.time > 24000) {
 			gameMap.time -= 24000;
+		}
+
+		// temp
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+			mapMainView.move(sf::Vector2f(5, 0));
+			shadeView.move(sf::Vector2f(5, 0));
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+			mapMainView.move(sf::Vector2f(-5, 0));
+			shadeView.move(sf::Vector2f(-5, 0));
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+			mapMainView.move(sf::Vector2f(0, -5));
+			shadeView.move(sf::Vector2f(0, -5));
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+			mapMainView.move(sf::Vector2f(0, 5));
+			shadeView.move(sf::Vector2f(0, 5));
 		}
 
 

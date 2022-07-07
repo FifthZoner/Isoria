@@ -163,6 +163,7 @@
     <ClInclude Include="data.h" />
     <ClInclude Include="declarations.h" />
     <ClInclude Include="graphics.h" />
+    <ClInclude Include="hybridRenderingSpecific.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="launcher.h" />
     <ClInclude Include="loadDatapacks.h" />

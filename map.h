@@ -79,8 +79,42 @@ struct dimension {
 		
 	}
 
-	void draw(sf::RenderWindow* window, renderLimit border, 
+	void draw(sf::RenderTexture* window, renderLimit border,
 		sf::RenderTexture* shadeTexture, renderLimit shadeBorder) {
+		
+		for (ushort y = border.lower.y; y < border.upper.y; y++) {
+			for (ushort x = border.lower.x; x < border.upper.x; x++) {
+				//std::cout << x << " " << y << "\n";
+				if (grid[y][x].renderPointer->isBackgroundVisible) {
+					window->draw(grid[y][x].renderPointer->background);
+				}
+				if (grid[y][x].renderPointer->isFloorVisible) {
+					window->draw(grid[y][x].renderPointer->floor);
+				}
+				if (grid[y][x].renderPointer->isWallVisible) {
+					window->draw(grid[y][x].renderPointer->wall);
+				}
+			}
+		}
+
+		for (ushort y = shadeBorder.lower.y; y < shadeBorder.upper.y; y++) {
+			for (ushort x = shadeBorder.lower.x; x < shadeBorder.upper.x; x++) {
+				//std::cout << x << " " << y << "\n";
+				if (grid[y][x].renderPointer->isFloorVisible) {
+					shadeTexture->draw(grid[y][x].renderPointer->floorShade);
+				}
+				if (grid[y][x].renderPointer->isWallVisible) {
+					shadeTexture->draw(grid[y][x].renderPointer->wallShade);
+				}
+			}
+		}
+		
+
+
+
+
+		// legacy
+		/*
 		for (ushort y = border.lower.y; y < border.upper.y; y++) {
 			for (ushort x = border.lower.x; x < border.upper.x; x++) {
 				if (backgrounds.blocks[y][x].isVisible) {
@@ -92,7 +126,7 @@ struct dimension {
 					floors.blocks[y][x].pointer->sprites[floors.blocks[y][x].variant].setPosition(floors.blocks[y][x].position);
 
 					window->draw(floors.blocks[y][x].pointer->sprites[floors.blocks[y][x].variant]);
-					
+
 				}
 				if (walls.blocks[y][x].isVisible) {
 
@@ -101,7 +135,7 @@ struct dimension {
 					window->draw(walls.blocks[y][x].pointer->sprites[walls.blocks[y][x].variant]);
 				}
 			}
-		 }
+		}
 
 		for (ushort y = shadeBorder.lower.y; y < shadeBorder.upper.y; y++) {
 			for (ushort x = shadeBorder.lower.x; x < shadeBorder.upper.x; x++) {
@@ -125,8 +159,12 @@ struct dimension {
 				}
 			}
 		}
-
+		*/
 	}
+
+	
+		
+		
 };
 
 // struct containing whole map
