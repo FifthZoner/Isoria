@@ -218,6 +218,7 @@ struct renderContainer {
 	// creates sprites and updates visibility, always give layer pointers in b f w order, coordinates in grid ones without block size
 	void create(sf::Vector2i coordinates, blockVariantStruct* backgroundPointer,
 		blockVariantStruct* floorPointer, blockVariantStruct* wallPointer) {
+		
 
 		if (backgroundPointer != nullptr) {
 			background.setTexture(backgroundPointer->texture);

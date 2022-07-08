@@ -149,8 +149,8 @@ renderLimit getShadeRenderLimit(dimension* pointer) {
 // calculates and saves basic render distances to limit the amount of rendered blocks, makes maps of any reasonable size possible without causing massive framerate decreases
 void prepareRenderLimits() {
 
-	mainRenderDistance = sf::Vector2i(gameRes.x / blockBaseSize + 1, gameRes.y / blockBaseSize + 1);
-	shadeRenderDistance = sf::Vector2i((gameRes.x + (angleMultiplier * 25)) / blockBaseSize + 1, (gameRes.y + (angleMultiplier * 25)) / blockBaseSize + 1);
+	mainRenderDistance = sf::Vector2i(gameRes.x / 2 / blockBaseSize + 1, gameRes.y / 2 / blockBaseSize + 1);
+	shadeRenderDistance = sf::Vector2i(((gameRes.x / 2) + (angleMultiplier * 25)) / blockBaseSize + 1, ((gameRes.y / 2) + (angleMultiplier * 25)) / blockBaseSize + 1);
 
 	
 }

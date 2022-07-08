@@ -59,7 +59,7 @@ std::queue<renderContainer*> renderContainerQueue;
 std::vector<renderContainer> renderContainerTable;
 
 // hybrid renderer expansion to avoid bugs
-const unsigned short hybridRenderOffset = 2;
+const unsigned short hybridRenderOffset = 5;
 renderLimit hybridRenderBorder;
 renderLimit hybridRenderCurrent;
 

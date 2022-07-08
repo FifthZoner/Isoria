@@ -10,7 +10,7 @@
 void createRenderTables() {
 
 	// resizing the table
-	renderContainerTable.resize(((shadeRenderDistance.x * 2) + hybridRenderOffset) * ((shadeRenderDistance.y * 2) + hybridRenderOffset));
+	renderContainerTable.resize(((shadeRenderDistance.x * 2) + (hybridRenderOffset * 2)) * ((shadeRenderDistance.y * 2) + (hybridRenderOffset * 2)));
 
 	// other
 	//currentDimensionPointer = &currentMap->dimensions[currentDimension];
@@ -28,6 +28,8 @@ void getHybridRenderingBorders() {
 	// to ensure no shenanigans like reading this while some value is out of limits
 	threadLock.lock();
 	sf::Vector2i coord = getViewCoodrinates();
+
+	
 
 	hybridRenderBorder.lower.x = coord.x - shadeRenderDistance.x - hybridRenderOffset;
 	hybridRenderBorder.lower.y = coord.y - shadeRenderDistance.y - hybridRenderOffset;
@@ -77,25 +79,27 @@ void initialHybridRenderingFill() {
 
 // vertical clear
 void hybridClearVertical(unsigned short x, unsigned short lowerY, unsigned short upperY) {
-	//std::cout << "V Clear: " << x << " " << lowerY << " " << upperY << "\n";
+	std::cout << "V Clear: " << x << " " << lowerY << " " << upperY << "\n";
 	for (unsigned short y = lowerY; y <= upperY; y++) {
 		renderContainerQueue.push(currentMap->dimensions[currentDimension].grid[y][x].renderPointer);
+		//currentMap->dimensions[currentDimension].grid[y][x].renderPointer = nullptr;
 	}
 }
 
 // horizontal clear
 void hybridClearHorizontal(unsigned short y, unsigned short lowerX, unsigned short upperX) {
-	//std::cout << "H Clear: " << y << " " << lowerX << " " << upperX << "\n";
+	std::cout << "H Clear: " << y << " " << lowerX << " " << upperX << "\n";
 	for (unsigned short x = lowerX; x <= upperX; x++) {
 		renderContainerQueue.push(currentMap->dimensions[currentDimension].grid[y][x].renderPointer);
+		//currentMap->dimensions[currentDimension].grid[y][x].renderPointer = nullptr;
 	}
 }
 
 // vertical assign
 void hybridAssignVertical(unsigned short x, unsigned short lowerY, unsigned short upperY) {
-	//std::cout << "H Assign: " << x << " " << lowerY << " " << upperY << "\n";
+	std::cout << "V Assign: " << x << " " << lowerY << " " << upperY << "\n";
 	for (unsigned short y = lowerY; y <= upperY; y++) {
-		currentMap->dimensions[currentDimension].grid[y][x].renderPointer = renderContainerQueue.front();
+		currentMap->dimensions[currentDimension].grid[y][x].renderPointer = &*renderContainerQueue.front();
 		renderContainerQueue.pop();
 		currentMap->dimensions[currentDimension].grid[y][x].renderPointer->create(sf::Vector2i(x, y), currentMap->dimensions[currentDimension].grid[y][x].background,
 			currentMap->dimensions[currentDimension].grid[y][x].floor, currentMap->dimensions[currentDimension].grid[y][x].wall);
@@ -104,9 +108,9 @@ void hybridAssignVertical(unsigned short x, unsigned short lowerY, unsigned shor
 
 // horizontal assign
 void hybridAssignHorizontal(unsigned short y, unsigned short lowerX, unsigned short upperX) {
-	//std::cout << "H Assign: " << y << " " << lowerX << " " << upperX << "\n";
+	std::cout << "H Assign: " << y << " " << lowerX << " " << upperX << "\n";
 	for (unsigned short x = lowerX; x <= upperX; x++) {
-		currentMap->dimensions[currentDimension].grid[y][x].renderPointer = renderContainerQueue.front();
+		currentMap->dimensions[currentDimension].grid[y][x].renderPointer = &*renderContainerQueue.front();
 		renderContainerQueue.pop();
 		currentMap->dimensions[currentDimension].grid[y][x].renderPointer->create(sf::Vector2i(x, y), currentMap->dimensions[currentDimension].grid[y][x].background,
 			currentMap->dimensions[currentDimension].grid[y][x].floor, currentMap->dimensions[currentDimension].grid[y][x].wall);
@@ -116,7 +120,23 @@ void hybridAssignHorizontal(unsigned short y, unsigned short lowerX, unsigned sh
 // performs area move of containers
 void moveHybridRender() {
 
-	// left
+	std::cout << "Current border: " << hybridRenderBorder.lower.x << " - " << hybridRenderBorder.upper.x << " " << hybridRenderBorder.lower.y << " - " << hybridRenderBorder.upper.y << "\n";
+
+
+	// works
+	if (hybridRenderBorder.upper.x > hybridRenderCurrent.upper.x) {
+		while (hybridRenderBorder.upper.x > hybridRenderCurrent.upper.x) {
+			hybridAssignVertical(hybridRenderCurrent.upper.x + 1, hybridRenderCurrent.lower.y, hybridRenderCurrent.upper.y);
+			hybridRenderCurrent.upper.x++;
+		}
+	}
+	else if (hybridRenderBorder.upper.x < hybridRenderCurrent.upper.x) {
+		while (hybridRenderBorder.upper.x < hybridRenderCurrent.upper.x) {
+			hybridClearVertical(hybridRenderCurrent.upper.x, hybridRenderCurrent.lower.y, hybridRenderCurrent.upper.y);
+			hybridRenderCurrent.upper.x--;
+		}
+	}
+
 	if (hybridRenderBorder.lower.x > hybridRenderCurrent.lower.x) {
 		while (hybridRenderBorder.lower.x > hybridRenderCurrent.lower.x) {
 			hybridClearVertical(hybridRenderCurrent.lower.x, hybridRenderCurrent.lower.y, hybridRenderCurrent.upper.y);
@@ -129,49 +149,40 @@ void moveHybridRender() {
 			hybridRenderCurrent.lower.x--;
 		}
 	}
-
-	// right
-	if (hybridRenderBorder.upper.x < hybridRenderCurrent.upper.x) {
-		while (hybridRenderBorder.upper.x < hybridRenderCurrent.upper.x) {
-			hybridClearVertical(hybridRenderCurrent.upper.x, hybridRenderCurrent.lower.y, hybridRenderCurrent.upper.y);
-			hybridRenderCurrent.upper.x--;
+	// works
+	if (hybridRenderBorder.upper.y > hybridRenderCurrent.upper.y) {
+		while (hybridRenderBorder.upper.y > hybridRenderCurrent.upper.y) {
+			hybridAssignHorizontal(hybridRenderCurrent.upper.y + 1, hybridRenderCurrent.lower.x, hybridRenderCurrent.upper.x);
+			hybridRenderCurrent.upper.y++;
 		}
 	}
-	else if (hybridRenderBorder.upper.x > hybridRenderCurrent.upper.x) {
-		while (hybridRenderBorder.upper.x > hybridRenderCurrent.upper.x) {
-			hybridAssignVertical(hybridRenderCurrent.upper.x + 1, hybridRenderCurrent.lower.y, hybridRenderCurrent.upper.y);
-			hybridRenderCurrent.upper.x++;
+	else if (hybridRenderBorder.upper.y < hybridRenderCurrent.upper.y) {
+		while (hybridRenderBorder.upper.y < hybridRenderCurrent.upper.y) {
+			hybridClearHorizontal(hybridRenderCurrent.upper.y, hybridRenderCurrent.lower.x, hybridRenderCurrent.upper.x);
+			hybridRenderCurrent.upper.y--;
 		}
 	}
 
-
-	// up
 	if (hybridRenderBorder.lower.y > hybridRenderCurrent.lower.y) {
 		while (hybridRenderBorder.lower.y > hybridRenderCurrent.lower.y) {
-			hybridClearVertical(hybridRenderCurrent.lower.y, hybridRenderCurrent.lower.x, hybridRenderCurrent.upper.x);
+			hybridClearHorizontal(hybridRenderCurrent.lower.y, hybridRenderCurrent.lower.x, hybridRenderCurrent.upper.x);
 			hybridRenderCurrent.lower.y++;
 		}
 	}
 	else if (hybridRenderBorder.lower.y < hybridRenderCurrent.lower.y) {
 		while (hybridRenderBorder.lower.y < hybridRenderCurrent.lower.y) {
-			hybridAssignVertical(hybridRenderCurrent.lower.y - 1, hybridRenderCurrent.lower.x, hybridRenderCurrent.upper.x);
+			hybridAssignHorizontal(hybridRenderCurrent.lower.y - 1, hybridRenderCurrent.lower.x, hybridRenderCurrent.upper.x);
 			hybridRenderCurrent.lower.y--;
 		}
 	}
 
-	// down
-	if (hybridRenderBorder.upper.y < hybridRenderCurrent.upper.y) {
-		while (hybridRenderBorder.upper.y < hybridRenderCurrent.upper.y) {
-			hybridClearVertical(hybridRenderCurrent.upper.y, hybridRenderCurrent.lower.x, hybridRenderCurrent.upper.x);
-			hybridRenderCurrent.upper.y--;
-		}
-	}
-	else if (hybridRenderBorder.upper.y > hybridRenderCurrent.upper.y) {
-		while (hybridRenderBorder.upper.y > hybridRenderCurrent.upper.y) {
-			hybridAssignVertical(hybridRenderCurrent.upper.y + 1, hybridRenderCurrent.lower.x, hybridRenderCurrent.upper.x);
-			hybridRenderCurrent.upper.y++;
-		}
-	}
+
+
+	
+	
+
+	std::cout << "Current area: " << hybridRenderCurrent.lower.x << " - " << hybridRenderCurrent.upper.x << " " << hybridRenderCurrent.lower.y << " - " << hybridRenderCurrent.upper.y << "\n";
+	std::cout << "Current buffer size: " << renderContainerQueue.size() << "\n";
 }
 
 // main hybrid renderer function to be started before starting the game
