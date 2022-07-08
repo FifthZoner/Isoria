@@ -159,6 +159,9 @@ void render2x0(dimension* pointer, sf::RenderWindow* window) {
 
 	// will be split into threads for simultaneus shading and other things
 
+	mapMainTexture.clear();
+	globalShadowWindow.clear();
+
 	// pls work
 	pointer->draw(&mapMainTexture, getRenderLimit(pointer), &globalShadowWindow, getShadeRenderLimit(pointer));
 

@@ -9,6 +9,8 @@
 #include "convert.h"
 #include "shared.h"
 
+
+
 //				DEFINITION
 
 struct blockVariantStruct {
@@ -209,22 +211,29 @@ struct renderContainer {
 	// contains data to display sprites of all types, made to work with hybrid rendering with a fixed amount of these
 	// these are allowed to be bigger due to their amount
 
-	sf::Sprite background, floor, floorShade, wall, wallShade;
+	
+	
+	sf::Sprite background = sf::Sprite();
+	sf::Sprite floor = sf::Sprite();
+	sf::Sprite floorShade = sf::Sprite();
+	sf::Sprite wall = sf::Sprite();
+	sf::Sprite wallShade = sf::Sprite();
 
 	bool isBackgroundVisible = false;
 	bool isFloorVisible = false;
 	bool isWallVisible = false;
-
 	// creates sprites and updates visibility, always give layer pointers in b f w order, coordinates in grid ones without block size
 	void create(sf::Vector2i coordinates, blockVariantStruct* backgroundPointer,
 		blockVariantStruct* floorPointer, blockVariantStruct* wallPointer) {
-		
+
+		//std::cout << coordinates.x << " " << coordinates.y << " " << backgroundPointer->isVisible << "\n";
 
 		if (backgroundPointer != nullptr) {
 			background.setTexture(backgroundPointer->texture);
 			background.setPosition(sf::Vector2f(blockBaseSize * coordinates.x, blockBaseSize * coordinates.y));
 			background.setScale(backgroundPointer->scaleToSet);
 		}
+
 		
 		if (floorPointer != nullptr) {
 			floor.setTexture(floorPointer->texture);
@@ -245,6 +254,7 @@ struct renderContainer {
 			wallShade.setPosition(sf::Vector2f(blockBaseSize * coordinates.x, blockBaseSize * coordinates.y));
 			wallShade.setScale(wallPointer->shadeScaleToSet);
 		}
+
 		
 
 		// and checking visibility here
@@ -312,10 +322,12 @@ struct renderContainer {
 	}
 };
 
+std::vector<renderContainer> renderContainerTable;
+
 // ultimate map storage solution that seems ... just too small, but works!
 struct cellContainer {
 	
-	renderContainer* renderPointer;
+	unsigned short renderPointer = 0;
 	blockVariantStruct* background;
 	blockVariantStruct* floor;
 	blockVariantStruct* wall;

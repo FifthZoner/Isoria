@@ -272,6 +272,18 @@ void dlLoadDatapackGraphics(lDatapackPaths* pPointer, datapack* dPointer) {
 	}
 }
 
+// fixes air info
+void fixAirInfo() {
+	for (unsigned short n = 0; n < mDatapacks.datapacks.size(); n++) {
+		mDatapacks.datapacks[n].backgroundBlocks[0].variants.resize(1);
+		mDatapacks.datapacks[n].backgroundBlocks[0].variants[0].isVisible = false;
+		mDatapacks.datapacks[n].floorBlocks[0].variants.resize(1);
+		mDatapacks.datapacks[n].floorBlocks[0].variants[0].isVisible = false;
+		mDatapacks.datapacks[n].wallBlocks[0].variants.resize(1);
+		mDatapacks.datapacks[n].wallBlocks[0].variants[0].isVisible = false;
+	}
+}
+
 // main function for datapack graphics loading
 void loadMainGameDatapacks(datapackContainer* datapackVariable, lDatapackPathsContainer* datapackPaths) {
 
@@ -290,4 +302,6 @@ void loadMainGameDatapacks(datapackContainer* datapackVariable, lDatapackPathsCo
 	for (ushort n = 0; n < paths->datapacks.size(); n++) {
 		dlLoadDatapackGraphics(&paths->datapacks[n], &container->datapacks[n]);
 	}
+
+	fixAirInfo();
 }

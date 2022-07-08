@@ -55,11 +55,11 @@ mapContainer* currentMap;
 datapackContainer mDatapacks;
 lDatapackPathsContainer mDatapackPathsContainer;
 
-std::queue<renderContainer*> renderContainerQueue;
-std::vector<renderContainer> renderContainerTable;
+std::queue<unsigned short> renderContainerQueue;
 
 // hybrid renderer expansion to avoid bugs
-const unsigned short hybridRenderOffset = 5;
+const unsigned short hybridRenderOffset = 2;
+const float hybridRenderTableMultiplier = 1;
 renderLimit hybridRenderBorder;
 renderLimit hybridRenderCurrent;
 
