@@ -47,6 +47,7 @@ public:
 			sprites.resize(paths.size());
 
 			for (ushort n = 0; n < paths.size(); n++) {
+				std::cout << paths[n] << "\n";
 				// new loading for unified storage
 				variants[n].texture.loadFromFile(paths[n]);
 				variants[n].variantNumber = n;
@@ -228,14 +229,14 @@ struct renderContainer {
 
 		//std::cout << coordinates.x << " " << coordinates.y << " " << backgroundPointer->isVisible << "\n";
 
-		if (backgroundPointer != nullptr) {
+		if (backgroundPointer->isVisible) {
 			background.setTexture(backgroundPointer->texture);
 			background.setPosition(sf::Vector2f(blockBaseSize * coordinates.x, blockBaseSize * coordinates.y));
 			background.setScale(backgroundPointer->scaleToSet);
 		}
 
 		
-		if (floorPointer != nullptr) {
+		if (floorPointer->isVisible) {
 			floor.setTexture(floorPointer->texture);
 			floor.setPosition(sf::Vector2f(blockBaseSize * coordinates.x, blockBaseSize * coordinates.y));
 			floor.setScale(floorPointer->scaleToSet);
@@ -245,7 +246,7 @@ struct renderContainer {
 			floorShade.setScale(floorPointer->shadeScaleToSet);
 		}
 		
-		if (wallPointer != nullptr) {
+		if (wallPointer->isVisible) {
 			wall.setTexture(wallPointer->texture);
 			wall.setPosition(sf::Vector2f(blockBaseSize * coordinates.x, blockBaseSize * coordinates.y));
 			wall.setScale(wallPointer->scaleToSet);
@@ -260,15 +261,15 @@ struct renderContainer {
 		// and checking visibility here
 
 
-		if (wallPointer != nullptr and wallPointer->isVisible and wallPointer->doesObstruct) {
+		if (wallPointer->isVisible and wallPointer->doesObstruct) {
 			isWallVisible = true;
 			isFloorVisible = false;
 			isBackgroundVisible = false;
 
 		}
-		else if (floorPointer != nullptr and floorPointer->isVisible and floorPointer->doesObstruct) {
+		else if (floorPointer->isVisible and floorPointer->doesObstruct) {
 
-			if (wallPointer == nullptr or !wallPointer->isVisible) {
+			if (!wallPointer->isVisible) {
 				isWallVisible = false;
 			}
 			else {
@@ -278,16 +279,16 @@ struct renderContainer {
 			isFloorVisible = true;
 			isBackgroundVisible = false;
 		}
-		else if (backgroundPointer != nullptr and backgroundPointer->isVisible and backgroundPointer->doesObstruct) {
+		else if (backgroundPointer->isVisible and backgroundPointer->doesObstruct) {
 
-			if (wallPointer == nullptr or !wallPointer->isVisible) {
+			if (!wallPointer->isVisible) {
 				isWallVisible = false;
 			}
 			else {
 				isWallVisible = true;
 			}
 
-			if (floorPointer == nullptr or !floorPointer->isVisible) {
+			if (!floorPointer->isVisible) {
 				isFloorVisible = false;
 			}
 			else {
@@ -298,21 +299,21 @@ struct renderContainer {
 		}
 		else {
 
-			if (wallPointer == nullptr or !wallPointer->isVisible) {
+			if (!wallPointer->isVisible) {
 				isWallVisible = false;
 			}
 			else {
 				isWallVisible = true;
 			}
 
-			if (floorPointer == nullptr or !floorPointer->isVisible) {
+			if (!floorPointer->isVisible) {
 				isFloorVisible = false;
 			}
 			else {
 				isFloorVisible = true;
 			}
 
-			if (backgroundPointer == nullptr or !backgroundPointer->isVisible) {
+			if (!backgroundPointer->isVisible) {
 				isBackgroundVisible = false;
 			}
 			else {

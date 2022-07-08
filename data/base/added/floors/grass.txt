@@ -1,2 +1,5 @@
-path 1
-data/base/added/gfx/grassFloor.png
+path 4
+data/base/added/gfx/grassFloor1.png
+data/base/added/gfx/grassFloor2.png
+data/base/added/gfx/grassFloor3.png
+data/base/added/gfx/grassFloor4.png

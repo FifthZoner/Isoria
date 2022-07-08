@@ -1,2 +1,5 @@
-path 1
-data/base/added/gfx/stoneBack.png
+path 4
+data/base/added/gfx/stoneBack1.png
+data/base/added/gfx/stoneBack2.png
+data/base/added/gfx/stoneBack3.png
+data/base/added/gfx/stoneBack4.png

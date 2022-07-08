@@ -100,27 +100,27 @@ void initialHybridRenderingFill() {
 
 // vertical clear
 void hybridClearVertical(unsigned short x, unsigned short lowerY, unsigned short upperY) {
-	std::cout << "V Clear: " << x << " " << lowerY << " " << upperY << "\n";
+	//std::cout << "V Clear: " << x << " " << lowerY << " " << upperY << "\n";
 	for (unsigned short y = lowerY; y <= upperY; y++) {
 		renderContainerQueue.push(currentMap->dimensions[currentDimension].grid[y][x].renderPointer);
 		
-		cleaned++;
+		//cleaned++;
 	}
 }
 
 // horizontal clear
 void hybridClearHorizontal(unsigned short y, unsigned short lowerX, unsigned short upperX) {
-	std::cout << "H Clear: " << y << " " << lowerX << " " << upperX << "\n";
+	//std::cout << "H Clear: " << y << " " << lowerX << " " << upperX << "\n";
 	for (unsigned short x = lowerX; x <= upperX; x++) {
 		renderContainerQueue.push(currentMap->dimensions[currentDimension].grid[y][x].renderPointer);
 
-		cleaned++;
+		//cleaned++;
 	}
 }
 
 // vertical assign
 void hybridAssignVertical(unsigned short x, unsigned short lowerY, unsigned short upperY) {
-	std::cout << "V Assign: " << x << " " << lowerY << " " << upperY << "\n";
+	//std::cout << "V Assign: " << x << " " << lowerY << " " << upperY << "\n";
 	for (unsigned short y = lowerY; y <= upperY; y++) {
 		currentMap->dimensions[currentDimension].grid[y][x].renderPointer = renderContainerQueue.front();
 		renderContainerQueue.pop();
@@ -132,7 +132,7 @@ void hybridAssignVertical(unsigned short x, unsigned short lowerY, unsigned shor
 
 // horizontal assign
 void hybridAssignHorizontal(unsigned short y, unsigned short lowerX, unsigned short upperX) {
-	std::cout << "H Assign: " << y << " " << lowerX << " " << upperX << "\n";
+	//std::cout << "H Assign: " << y << " " << lowerX << " " << upperX << "\n";
 	for (unsigned short x = lowerX; x <= upperX; x++) {
 		currentMap->dimensions[currentDimension].grid[y][x].renderPointer = renderContainerQueue.front();
 		renderContainerQueue.pop();
@@ -145,7 +145,7 @@ void hybridAssignHorizontal(unsigned short y, unsigned short lowerX, unsigned sh
 // performs area move of containers
 void moveHybridRender() {
 
-	std::cout << "Current border: " << hybridRenderBorder.lower.x << " - " << hybridRenderBorder.upper.x << " " << hybridRenderBorder.lower.y << " - " << hybridRenderBorder.upper.y << "\n";
+	//std::cout << "Current border: " << hybridRenderBorder.lower.x << " - " << hybridRenderBorder.upper.x << " " << hybridRenderBorder.lower.y << " - " << hybridRenderBorder.upper.y << "\n";
 
 
 	// works
@@ -205,10 +205,10 @@ void moveHybridRender() {
 
 	
 	
-	std::cout << "Current table size: " << renderContainerTable.size() << "\n";
-	std::cout << "Current cleaned and assigned: " << cleaned << " " << assigned << "\n";
-	std::cout << "Current area: " << hybridRenderCurrent.lower.x << " - " << hybridRenderCurrent.upper.x << " " << hybridRenderCurrent.lower.y << " - " << hybridRenderCurrent.upper.y << "\n";
-	std::cout << "Current buffer size: " << renderContainerQueue.size() << "\n";
+	//std::cout << "Current table size: " << renderContainerTable.size() << "\n";
+	//std::cout << "Current cleaned and assigned: " << cleaned << " " << assigned << "\n";
+	//std::cout << "Current area: " << hybridRenderCurrent.lower.x << " - " << hybridRenderCurrent.upper.x << " " << hybridRenderCurrent.lower.y << " - " << hybridRenderCurrent.upper.y << "\n";
+	//std::cout << "Current buffer size: " << renderContainerQueue.size() << "\n";
 }
 
 // main hybrid renderer function to be started before starting the game

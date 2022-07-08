@@ -121,7 +121,7 @@ sf::Vector2i gameRes = sf::Vector2i(1920, 1080);
 
 unsigned short stage = 0;
 unsigned short subStage = 0;
-unsigned short framerate = 60;
+unsigned short framerate = 120;
 unsigned short tickRate = 240;
 
 bool gThreadSetLoadString = false;

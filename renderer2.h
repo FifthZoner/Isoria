@@ -41,7 +41,7 @@ void updateShadowAngle(unsigned short* value) {
 			revert = -1;
 		}
 
-		globalShader.setUniform("moveValue", sf::Vector2f(revert * angleHelperValue.x * abs(cos((*value - 5000) * PI / 14000)), 0.5 * abs(cos((*value + 2000) * PI / 28000)) * angleHelperValue.y));
+		globalShader.setUniform("moveValue", sf::Vector2f(revert * angleHelperValue.x * abs(cos((*value - 5000) * PI / 14000)), 0.5 * abs(cos((*value + 2000) * PI / 28000)) * angleHelperValue.y + (angleHelperValue.y * 0.15)));
 	}
 	// night
 	else {
@@ -60,7 +60,7 @@ void updateShadowAngle(unsigned short* value) {
 			revert = 1;
 		}
 
-		globalShader.setUniform("moveValue", sf::Vector2f(revert * angleHelperValue.x * abs(cos(temp * PI / 10000)), 0.5 * abs(cos((temp + 5000) * PI / 20000)) * angleHelperValue.y));
+		globalShader.setUniform("moveValue", sf::Vector2f(revert * angleHelperValue.x * abs(cos(temp * PI / 10000)), 0.5 * abs(cos((temp + 5000) * PI / 20000)) * angleHelperValue.y + (angleHelperValue.y * 0.15)));
 	}
 
 
@@ -149,8 +149,8 @@ renderLimit getShadeRenderLimit(dimension* pointer) {
 // calculates and saves basic render distances to limit the amount of rendered blocks, makes maps of any reasonable size possible without causing massive framerate decreases
 void prepareRenderLimits() {
 
-	mainRenderDistance = sf::Vector2i(gameRes.x / 2 / blockBaseSize + 1, gameRes.y / 2 / blockBaseSize + 1);
-	shadeRenderDistance = sf::Vector2i(((gameRes.x / 2) + (angleMultiplier * 25)) / blockBaseSize + 1, ((gameRes.y / 2) + (angleMultiplier * 25)) / blockBaseSize + 1);
+	mainRenderDistance = sf::Vector2i(gameRes.x / 2 / blockBaseSize + 2, gameRes.y / 2 / blockBaseSize + 2);
+	shadeRenderDistance = sf::Vector2i(((gameRes.x / 2) + (angleMultiplier * 25)) / blockBaseSize + 2, ((gameRes.y / 2) + (angleMultiplier * 25)) / blockBaseSize + 1);
 
 	
 }

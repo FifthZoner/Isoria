@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include <unordered_map>
+#include <cstdlib>
 
 #include <iostream>
 
@@ -46,7 +47,7 @@ void mlLoadDimensionBackground(backgroundLayer* pointer, std::ifstream* file, ve
 			*file >> temp;
 			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.background[temp].datapackNumber].backgroundBlocks[mlSecondConvert.background[temp].objectID], vec2i(x, y), blockBaseSize);
 			// variant is 0 for now, to be changed later
-			dimPointer->grid[y][x].createBackground(&mlDatapack->datapacks[mlSecondConvert.background[temp].datapackNumber].backgroundBlocks[mlSecondConvert.background[temp].objectID].variants[0]);
+			dimPointer->grid[y][x].createBackground(&mlDatapack->datapacks[mlSecondConvert.background[temp].datapackNumber].backgroundBlocks[mlSecondConvert.background[temp].objectID].variants[rand()% mlDatapack->datapacks[mlSecondConvert.background[temp].datapackNumber].backgroundBlocks[mlSecondConvert.background[temp].objectID].variants.size()]);
 
 		}
 	}
@@ -63,7 +64,7 @@ void mlLoadDimensionFloor(floorLayer* pointer, std::ifstream* file, vec2i size, 
 			*file >> temp;
 			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.floor[temp].datapackNumber].floorBlocks[mlSecondConvert.floor[temp].objectID], vec2i(x, y), blockBaseSize);
 			// variant is 0 for now, to be changed
-			dimPointer->grid[y][x].createFloor(&mlDatapack->datapacks[mlSecondConvert.floor[temp].datapackNumber].floorBlocks[mlSecondConvert.floor[temp].objectID].variants[0]);
+			dimPointer->grid[y][x].createFloor(&mlDatapack->datapacks[mlSecondConvert.floor[temp].datapackNumber].floorBlocks[mlSecondConvert.floor[temp].objectID].variants[rand() % mlDatapack->datapacks[mlSecondConvert.floor[temp].datapackNumber].floorBlocks[mlSecondConvert.floor[temp].objectID].variants.size()]);
 
 		}
 	}
@@ -80,7 +81,7 @@ void mlLoadDimensionWall(wallLayer* pointer, std::ifstream* file, vec2i size, di
 			*file >> temp;
 			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.wall[temp].datapackNumber].wallBlocks[mlSecondConvert.wall[temp].objectID], vec2i(x, y), blockBaseSize);
 			// variant is 0 for now, to be changed
-			dimPointer->grid[y][x].createWall(&mlDatapack->datapacks[mlSecondConvert.wall[temp].datapackNumber].wallBlocks[mlSecondConvert.wall[temp].objectID].variants[0]);
+			dimPointer->grid[y][x].createWall(&mlDatapack->datapacks[mlSecondConvert.wall[temp].datapackNumber].wallBlocks[mlSecondConvert.wall[temp].objectID].variants[rand() % mlDatapack->datapacks[mlSecondConvert.wall[temp].datapackNumber].wallBlocks[mlSecondConvert.wall[temp].objectID].variants.size()]);
 		}
 	}
 }

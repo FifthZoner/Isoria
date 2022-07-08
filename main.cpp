@@ -375,8 +375,7 @@ void graphicsRenderer() {
 			}
 		}
 
-		// temp due to some bug os something
-		//if (gameClock.getElapsedTime().asMicroseconds() > frameTime and isInFocus) {
+		if (gameClock.getElapsedTime().asMicroseconds() > frameTime and isInFocus) {
 			gameClock.restart();
 
 			
@@ -406,7 +405,7 @@ void graphicsRenderer() {
 			}
 
 			gameWindow.display();
-		//}
+		}
 	}
 
 	gameWindow.close();
@@ -655,7 +654,7 @@ void run1x1NewWorld() {
 						if (sfDebug) {
 							std::cout << "SF debug: Main menu new world start button clicked" << "\n";
 						}
-						generateMap("test", &mapGeneratorString, sf::Vector2i(500, 500));
+						generateMap("test", &mapGeneratorString, sf::Vector2i(1000, 1000));
 					}
 					break;
 				}
