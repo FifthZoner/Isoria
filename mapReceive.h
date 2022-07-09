@@ -691,22 +691,16 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 		}
 		// map numbers
 		else {
-			
 			// background
 			if (currentPart == 0) {
-				
-				// sorry
-				map->dimensions[currentIndex].backgrounds.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrBackgroundConvert[packet[current]].datapackNumber].backgroundBlocks[mrBackgroundConvert[packet[current]].id], mapVec, blockBaseSize);
-
 				// new and better, temp variant
 				map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].createBackground(&pointer->datapacks[mrBackgroundConvert[packet[current]].datapackNumber].backgroundBlocks[mrBackgroundConvert[packet[current]].id].variants[rand() % pointer->datapacks[mrBackgroundConvert[packet[current]].datapackNumber].backgroundBlocks[mrBackgroundConvert[packet[current]].id].variants.size()]);
 
 
-
 				mapVec.x++;
-
-
+				//std::cout << mapVec.x << " " << map->dimensions[currentIndex].size.x << "\n";
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {
+					
 					mapVec.x = 0;
 					mapVec.y++;
 
@@ -719,9 +713,6 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 			}
 			// floor
 			else if (currentPart == 1) {
-				// sorry
-				map->dimensions[currentIndex].floors.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrFloorConvert[packet[current]].datapackNumber].floorBlocks[mrFloorConvert[packet[current]].id], mapVec, blockBaseSize);
-
 				// new and better, temp variant
 				map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].createFloor(&pointer->datapacks[mrFloorConvert[packet[current]].datapackNumber].floorBlocks[mrFloorConvert[packet[current]].id].variants[rand() % pointer->datapacks[mrFloorConvert[packet[current]].datapackNumber].floorBlocks[mrFloorConvert[packet[current]].id].variants.size()]);
 
@@ -742,9 +733,6 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 			}
 			// wall
 			else {
-				// sorry
-				map->dimensions[currentIndex].walls.blocks[mapVec.y][mapVec.x].prepare(&pointer->datapacks[mrWallConvert[packet[current]].datapackNumber].wallBlocks[mrWallConvert[packet[current]].id], mapVec, blockBaseSize);
-
 				// new and better, temp variant
 				map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].createWall(&pointer->datapacks[mrWallConvert[packet[current]].datapackNumber].wallBlocks[mrWallConvert[packet[current]].id].variants[rand() % pointer->datapacks[mrWallConvert[packet[current]].datapackNumber].wallBlocks[mrWallConvert[packet[current]].id].variants.size()]);
 
@@ -781,9 +769,6 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 	return 0;
 }
 
-// declared here due to parsing, compilation or some other minor shit
-void mlPrepareDimensionRenderGrid(dimension* pointer, bool debug);
-
 bool receiveMap(mapContainer* map, sf::TcpSocket* socket, datapackContainer* datapackPtr, bool debug, bool* startGame, bool* stIsFrozen, bool* stIsRunning) {
 	mrDebug = debug;
 
@@ -816,7 +801,6 @@ bool receiveMap(mapContainer* map, sf::TcpSocket* socket, datapackContainer* dat
 
 	// temp here probably
 	for (unsigned short n = 0; n < map->dimensions.size(); n++) {
-		mlPrepareDimensionRenderGrid(&map->dimensions[n], mrDebug);
 		debugMsg(std::string("MR Debug: Finished preparing dimension with size of: " + std::to_string(map->dimensions[n].size.x) + " " + std::to_string(map->dimensions[n].size.y)));
 	}
 

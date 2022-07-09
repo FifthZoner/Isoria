@@ -365,7 +365,7 @@ bool sendMapProper(mapContainer* map, sf::TcpSocket* socket) {
 			if (currentLayer == 0) {
 
 				// gets converted number from datapack number and internal id
-				packet[current] = msConvert.backgrounds[map->dimensions[currentIndex].backgrounds.blocks[mapVec.y][mapVec.x].pointer->datapackId][map->dimensions[currentIndex].backgrounds.blocks[mapVec.y][mapVec.x].pointer->internalId];
+				packet[current] = msConvert.backgrounds[map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].background->datapackId][map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].background->internalId];
 				mapVec.x++;
 
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {
@@ -384,7 +384,8 @@ bool sendMapProper(mapContainer* map, sf::TcpSocket* socket) {
 			else if (currentLayer == 1) {
 
 				// gets converted number from datapack number and internal id
-				packet[current] = msConvert.floors[map->dimensions[currentIndex].floors.blocks[mapVec.y][mapVec.x].pointer->datapackId][map->dimensions[currentIndex].floors.blocks[mapVec.y][mapVec.x].pointer->internalId];
+				packet[current] = msConvert.floors[map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].floor->datapackId][map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].floor->internalId];
+
 				mapVec.x++;
 
 
@@ -405,7 +406,8 @@ bool sendMapProper(mapContainer* map, sf::TcpSocket* socket) {
 			else {
 
 				// gets converted number from datapack number and internal id
-				packet[current] = msConvert.walls[map->dimensions[currentIndex].walls.blocks[mapVec.y][mapVec.x].pointer->datapackId][map->dimensions[currentIndex].walls.blocks[mapVec.y][mapVec.x].pointer->internalId];
+				packet[current] = msConvert.walls[map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].wall->datapackId][map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].wall->internalId];
+
 				mapVec.x++;
 
 

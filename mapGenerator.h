@@ -178,7 +178,9 @@ void loadMGDatapacks() {
 // main map preparation function
 void prepareMGMap() {
 	// temp before introducing flexible generation
-	map.create(std::vector<vec2i>{mgMapSize}, std::vector <str>{"Forest"});
+	map.create(std::vector<vec2i>{mgMapSize, mgMapSize, mgMapSize, mgMapSize, mgMapSize, mgMapSize, mgMapSize, mgMapSize, }, std::vector <str>{"Forest",
+		"Forest: Fellowship of the Trees", "Forest: The Two Trees", "Forest: Return of the Tree", "Forest 5: Electric Bogaloo",
+	"Forest: New Generation", "Forest: The Woodpecker Attacks", "Forest: Red Dead Treedemption"});
 }
 
 //				PROPER GENERATION
@@ -259,7 +261,7 @@ void MGSaveDimensionOrder(str* path) {
 	file.open(*path + "dimensionList.txt");
 
 	for (ushort n = 0; n < map.dimensions.size(); n++) {
-		file << map.dimensions[n].name << " " << map.dimensions[n].floor.blocks[0].size() << " " << map.dimensions[n].floor.blocks.size() << "\n";
+		file << map.dimensions[n].name << "\n" << map.dimensions[n].floor.blocks[0].size() << " " << map.dimensions[n].floor.blocks.size() << "\n";
 	}
 
 	file.close();
@@ -479,6 +481,10 @@ void generateMap(str name, str* statusString, sf::Vector2i size, bool debugMode 
 	if (mgDebug) {
 		std::cout << "MG debug: Map ready!" << "\n";
 	}
+
+	map.dimensions.clear();
+	mgConversionDatapacks.clear();
+	mgDatapacks.clear();
 
 	setStage(1, 0);
 }

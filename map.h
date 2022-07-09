@@ -112,57 +112,6 @@ struct dimension {
 			}
 		}
 		
-
-
-
-
-		// legacy
-		/*
-		for (ushort y = border.lower.y; y < border.upper.y; y++) {
-			for (ushort x = border.lower.x; x < border.upper.x; x++) {
-				if (backgrounds.blocks[y][x].isVisible) {
-					backgrounds.blocks[y][x].pointer->sprites[backgrounds.blocks[y][x].variant].setPosition(backgrounds.blocks[y][x].position);
-					window->draw(backgrounds.blocks[y][x].pointer->sprites[backgrounds.blocks[y][x].variant]);
-				}
-				if (floors.blocks[y][x].isVisible) {
-
-					floors.blocks[y][x].pointer->sprites[floors.blocks[y][x].variant].setPosition(floors.blocks[y][x].position);
-
-					window->draw(floors.blocks[y][x].pointer->sprites[floors.blocks[y][x].variant]);
-
-				}
-				if (walls.blocks[y][x].isVisible) {
-
-					walls.blocks[y][x].pointer->sprites[walls.blocks[y][x].variant].setPosition(walls.blocks[y][x].position);
-
-					window->draw(walls.blocks[y][x].pointer->sprites[walls.blocks[y][x].variant]);
-				}
-			}
-		}
-
-		for (ushort y = shadeBorder.lower.y; y < shadeBorder.upper.y; y++) {
-			for (ushort x = shadeBorder.lower.x; x < shadeBorder.upper.x; x++) {
-				if (backgrounds.blocks[y][x].isVisible) {
-					backgrounds.blocks[y][x].pointer->sprites[backgrounds.blocks[y][x].variant].setPosition(sf::Vector2f(x * blockBaseSize, y * blockBaseSize));
-					window->draw(backgrounds.blocks[y][x].pointer->sprites[backgrounds.blocks[y][x].variant]);
-				}
-				if (floors.blocks[y][x].isVisible) {
-
-					floors.blocks[y][x].pointer->shadeSprites[floors.blocks[y][x].variant].setPosition(sf::Vector2f(x * blockBaseSize, y * blockBaseSize));
-
-					shadeTexture->draw(floors.blocks[y][x].pointer->shadeSprites[floors.blocks[y][x].variant]);
-
-
-				}
-				if (walls.blocks[y][x].isVisible) {
-
-					walls.blocks[y][x].pointer->shadeSprites[walls.blocks[y][x].variant].setPosition(sf::Vector2f(x * blockBaseSize, y * blockBaseSize));
-
-					shadeTexture->draw(walls.blocks[y][x].pointer->shadeSprites[walls.blocks[y][x].variant]);
-				}
-			}
-		}
-		*/
 	}
 
 	

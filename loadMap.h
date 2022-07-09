@@ -45,8 +45,8 @@ void mlLoadDimensionBackground(backgroundLayer* pointer, std::ifstream* file, ve
 		for (uint x = 0; x < size.x; x++) {
 			ulong temp;
 			*file >> temp;
-			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.background[temp].datapackNumber].backgroundBlocks[mlSecondConvert.background[temp].objectID], vec2i(x, y), blockBaseSize);
-			// variant is 0 for now, to be changed later
+
+			// variant is random for now, to be changed later
 			dimPointer->grid[y][x].createBackground(&mlDatapack->datapacks[mlSecondConvert.background[temp].datapackNumber].backgroundBlocks[mlSecondConvert.background[temp].objectID].variants[rand()% mlDatapack->datapacks[mlSecondConvert.background[temp].datapackNumber].backgroundBlocks[mlSecondConvert.background[temp].objectID].variants.size()]);
 
 		}
@@ -62,8 +62,7 @@ void mlLoadDimensionFloor(floorLayer* pointer, std::ifstream* file, vec2i size, 
 		for (uint x = 0; x < size.x; x++) {
 			ulong temp;
 			*file >> temp;
-			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.floor[temp].datapackNumber].floorBlocks[mlSecondConvert.floor[temp].objectID], vec2i(x, y), blockBaseSize);
-			// variant is 0 for now, to be changed
+			// variant is random for now, to be changed
 			dimPointer->grid[y][x].createFloor(&mlDatapack->datapacks[mlSecondConvert.floor[temp].datapackNumber].floorBlocks[mlSecondConvert.floor[temp].objectID].variants[rand() % mlDatapack->datapacks[mlSecondConvert.floor[temp].datapackNumber].floorBlocks[mlSecondConvert.floor[temp].objectID].variants.size()]);
 
 		}
@@ -79,8 +78,7 @@ void mlLoadDimensionWall(wallLayer* pointer, std::ifstream* file, vec2i size, di
 		for (uint x = 0; x < size.x; x++) {
 			ulong temp;
 			*file >> temp;
-			pointer->blocks[y][x].prepare(&mlDatapack->datapacks[mlSecondConvert.wall[temp].datapackNumber].wallBlocks[mlSecondConvert.wall[temp].objectID], vec2i(x, y), blockBaseSize);
-			// variant is 0 for now, to be changed
+			// variant is random for now, to be changed
 			dimPointer->grid[y][x].createWall(&mlDatapack->datapacks[mlSecondConvert.wall[temp].datapackNumber].wallBlocks[mlSecondConvert.wall[temp].objectID].variants[rand() % mlDatapack->datapacks[mlSecondConvert.wall[temp].datapackNumber].wallBlocks[mlSecondConvert.wall[temp].objectID].variants.size()]);
 		}
 	}
@@ -185,11 +183,12 @@ void mlLoadDimensionData() {
 	file.open("saves/" + mlSaveName + "/dimensionList.txt");
 	if (file.is_open()) {
 		vec2i size;
-		for (str input; file >> input; mlDimensionNames.push_back(input)) {
-
+		for (str input; std::getline(file, input);) {
+			mlDimensionNames.push_back(input);
 			file >> size.x >> size.y;
 			mlDimensionSizes.push_back(size);
-
+			// move to next line
+			std::getline(file, input);
 			if (mlDebug) {
 				std::cout << "ML debug: Loaded dimension name: " << input << "\n";
 				std::cout << "ML debug: Loaded dimension size: " << size.x << " " << size.y << "\n";
@@ -209,6 +208,7 @@ void mlLoadDimensions() {
 	mlLoadDimensionData();
 
 	mlPrepareMapTables();
+
 
 	for (ushort n = 0; n < mlMap->dimensions.size(); n++) {
 
@@ -465,106 +465,6 @@ void mlCheckpacks() {
 	mlCheckDatapackPresence();
 }
 
-//				RENDER GRIDS
-
-// a dimension specific function
-void mlPrepareDimensionRenderGrid(dimension* pointer, bool debug) {
-	
-	if (debug) {
-		std::cout << "ML debug: Preparing render grid for dimension: " << pointer->name << "\n";
-	}
-
-	for (uint y = 0; y < pointer->size.y; y++) {
-
-		for (uint x = 0; x < pointer->size.x; x++) {
-
-			if (pointer->walls.blocks[y][x].pointer->isVisible and pointer->walls.blocks[y][x].pointer->doesObstruct) {
-				pointer->renderGrid.grid[y][x].wall = true;
-				pointer->renderGrid.grid[y][x].floor = false;
-				pointer->renderGrid.grid[y][x].background = false;
-				pointer->walls.blocks[y][x].isVisible = true;
-				pointer->floors.blocks[y][x].isVisible = false;
-				pointer->backgrounds.blocks[y][x].isVisible = false;
-			}
-			else if (pointer->floors.blocks[y][x].pointer->isVisible and pointer->floors.blocks[y][x].pointer->doesObstruct) {
-
-				if (!pointer->walls.blocks[y][x].pointer->isVisible) {
-					pointer->renderGrid.grid[y][x].wall = false;
-					pointer->walls.blocks[y][x].isVisible = false;
-				}
-				else {
-					pointer->renderGrid.grid[y][x].wall = true;
-					pointer->walls.blocks[y][x].isVisible = true;
-				}
-
-				pointer->renderGrid.grid[y][x].floor = true;
-				pointer->floors.blocks[y][x].isVisible = true;
-				pointer->renderGrid.grid[y][x].background = false;
-				pointer->backgrounds.blocks[y][x].isVisible = false;
-			}
-			else if (pointer->backgrounds.blocks[y][x].pointer->isVisible and pointer->backgrounds.blocks[y][x].pointer->doesObstruct) {
-
-				if (!pointer->walls.blocks[y][x].pointer->isVisible) {
-					pointer->renderGrid.grid[y][x].wall = false;
-					pointer->walls.blocks[y][x].isVisible = false;
-				}
-				else {
-					pointer->renderGrid.grid[y][x].wall = true;
-					pointer->walls.blocks[y][x].isVisible = true;
-				}
-
-				if (!pointer->floors.blocks[y][x].pointer->isVisible) {
-					pointer->renderGrid.grid[y][x].floor = false;
-					pointer->floors.blocks[y][x].isVisible = false;
-				}
-				else {
-					pointer->renderGrid.grid[y][x].floor = true;
-					pointer->floors.blocks[y][x].isVisible = true;
-				}
-
-				pointer->renderGrid.grid[y][x].background = true;
-				pointer->backgrounds.blocks[y][x].isVisible = true;
-			}
-			else {
-
-				if (!pointer->walls.blocks[y][x].pointer->isVisible) {
-					pointer->renderGrid.grid[y][x].wall = false;
-					pointer->walls.blocks[y][x].isVisible = false;
-				}
-				else {
-					pointer->renderGrid.grid[y][x].wall = true;
-					pointer->walls.blocks[y][x].isVisible = true;
-				}
-
-				if (!pointer->floors.blocks[y][x].pointer->isVisible) {
-					pointer->renderGrid.grid[y][x].floor = false;
-					pointer->floors.blocks[y][x].isVisible = false;
-				}
-				else {
-					pointer->renderGrid.grid[y][x].floor = true;
-					pointer->floors.blocks[y][x].isVisible = true;
-				}
-
-				if (!pointer->backgrounds.blocks[y][x].pointer->isVisible) {
-					pointer->renderGrid.grid[y][x].background = false;
-					pointer->backgrounds.blocks[y][x].isVisible = false;
-				}
-				else {
-					pointer->renderGrid.grid[y][x].background = true;
-					pointer->backgrounds.blocks[y][x].isVisible = true;
-				}
-			}
-		}
-	}
-}
-
-// main function, render grids fefine what to display to avoid resource usage to render over other things
-void mlPrepareRenderGrids(bool debug) {
-	for (ushort n = 0; n < mlMap->dimensions.size(); n++) {
-		mlPrepareDimensionRenderGrid(&mlMap->dimensions[n], debug);
-	}
-}
-
 //				MAIN FUNCTION
 
 void loadMap(mapContainer* pointer, const str saveName, datapackContainer* datapackPointerForLoading, bool isDebugActive = false) {
@@ -597,9 +497,6 @@ void loadMap(mapContainer* pointer, const str saveName, datapackContainer* datap
 	if (mlDebug) {
 		std::cout << "[ MILESTONE ] ML debug: Preparing render grids... \n";
 	}
-
-	// preparing render grid
-	mlPrepareRenderGrids(mlDebug);
 
 	// all other things to do before finishing up, invontories, players, etc
 
