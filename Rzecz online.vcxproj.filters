@@ -128,9 +128,18 @@
     <ClInclude Include="hybridRenderingSpecific.h">
       <Filter>Graphics\Misc</Filter>
     </ClInclude>
+    <ClInclude Include="blockShapeMisc.h">
+      <Filter>Graphics\Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="globalShader.frag">
+      <Filter>Graphics\Misc</Filter>
+    </None>
+    <None Include="gfx\blockShape\shapeCenterShader.frag">
+      <Filter>Graphics\Misc</Filter>
+    </None>
+    <None Include="gfx\blockShape\shapeCornerShader.frag">
       <Filter>Graphics\Misc</Filter>
     </None>
   </ItemGroup>

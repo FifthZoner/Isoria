@@ -1,0 +1,2 @@
+path
+gfx/blockShape/gfx/1.png

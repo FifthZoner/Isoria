@@ -158,6 +158,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="blockShapeMisc.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="convert.h" />
     <ClInclude Include="data.h" />
@@ -185,6 +186,8 @@
     <ClInclude Include="transferMisc.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="gfx\blockShape\shapeCenterShader.frag" />
+    <None Include="gfx\blockShape\shapeCornerShader.frag" />
     <None Include="globalShader.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

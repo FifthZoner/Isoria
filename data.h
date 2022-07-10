@@ -8,6 +8,7 @@
 #include "quickWrite.h"
 #include "convert.h"
 #include "shared.h"
+#include "blockShapeMisc.h"
 
 
 
@@ -19,14 +20,24 @@ struct blockVariantStruct {
 	char variantNumber = 0;
 	bool doesObstruct = false;
 	bool isVisible = false;
+	bool doesHaveShade = true;
 	vec2f scaleToSet = sf::Vector2f(1, 1);
 	vec2f shadeScaleToSet = sf::Vector2f(1, 1);
 	unsigned short datapackId, internalId;
+
+	shapeCornerContainer corners;
+	shapeCenterContainer center;
+
+	void createShapes(unsigned short shapeVariant) {
+		corners.prepareCornerVariants(shapeVariant, &texture, doesHaveShade, &shadeTexture);
+		center.prepareCenterVariants(shapeVariant, &texture, doesHaveShade, &shadeTexture);
+	}
 };
 
 // a class containing information about given background block
 class backgroundBlockInfo {
 public:
+	unsigned short shapeVariant = 0;
 	std::string name;
 	std::vector <sf::Texture> textures;
 	std::vector <blockVariantStruct> variants;
@@ -36,10 +47,10 @@ public:
 
 
 			for (ushort n = 0; n < paths.size(); n++) {
-				std::cout << paths[n] << "\n";
 				// new loading for unified storage
 				variants[n].texture.loadFromFile(paths[n]);
 				variants[n].variantNumber = n;
+				variants[n].doesHaveShade = false;
 				variants[n].internalId = idInDatapack;
 				variants[n].datapackId = idOfDatapack;
 				variants[n].scaleToSet = sf::Vector2f(float(baseBlockSize) / float(variants[n].texture.getSize().x), float(baseBlockSize) / float(variants[n].texture.getSize().y));
@@ -62,6 +73,7 @@ public:
 // a class containing information about given floor block
 class floorBlockInfo {
 public:
+	unsigned short shapeVariant = 0;
 	std::string name;
 	std::vector <sf::Texture> textures;
 	std::vector <sf::Texture> shadeTextures;
@@ -81,7 +93,7 @@ public:
 			variants[n].doesObstruct = true;
 			variants[n].isVisible = true;
 
-
+			variants[n].createShapes(shapeVariant);
 
 			textures[n].loadFromFile(paths[n]);
 
@@ -107,6 +119,7 @@ public:
 // a class containing information about given wall block
 class wallBlockInfo {
 public:
+	unsigned short shapeVariant = 0;
 	std::string name;
 	std::vector <sf::Texture> textures;
 	std::vector <sf::Texture> shadeTextures;
@@ -156,7 +169,9 @@ struct renderContainer {
 	
 	sf::Sprite background = sf::Sprite();
 	sf::Sprite floor = sf::Sprite();
+	sf::Sprite floorCorners = sf::Sprite();
 	sf::Sprite floorShade = sf::Sprite();
+	sf::Sprite floorCornersShade = sf::Sprite();
 	sf::Sprite wall = sf::Sprite();
 	sf::Sprite wallShade = sf::Sprite();
 
@@ -164,8 +179,9 @@ struct renderContainer {
 	bool isFloorVisible = false;
 	bool isWallVisible = false;
 	// creates sprites and updates visibility, always give layer pointers in b f w order, coordinates in grid ones without block size
-	void create(sf::Vector2i coordinates, blockVariantStruct* backgroundPointer,
+	virtual void create(sf::Vector2i coordinates, blockVariantStruct* backgroundPointer,
 		blockVariantStruct* floorPointer, blockVariantStruct* wallPointer) {
+
 
 		//std::cout << coordinates.x << " " << coordinates.y << " " << backgroundPointer->isVisible << "\n";
 

@@ -564,14 +564,7 @@ void mrPrepareBlockStates(dimension* pointer) {
 		std::cout << "MR Debug: Creating block states... \n";
 	}
 
-	
-	for (unsigned short y = 0; y < pointer->size.y; y++) {
-		for (unsigned short x = 0; x < pointer->size.x; x++) {
-			pointer->backgrounds.blocks[y][x].create();
-			pointer->floors.blocks[y][x].create();
-			pointer->walls.blocks[y][x].create();
-		}
-	}
+
 	
 
 	if (mrDebug) {

@@ -105,7 +105,11 @@ bool isHybridRenderServiceActive = false;
 bool isHybridRenderServiceReady = false;
 bool canHybridRenderServiceStartWorking = false;
 
-
+// block shape
+sf::Shader blockShapeCenterShader;
+sf::Shader blockShapeCornerShader;
+sf::RenderTexture blockShapeTexture;
+sf::Sprite blockShapeSprite;
 
 
 

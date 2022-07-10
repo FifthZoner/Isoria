@@ -1,5 +1,6 @@
 #pragma once
 #include "declarations.h"
+#include "map.h"
 
 // hybrid renderer updating service is supposed to be run in a seperate thread! 
 

@@ -48,7 +48,7 @@ mapContainer gameMap;
 mapContainer debugMap;
 
 dimension* currentDimensionPointer;
-mapContainer* currentMap;
+
 
 //				DATAPACKS
 
@@ -57,6 +57,7 @@ lDatapackPathsContainer mDatapackPathsContainer;
 
 std::queue<unsigned short> renderContainerQueue;
 
+//		HYBRID RENDERING
 // hybrid renderer expansion to avoid bugs
 const unsigned short hybridRenderOffset = 2;
 const float hybridRenderTableMultiplier = 1.1;
@@ -65,6 +66,8 @@ renderLimit hybridRenderCurrent;
 
 
 std::thread hybridRenderServiceThread;
+
+// 
 
 // sets current stage safely
 void setStage(ushort setStage, ushort setSubStage = 0) {

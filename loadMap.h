@@ -37,7 +37,7 @@ mlSecondaryConversionTableContainer mlSecondConvert;
 //				MAP CONTENT LOADING
 
 // loads background layer using conversion tables
-void mlLoadDimensionBackground(backgroundLayer* pointer, std::ifstream* file, vec2i size, dimension* dimPointer) {
+void mlLoadDimensionBackground(std::ifstream* file, vec2i size, dimension* dimPointer) {
 	if (mlDebug) {
 		std::cout << "ML debug: Loading background blocks \n";
 	}
@@ -54,7 +54,7 @@ void mlLoadDimensionBackground(backgroundLayer* pointer, std::ifstream* file, ve
 }
 
 // loads floor layer using conversion tables
-void mlLoadDimensionFloor(floorLayer* pointer, std::ifstream* file, vec2i size, dimension* dimPointer) {
+void mlLoadDimensionFloor(std::ifstream* file, vec2i size, dimension* dimPointer) {
 	if (mlDebug) {
 		std::cout << "ML debug: Loading floor blocks \n";
 	}
@@ -70,7 +70,7 @@ void mlLoadDimensionFloor(floorLayer* pointer, std::ifstream* file, vec2i size, 
 }
 
 // loads wall layer using conversion tables
-void mlLoadDimensionWall(wallLayer* pointer, std::ifstream* file, vec2i size, dimension* dimPointer) {
+void mlLoadDimensionWall(std::ifstream* file, vec2i size, dimension* dimPointer) {
 	if (mlDebug) {
 		std::cout << "ML debug: Loading wall blocks \n";
 	}
@@ -98,26 +98,26 @@ void mlLoadDimension(dimension* pointer) {
 			std::cout << "ML debug: Loading dimension background... " << "\n";
 		}
 
-		mlLoadDimensionBackground(&pointer->backgrounds, &file, vec2i(pointer->backgrounds.blocks[0].size(), pointer->backgrounds.blocks.size()), pointer);
+		mlLoadDimensionBackground(&file, pointer->size, pointer);
 
 		if (mlDebug) {
 			std::cout << "ML debug: Loading dimension floors... " << "\n";
 		}
 
-		mlLoadDimensionFloor(&pointer->floors, &file, vec2i(pointer->floors.blocks[0].size(), pointer->floors.blocks.size()), pointer);
+		mlLoadDimensionFloor(&file, pointer->size, pointer);
 
 		if (mlDebug) {
 			std::cout << "ML debug: Loading dimension walls... " << "\n";
 		}
 
-		mlLoadDimensionWall(&pointer->walls, &file, vec2i(pointer->walls.blocks[0].size(), pointer->walls.blocks.size()), pointer);
+		mlLoadDimensionWall(&file, pointer->size, pointer);
 
 		file.close();
 	}
 
 	
 }
-
+/*
 // prepares background block states
 void mlPrepareDimensionBackground(backgroundLayer* pointer, vec2i size) {
 	for (uint y = 0; y < size.y; y++) {
@@ -144,7 +144,7 @@ void mlPrepareDimensionWall(wallLayer* pointer, vec2i size) {
 		}
 	}
 }
-
+*/
 // main function for second map block loading
 void mlPrepareBlockStates(dimension* pointer, bool debug) {
 	if (debug) {
@@ -155,19 +155,19 @@ void mlPrepareBlockStates(dimension* pointer, bool debug) {
 		std::cout << "ML debug: Preparing dimension background... " << "\n";
 	}
 
-	mlPrepareDimensionBackground(&pointer->backgrounds, vec2i(pointer->size.x, pointer->size.y));
+	//mlPrepareDimensionBackground(&pointer->backgrounds, vec2i(pointer->size.x, pointer->size.y));
 
 	if (debug) {
 		std::cout << "ML debug: Preparing dimension floors... " << "\n";
 	}
 
-	mlPrepareDimensionFloor(&pointer->floors, vec2i(pointer->size.x, pointer->size.y));
+	//mlPrepareDimensionFloor(&pointer->floors, vec2i(pointer->size.x, pointer->size.y));
 
 	if (debug) {
 		std::cout << "ML debug: Preparing dimension walls... " << "\n";
 	}
 
-	mlPrepareDimensionWall(&pointer->walls, vec2i(pointer->size.x, pointer->size.y));
+	//mlPrepareDimensionWall(&pointer->walls, vec2i(pointer->size.x, pointer->size.y));
 }
 
 // prepares tables in mapContainer
