@@ -251,6 +251,8 @@ void loadBlockShapeAssets() {
 // collective function to load most of game's data
 void loadData() {
 
+	loadBlockShapeAssets();
+
 	loadMainMenu();
 
 	setLoadString("Loading datapack definitions...");
@@ -265,8 +267,6 @@ void loadData() {
 	paths->datapacks.clear();
 
 	setLoadString("Loading primary graphics...");
-
-	loadBlockShapeAssets();
 
 	loadPrimaryGraphics();
 
@@ -289,10 +289,10 @@ void loadData() {
 //		MAIN FUNCTIONS
 
 
-
 // renders main menu graphics
 void render1MainMenu() {
 	mmBackground.draw(&gameWindow);
+
 
 	switch (subStage) {
 	case 0:
@@ -666,7 +666,7 @@ void run1x1NewWorld() {
 						if (sfDebug) {
 							std::cout << "SF debug: Main menu new world start button clicked" << "\n";
 						}
-						generateMap("test", &mapGeneratorString, sf::Vector2i(1000, 1000));
+						generateMap("test", &mapGeneratorString, sf::Vector2i(100, 100));
 					}
 					break;
 				}

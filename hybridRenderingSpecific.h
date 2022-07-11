@@ -16,13 +16,14 @@ void createRenderTables() {
 
 	// resizing the table
 	renderContainerTable.resize(((shadeRenderDistance.x * 2) + (hybridRenderOffset * 2)) * ((shadeRenderDistance.y * 2) + (hybridRenderOffset * 2)) * hybridRenderTableMultiplier);
+	renderContainerVirtualTable.resize(((shadeRenderDistance.x * 2) + (hybridRenderOffset * 2)) * ((shadeRenderDistance.y * 2) + (hybridRenderOffset * 2)) * hybridRenderTableMultiplier);
 
 	// other
 	//currentDimensionPointer = &currentMap->dimensions[currentDimension];
 
 	// filling the queue
 	for (unsigned short n = 0; n < renderContainerTable.size(); n++) {
-
+		renderContainerTable[n] = &renderContainerVirtualTable[n];
 		renderContainerQueue.push(n);
 	}
 
@@ -87,7 +88,7 @@ void initialHybridRenderingFill() {
 		for (unsigned short x = hybridRenderBorder.lower.x; x <= hybridRenderBorder.upper.x; x++) {
 			currentMap->dimensions[currentDimension].grid[y][x].renderPointer = renderContainerQueue.front();
 			renderContainerQueue.pop();
-			renderContainerTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].create(sf::Vector2i(x, y), currentMap->dimensions[currentDimension].grid[y][x].background,
+			renderContainerTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer]->create(sf::Vector2i(x, y), currentMap->dimensions[currentDimension].grid[y][x].background,
 				currentMap->dimensions[currentDimension].grid[y][x].floor, currentMap->dimensions[currentDimension].grid[y][x].wall);
 			assigned++;
 		}
@@ -125,7 +126,7 @@ void hybridAssignVertical(unsigned short x, unsigned short lowerY, unsigned shor
 	for (unsigned short y = lowerY; y <= upperY; y++) {
 		currentMap->dimensions[currentDimension].grid[y][x].renderPointer = renderContainerQueue.front();
 		renderContainerQueue.pop();
-		renderContainerTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].create(sf::Vector2i(x, y), currentMap->dimensions[currentDimension].grid[y][x].background,
+		renderContainerTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer]->create(sf::Vector2i(x, y), currentMap->dimensions[currentDimension].grid[y][x].background,
 			currentMap->dimensions[currentDimension].grid[y][x].floor, currentMap->dimensions[currentDimension].grid[y][x].wall);
 		assigned++;
 	}
@@ -137,7 +138,7 @@ void hybridAssignHorizontal(unsigned short y, unsigned short lowerX, unsigned sh
 	for (unsigned short x = lowerX; x <= upperX; x++) {
 		currentMap->dimensions[currentDimension].grid[y][x].renderPointer = renderContainerQueue.front();
 		renderContainerQueue.pop();
-		renderContainerTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].create(sf::Vector2i(x, y), currentMap->dimensions[currentDimension].grid[y][x].background,
+		renderContainerTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer]->create(sf::Vector2i(x, y), currentMap->dimensions[currentDimension].grid[y][x].background,
 			currentMap->dimensions[currentDimension].grid[y][x].floor, currentMap->dimensions[currentDimension].grid[y][x].wall);
 		assigned++;
 	}

@@ -29,6 +29,12 @@ struct blockVariantStruct {
 	shapeCenterContainer center;
 
 	void createShapes(unsigned short shapeVariant) {
+		blockShapeCenterShader.setUniform("targetTexture", texture);
+		if (doesHaveShade) {
+			blockShapeCenterShader.setUniform("targetShadeTexture", shadeTexture);
+
+		}
+
 		corners.prepareCornerVariants(shapeVariant, &texture, doesHaveShade, &shadeTexture);
 		center.prepareCenterVariants(shapeVariant, &texture, doesHaveShade, &shadeTexture);
 	}
@@ -182,8 +188,9 @@ struct renderContainer {
 	virtual void create(sf::Vector2i coordinates, blockVariantStruct* backgroundPointer,
 		blockVariantStruct* floorPointer, blockVariantStruct* wallPointer) {
 
-
-		//std::cout << coordinates.x << " " << coordinates.y << " " << backgroundPointer->isVisible << "\n";
+		/*
+		
+		*/
 
 		if (backgroundPointer->isVisible) {
 			background.setTexture(backgroundPointer->texture);
@@ -279,15 +286,18 @@ struct renderContainer {
 	}
 };
 
-std::vector<renderContainer> renderContainerTable;
+struct renderContainerFixed;
+
+std::vector<renderContainerFixed> renderContainerVirtualTable;
+std::vector<renderContainer*> renderContainerTable;
 
 // ultimate map storage solution that seems ... just too small, but works!
 struct cellContainer {
 	
 	unsigned short renderPointer = 0;
-	blockVariantStruct* background;
-	blockVariantStruct* floor;
-	blockVariantStruct* wall;
+	blockVariantStruct* background = nullptr;
+	blockVariantStruct* floor = nullptr;
+	blockVariantStruct* wall = nullptr;
 	std::vector<unsigned short> entitiesPresent;
 
 	void createBackground(blockVariantStruct* pointer) {

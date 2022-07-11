@@ -23,7 +23,7 @@ uniform bool addUpLeft;
 // it takes corner textures and checks if any active one is in the spot and then displays these parts of main texture
 void main( void ){
 
-	vec2 position = vec2( gl_FragCoord.x / resolution.x, gl_FragCoord.y / resolution.y );
+	vec2 position = gl_FragCoord.xy / 24.0;
 
 	bool showTarget = false;
 

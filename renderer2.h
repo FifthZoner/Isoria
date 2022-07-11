@@ -163,7 +163,8 @@ void render2x0(dimension* pointer, sf::RenderWindow* window) {
 	globalShadowWindow.clear();
 
 	// pls work
-	pointer->draw(&mapMainTexture, getRenderLimit(pointer), &globalShadowWindow, getShadeRenderLimit(pointer));
+	//pointer->draw(&mapMainTexture, getRenderLimit(pointer), &globalShadowWindow, getShadeRenderLimit(pointer));
+	drawMap(&mapMainTexture, getRenderLimit(pointer), &globalShadowWindow, getShadeRenderLimit(pointer));
 
 	mapMainTexture.setView(mapMainView);
 	globalShadowWindow.setView(shadeView);

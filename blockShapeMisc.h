@@ -57,9 +57,9 @@ struct shapeCornerContainer {
 
 	// prepares corner textures for given variant stored in an array
 	void prepareCornerVariants(unsigned short shapeVariantNumber, sf::Texture* texture, bool doShadeTexture, sf::Texture* shadeTexture) {
-		
+
 		blockShapeVariants[shapeVariantNumber].loadIntoShaders();
-		blockShapeCornerShader.setUniform("resolution", sf::Vector2i(blockBaseSize, blockBaseSize));
+		blockShapeCornerShader.setUniform("resolution", sf::Vector2f(blockBaseSize, blockBaseSize));
 
 		for (char b1 = 0; b1 < 2; b1++) {
 			for (char b2 = 0; b2 < 2; b2++) {
@@ -69,17 +69,19 @@ struct shapeCornerContainer {
 						blockShapeCornerShader.setUniform("addUpRight", b2);
 						blockShapeCornerShader.setUniform("addDownLeft", b3);
 						blockShapeCornerShader.setUniform("addDownRight", b4);
-						blockShapeCornerShader.setUniform("targetTexture", *texture);
+						//blockShapeCornerShader.setUniform("targetTexture", *texture);
 
 						blockShapeTexture.clear(sf::Color(0, 0, 0, 0));
+						blockShapeSprite.setTexture(*texture);
 						blockShapeTexture.draw(blockShapeSprite, &blockShapeCornerShader);
 						blockShapeTexture.display();
 						variantTable[b1][b2][b3][b4] = blockShapeTexture.getTexture();
-						
+
 
 						if (doShadeTexture) {
-							blockShapeCornerShader.setUniform("targetTexture", *shadeTexture);
+							//blockShapeCornerShader.setUniform("targetTexture", *shadeTexture);
 							blockShapeTexture.clear(sf::Color(0, 0, 0, 0));
+							blockShapeSprite.setTexture(*shadeTexture);
 							blockShapeTexture.draw(blockShapeSprite, &blockShapeCornerShader);
 							blockShapeTexture.display();
 							variantTable[b1][b2][b3][b4] = blockShapeTexture.getTexture();
@@ -99,30 +101,36 @@ struct shapeCenterContainer {
 	void prepareCenterVariants(unsigned short shapeVariantNumber, sf::Texture* texture, bool doShadeTexture, sf::Texture* shadeTexture) {
 
 		blockShapeVariants[shapeVariantNumber].loadIntoShaders();
-		blockShapeCornerShader.setUniform("resolution", sf::Vector2i(blockBaseSize, blockBaseSize));
+		blockShapeCenterShader.setUniform("resolution", sf::Vector2f(float(blockBaseSize), float(blockBaseSize)));
 
 		for (char b1 = 0; b1 < 2; b1++) {
 			for (char b2 = 0; b2 < 2; b2++) {
 				for (char b3 = 0; b3 < 2; b3++) {
 					for (char b4 = 0; b4 < 2; b4++) {
 						for (char b5 = 0; b5 < 2; b5++) {
-							blockShapeCornerShader.setUniform("addCenter", b1);
-							blockShapeCornerShader.setUniform("addUp", b2);
-							blockShapeCornerShader.setUniform("addLeft", b3);
-							blockShapeCornerShader.setUniform("addDown", b4);
-							blockShapeCornerShader.setUniform("addLeft", b5);
-							blockShapeCornerShader.setUniform("targetTexture", *texture);
+							blockShapeCenterShader.setUniform("addCenter", b1);
+							blockShapeCenterShader.setUniform("addDown", b2);
+							blockShapeCenterShader.setUniform("addRight", b3);
+							blockShapeCenterShader.setUniform("addUp", b4);
+							blockShapeCenterShader.setUniform("addLeft", b5);
+							sf::RectangleShape temp;
+							temp.setSize(sf::Vector2f(24, 24));
+							temp.setPosition(0, 0);
 
+							//blockShapeTexture.create(blockBaseSize, blockBaseSize);
 							blockShapeTexture.clear(sf::Color(0, 0, 0, 0));
-							blockShapeTexture.draw(blockShapeSprite, &blockShapeCornerShader);
+							blockShapeSprite.setTexture(*texture);
+							blockShapeTexture.draw(blockShapeSprite, &blockShapeCenterShader);
+							blockShapeTexture.draw(temp, &blockShapeCenterShader);
 							blockShapeTexture.display();
-							variantTable[b1][b2][b3][b4][b5] = blockShapeTexture.getTexture();
 
+							variantTable[int(b1)][int(b2)][int(b3)][int(b4)][int(b5)] = blockShapeTexture.getTexture();
 
 							if (doShadeTexture) {
-								blockShapeCornerShader.setUniform("targetTexture", *shadeTexture);
+								//blockShapeCenterShader.setUniform("targetTexture", *shadeTexture);
 								blockShapeTexture.clear(sf::Color(0, 0, 0, 0));
-								blockShapeTexture.draw(blockShapeSprite, &blockShapeCornerShader);
+								blockShapeSprite.setTexture(*shadeTexture);
+								blockShapeTexture.draw(blockShapeSprite, &blockShapeCenterShader);
 								blockShapeTexture.display();
 								variantTable[b1][b2][b3][b4][b5] = blockShapeTexture.getTexture();
 							}
