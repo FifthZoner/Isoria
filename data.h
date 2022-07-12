@@ -43,9 +43,9 @@ struct blockVariantStruct {
 // a class containing information about given background block
 class backgroundBlockInfo {
 public:
-	unsigned short shapeVariant = 0;
+	// temp
+	unsigned short shapeVariant = 1;
 	std::string name;
-	std::vector <sf::Texture> textures;
 	std::vector <blockVariantStruct> variants;
 
 
@@ -65,9 +65,10 @@ public:
 				variants[n].isVisible = true;
 				
 
-				textures[n].loadFromFile(paths[n]);
 			
 				// background blocks are excluded from shading to improve performance
+
+				variants[n].createShapes(shapeVariant);
 			}
 
 		}
@@ -79,10 +80,9 @@ public:
 // a class containing information about given floor block
 class floorBlockInfo {
 public:
-	unsigned short shapeVariant = 0;
+	// temp
+	unsigned short shapeVariant = 1;
 	std::string name;
-	std::vector <sf::Texture> textures;
-	std::vector <sf::Texture> shadeTextures;
 	std::vector <blockVariantStruct> variants;
 
 	void create(std::vector <str> paths, ushort baseBlockSize, unsigned short idOfDatapack, unsigned short idInDatapack, bool isAir = false) {
@@ -99,9 +99,8 @@ public:
 			variants[n].doesObstruct = true;
 			variants[n].isVisible = true;
 
-			variants[n].createShapes(shapeVariant);
+			
 
-			textures[n].loadFromFile(paths[n]);
 
 			// new
 			std::string path = paths[n].erase(paths[n].size() - 4, 4);
@@ -113,8 +112,8 @@ public:
 
 			// gets shade file in format xxxxShade.(!)png(!)
 			// path calculation moved
-			shadeTextures[n].loadFromFile(path);
 
+			variants[n].createShapes(shapeVariant);
 		}
 	}
 		
@@ -125,10 +124,9 @@ public:
 // a class containing information about given wall block
 class wallBlockInfo {
 public:
+	// temp
 	unsigned short shapeVariant = 0;
 	std::string name;
-	std::vector <sf::Texture> textures;
-	std::vector <sf::Texture> shadeTextures;
 	std::vector <blockVariantStruct> variants;
 
 	void create(std::vector <str> paths, ushort baseBlockSize, unsigned short idOfDatapack, unsigned short idInDatapack, bool isAir = false) {
@@ -146,7 +144,6 @@ public:
 			variants[n].isVisible = true;
 
 
-			textures[n].loadFromFile(paths[n]);
 
 
 			// new
@@ -158,8 +155,8 @@ public:
 
 			// gets shade file in format xxxxShade.(!)png(!)
 			// path calculation moved
-			shadeTextures[n].loadFromFile(path);
 
+			variants[n].createShapes(shapeVariant);
 		}
 	}
 };
@@ -348,77 +345,4 @@ struct lDatapackPaths {
 // a main struct for datapack paths
 struct lDatapackPathsContainer {
 	std::vector<lDatapackPaths> datapacks;
-};
-
-//				SINGLE CLASSES
-
-// a class containing information about a single background block
-class backgroundBlock {
-public:
-
-	backgroundBlockInfo* pointer;
-	bool isVisible = false;
-	unsigned short variant = 0;
-	sf::Vector2f position = sf::Vector2f(0, 0);
-
-	// creates given background block at given coordinates
-	void prepare(backgroundBlockInfo* blockInfoPointer, sf::Vector2i gridCoords, ushort baseSize) {
-		pointer = blockInfoPointer;
-		position.x = gridCoords.x * blockBaseSize;
-		position.y = gridCoords.y * blockBaseSize;
-	}
-
-	// sets right texture depending on neighboring blocks etc
-	void create(ushort state = 0) {
-		variant = state;
-	}
-};
-
-// a class containing information about a single floor block
-class floorBlock {
-public:
-
-	floorBlockInfo* pointer;
-	bool isVisible = false;
-	unsigned short variant = 0;
-	sf::Vector2f position = sf::Vector2f(0, 0);
-
-
-	// creates given background block at given coordinates
-	void prepare(floorBlockInfo* blockInfoPointer, sf::Vector2i gridCoords, ushort baseSize) {
-		pointer = blockInfoPointer;
-		position.x = gridCoords.x * blockBaseSize;
-		position.y = gridCoords.y * blockBaseSize;
-
-	}
-
-	// sets right texture depending on neighboring blocks etc
-	void create(ushort state = 0) {
-		variant = state;
-	}
-};
-
-// a class containing information about a single wall block
-class wallBlock {
-public:
-	wallBlockInfo* pointer;
-	bool isVisible = false;
-	unsigned short variant = 0;
-	sf::Vector2f position = sf::Vector2f(0, 0);
-
-
-
-
-	// creates given background block at given coordinates
-	void prepare(wallBlockInfo* blockInfoPointer, sf::Vector2i gridCoords, ushort baseSize) {
-		pointer = blockInfoPointer;
-		position.x = gridCoords.x * blockBaseSize;
-		position.y = gridCoords.y * blockBaseSize;
-	}
-
-
-	// sets right texture depending on neighboring blocks etc
-	void create(ushort state = 0) {
-		variant = state;
-	}
 };

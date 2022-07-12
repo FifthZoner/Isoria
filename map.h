@@ -23,10 +23,10 @@ struct dimension {
 	std::vector<std::vector<cellContainer>> grid;
 
 
-	vec2i size = vec2i(0, 0);
-	str name;
+	sf::Vector2i size = vec2i(0, 0);
+	std::string name;
 
-	void create(vec2i dimSize, str nameToSet) {
+	void create(sf::Vector2i dimSize, std::string nameToSet) {
 
 		name = nameToSet;
 		size = dimSize;
@@ -107,12 +107,15 @@ mapContainer* currentMap;
 struct renderContainerFixed : renderContainer {
 
 	sf::Sprite background = sf::Sprite();
+	sf::Sprite backgroundCorners = sf::Sprite();
 	sf::Sprite floor = sf::Sprite();
 	sf::Sprite floorCorners = sf::Sprite();
 	sf::Sprite floorShade = sf::Sprite();
 	sf::Sprite floorCornersShade = sf::Sprite();
 	sf::Sprite wall = sf::Sprite();
+	sf::Sprite wallCorners = sf::Sprite();
 	sf::Sprite wallShade = sf::Sprite();
+	sf::Sprite wallCornersShade = sf::Sprite();
 
 
 
@@ -132,13 +135,15 @@ struct renderContainerFixed : renderContainer {
 		// center->top->right->down->left
 		// up left -> up right -> down left -> down right
 
-		// here comes a monstrocity for now for floors only, sorry
+		// here comes a huuuuuge but neatly organized and collapasble monster of a function, feck off critics, 
+		// it's my code and I'm not motivated enough nor do I give a feck about it, it works
+		bool backgroundCenterBools[5] = { true, false, false, false, false };
+		bool backgroundCornerBools[4] = { false, false, false, false };
 		bool floorCenterBools[5] = { true, false, false, false, false };
 		bool floorCornerBools[4] = { false, false, false, false };
+		bool wallCenterBools[5] = { true, false, false, false, false };
+		bool wallCornerBools[4] = { false, false, false, false };
 
-		if (coordinates.x == 39) {
-			std::cout << floorPointer->datapackId << " " << floorPointer->internalId << "\n";
-		}
 
 
 		// finally works
@@ -147,118 +152,239 @@ struct renderContainerFixed : renderContainer {
 				if (coordinates.y > 0) {
 					if (coordinates.y < currentMap->dimensions[currentDimension].size.y - 1) {
 						// top
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].background->internalId == backgroundPointer->internalId) {
+							backgroundCenterBools[1] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[1] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].wall->internalId == wallPointer->internalId) {
+							wallCenterBools[1] = true;
+						}
 
 						// right
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCenterBools[2] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[2] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+							wallCenterBools[2] = true;
+						}
 
 						// down
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].background->internalId == backgroundPointer->internalId) {
+							backgroundCenterBools[3] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[3] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].wall->internalId == wallPointer->internalId) {
+							wallCenterBools[3] = true;
+						}
 
 						// left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCenterBools[4] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[4] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+							wallCenterBools[4] = true;
+						}
 
 						// up left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCornerBools[0] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 							floorCornerBools[0] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+							wallCornerBools[0] = true;
+						}
 
 						// up right
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCornerBools[1] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 							floorCornerBools[1] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+							wallCornerBools[1] = true;
+						}
 
 						// down left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCornerBools[2] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 							floorCornerBools[2] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+							wallCornerBools[2] = true;
+						}
 
 						// down right
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCornerBools[3] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 							floorCornerBools[3] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+							wallCornerBools[3] = true;
+						}
+
 					}
 					else {
 						// at lower border
 
 						// top
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].background->internalId == backgroundPointer->internalId) {
+							backgroundCenterBools[1] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[1] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].wall->internalId == wallPointer->internalId) {
+							wallCenterBools[1] = true;
+						}
 
 						// right
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCenterBools[2] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[2] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+							wallCenterBools[2] = true;
+						}
 
 						// down
+						backgroundCenterBools[3] = true;
 						floorCenterBools[3] = true;
+						wallCenterBools[3] = true;
 
 						// left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCenterBools[4] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[4] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+							wallCenterBools[4] = true;
+						}
 
 						// up left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCornerBools[0] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 							floorCornerBools[0] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+							wallCornerBools[0] = true;
+						}
 
 						// up right
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCornerBools[1] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 							floorCornerBools[1] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+							wallCornerBools[1] = true;
+						}
 
 						// down left
+						backgroundCornerBools[2] = true;
 						floorCornerBools[2] = true;
+						wallCornerBools[2] = true;
 
 						// down right
+						backgroundCornerBools[3] = true;
 						floorCornerBools[3] = true;
+						wallCornerBools[3] = true;
 					}
 				}
 				else {
 					// at upper border
 
 					// top
+					backgroundCenterBools[1] = true;
 					floorCenterBools[1] = true;
+					wallCenterBools[1] = true;
 
 					// right
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+						backgroundCenterBools[2] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 						floorCenterBools[2] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+						wallCenterBools[2] = true;
+					}
 
 					// down
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].background->internalId == backgroundPointer->internalId) {
+						backgroundCenterBools[3] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 						floorCenterBools[3] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].wall->internalId == wallPointer->internalId) {
+						wallCenterBools[3] = true;
+					}
 
 					// left
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+						backgroundCenterBools[4] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 						floorCenterBools[4] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+						wallCenterBools[4] = true;
+					}
 
 					// up left
+					backgroundCornerBools[0] = true;
 					floorCornerBools[0] = true;
+					wallCornerBools[0] = true;
 
 					// up right
+					backgroundCornerBools[1] = true;
 					floorCornerBools[1] = true;
+					wallCornerBools[1] = true;
 
 					// down left
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+						backgroundCornerBools[2] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 						floorCornerBools[2] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+						wallCornerBools[2] = true;
+					}
 
 					// down right
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+						backgroundCornerBools[3] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 						floorCornerBools[3] = true;
+					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+						wallCornerBools[3] = true;
 					}
 
 				}
@@ -269,109 +395,198 @@ struct renderContainerFixed : renderContainer {
 						// on right wall
 
 						// top
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].background->internalId == backgroundPointer->internalId) {
+							backgroundCenterBools[1] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[1] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].wall->internalId == wallPointer->internalId) {
+							wallCenterBools[1] = true;
+						}
 
 						// right
+						backgroundCenterBools[2] = true;
 						floorCenterBools[2] = true;
+						wallCenterBools[2] = true;
 
 						// down
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].background->internalId == backgroundPointer->internalId) {
+							backgroundCenterBools[3] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[3] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].wall->internalId == wallPointer->internalId) {
+							wallCenterBools[3] = true;
+						}
 
 						// left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCenterBools[4] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[4] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+							wallCenterBools[4] = true;
+						}
 
 						// up left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCornerBools[0] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 							floorCornerBools[0] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+							wallCornerBools[0] = true;
+						}
 
 						// up right
+						backgroundCornerBools[1] = true;
 						floorCornerBools[1] = true;
+						wallCornerBools[1] = true;
 
 						// down left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCornerBools[2] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 							floorCornerBools[2] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+							wallCornerBools[2] = true;
+						}
 
 						// down right
+						backgroundCornerBools[3] = true;
 						floorCornerBools[3] = true;
+						wallCornerBools[3] = true;
 
 					}
 					else {
 						// on lower right corner
 
 						// top
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].background->internalId == backgroundPointer->internalId) {
+							backgroundCenterBools[1] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[1] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].wall->internalId == wallPointer->internalId) {
+							wallCenterBools[1] = true;
+						}
 
 						// right
+						backgroundCenterBools[2] = true;
 						floorCenterBools[2] = true;
+						wallCenterBools[2] = true;
 
 						// down
+						backgroundCenterBools[3] = true;
 						floorCenterBools[3] = true;
+						wallCenterBools[3] = true;
 
 						// left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCenterBools[4] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[4] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+							wallCenterBools[4] = true;
+						}
 
 						// up left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+							backgroundCornerBools[0] = true;
+						}
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 							floorCornerBools[0] = true;
 						}
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+							wallCornerBools[0] = true;
+						}
 
 						// up right
+						backgroundCornerBools[1] = true;
 						floorCornerBools[1] = true;
+						wallCornerBools[1] = true;
 
 						// down left
+						backgroundCornerBools[2] = true;
 						floorCornerBools[2] = true;
+						wallCornerBools[2] = true;
 
 						// down right
+						backgroundCornerBools[3] = true;
 						floorCornerBools[3] = true;
-
-
+						wallCornerBools[3] = true;
 					}
 				}
 				else {
 					// on upper right corner
 
 					// top
+					backgroundCenterBools[1] = true;
 					floorCenterBools[1] = true;
+					wallCenterBools[1] = true;
 
 					// right
+					backgroundCenterBools[2] = true;
 					floorCenterBools[2] = true;
+					wallCenterBools[2] = true;
 
 					// down
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].background->internalId == backgroundPointer->internalId) {
+						backgroundCenterBools[3] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 						floorCenterBools[3] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].wall->internalId == wallPointer->internalId) {
+						wallCenterBools[3] = true;
+					}
 
 					// left
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+						backgroundCenterBools[4] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 						floorCenterBools[4] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+						wallCenterBools[4] = true;
+					}
 
 					// up left
+					backgroundCornerBools[0] = true;
 					floorCornerBools[0] = true;
+					wallCornerBools[0] = true;
 
 					// up right
+					backgroundCornerBools[1] = true;
 					floorCornerBools[1] = true;
+					wallCornerBools[1] = true;
 
 					// down left
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].background->internalId == backgroundPointer->internalId) {
+						backgroundCornerBools[2] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
 						floorCornerBools[2] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].wall->internalId == wallPointer->internalId) {
+						wallCornerBools[2] = true;
+					}
 
 					// down right
+					backgroundCornerBools[3] = true;
 					floorCornerBools[3] = true;
-
+					wallCornerBools[3] = true;
 				}
 			}
 		}
@@ -381,37 +596,73 @@ struct renderContainerFixed : renderContainer {
 					// on left wall
 
 					// top
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].background->internalId == backgroundPointer->internalId) {
+						backgroundCenterBools[1] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 						floorCenterBools[1] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].wall->internalId == wallPointer->internalId) {
+						wallCenterBools[1] = true;
+					}
 
 					// right
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+						backgroundCenterBools[2] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 						floorCenterBools[2] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+						wallCenterBools[2] = true;
+					}
 
 					// down
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].background->internalId == backgroundPointer->internalId) {
+						backgroundCenterBools[3] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 						floorCenterBools[3] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].wall->internalId == wallPointer->internalId) {
+						wallCenterBools[3] = true;
+					}
 
 					// left
+					backgroundCenterBools[4] = true;
 					floorCenterBools[4] = true;
+					wallCenterBools[4] = true;
 
 					// up left
+					backgroundCornerBools[0] = true;
 					floorCornerBools[0] = true;
+					wallCornerBools[0] = true;
 
 					// up right
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+						backgroundCornerBools[1] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 						floorCornerBools[1] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+						wallCornerBools[1] = true;
+					}
 
 					// down left
+					backgroundCornerBools[2] = true;
 					floorCornerBools[2] = true;
+					wallCornerBools[2] = true;
 
 					// down right
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+						backgroundCornerBools[3] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 						floorCornerBools[3] = true;
+					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+						wallCornerBools[3] = true;
 					}
 
 				}
@@ -419,34 +670,62 @@ struct renderContainerFixed : renderContainer {
 					// on lower left corner
 
 					// top
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].background->internalId == backgroundPointer->internalId) {
+						backgroundCenterBools[1] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 						floorCenterBools[1] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].wall->internalId == wallPointer->internalId) {
+						wallCenterBools[1] = true;
+					}
 
 					// right
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+						backgroundCenterBools[2] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 						floorCenterBools[2] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+						wallCenterBools[2] = true;
+					}
 
 					// down
+					backgroundCenterBools[3] = true;
 					floorCenterBools[3] = true;
+					wallCenterBools[3] = true;
 
 					// left
+					backgroundCenterBools[4] = true;
 					floorCenterBools[4] = true;
+					wallCenterBools[4] = true;
 
 					// up left
+					backgroundCornerBools[0] = true;
 					floorCornerBools[0] = true;
+					wallCornerBools[0] = true;
 
 					// up right
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+						backgroundCornerBools[1] = true;
+					}
 					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 						floorCornerBools[1] = true;
 					}
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+						wallCornerBools[1] = true;
+					}
 
 					// down left
+					backgroundCornerBools[2] = true;
 					floorCornerBools[2] = true;
+					wallCornerBools[2] = true;
 
 					// down right
+					backgroundCornerBools[3] = true;
 					floorCornerBools[3] = true;
+					wallCornerBools[3] = true;
 
 				}
 			}
@@ -454,33 +733,61 @@ struct renderContainerFixed : renderContainer {
 				// on upper left corner
 
 				// top
+				backgroundCenterBools[1] = true;
 				floorCenterBools[1] = true;
+				wallCenterBools[1] = true;
 
 				// right
+				if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+					backgroundCenterBools[2] = true;
+				}
 				if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 					floorCenterBools[2] = true;
 				}
+				if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+					wallCenterBools[2] = true;
+				}
 
 				// down
+				if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].background->internalId == backgroundPointer->internalId) {
+					backgroundCenterBools[3] = true;
+				}
 				if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 					floorCenterBools[3] = true;
 				}
+				if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].wall->internalId == wallPointer->internalId) {
+					wallCenterBools[3] = true;
+				}
 
 				// left
+				backgroundCenterBools[4] = true;
 				floorCenterBools[4] = true;
+				wallCenterBools[4] = true;
 
 				// up left
+				backgroundCornerBools[0] = true;
 				floorCornerBools[0] = true;
+				wallCornerBools[0] = true;
 
 				// up right
+				backgroundCornerBools[1] = true;
 				floorCornerBools[1] = true;
+				wallCornerBools[1] = true;
 
 				// down left
+				backgroundCornerBools[2] = true;
 				floorCornerBools[2] = true;
+				wallCornerBools[2] = true;
 
 				// down right
+				if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].background->internalId == backgroundPointer->internalId) {
+					backgroundCornerBools[3] = true;
+				}
 				if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 					floorCornerBools[3] = true;
+				}
+				if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
+					wallCornerBools[3] = true;
 				}
 			}
 		}
@@ -489,9 +796,12 @@ struct renderContainerFixed : renderContainer {
 		//std::cout << coordinates.x << " " << coordinates.y << " " << backgroundPointer->isVisible << "\n";
 
 		if (backgroundPointer->isVisible) {
-			background.setTexture(backgroundPointer->texture);
-			background.setPosition(sf::Vector2f(blockBaseSize * coordinates.x, blockBaseSize * coordinates.y));
+			background.setTexture(backgroundPointer->center.variantTable[backgroundCenterBools[0]][backgroundCenterBools[1]][backgroundCenterBools[2]][backgroundCenterBools[3]][backgroundCenterBools[4]]);
+			background.setPosition(sf::Vector2f(blockBaseSize* coordinates.x, blockBaseSize* coordinates.y));
 			background.setScale(backgroundPointer->scaleToSet);
+			backgroundCorners.setTexture(backgroundPointer->corners.variantTable[backgroundCornerBools[0]][backgroundCornerBools[1]][backgroundCornerBools[2]][backgroundCornerBools[3]]);
+			backgroundCorners.setPosition(sf::Vector2f(blockBaseSize* coordinates.x, blockBaseSize* coordinates.y));
+			backgroundCorners.setScale(backgroundPointer->scaleToSet);
 		}
 
 	
@@ -514,13 +824,20 @@ struct renderContainerFixed : renderContainer {
 		
 
 		if (wallPointer->isVisible) {
-			wall.setTexture(wallPointer->texture);
-			wall.setPosition(sf::Vector2f(blockBaseSize * coordinates.x, blockBaseSize * coordinates.y));
+			wall.setTexture(wallPointer->center.variantTable[wallCenterBools[0]][wallCenterBools[1]][wallCenterBools[2]][wallCenterBools[3]][wallCenterBools[4]]);
+			wall.setPosition(sf::Vector2f(blockBaseSize* coordinates.x, blockBaseSize* coordinates.y));
 			wall.setScale(wallPointer->scaleToSet);
+			wallCorners.setTexture(wallPointer->corners.variantTable[wallCornerBools[0]][wallCornerBools[1]][wallCornerBools[2]][wallCornerBools[3]]);
+			wallCorners.setPosition(sf::Vector2f(blockBaseSize* coordinates.x, blockBaseSize* coordinates.y));
+			wallCorners.setScale(wallPointer->scaleToSet);
 
-			wallShade.setTexture(wallPointer->shadeTexture);
-			wallShade.setPosition(sf::Vector2f(blockBaseSize * coordinates.x, blockBaseSize * coordinates.y));
+
+			wallShade.setTexture(wallPointer->center.variantShadeTable[wallCenterBools[0]][wallCenterBools[1]][wallCenterBools[2]][wallCenterBools[3]][wallCenterBools[4]]);
+			wallShade.setPosition(sf::Vector2f(blockBaseSize* coordinates.x, blockBaseSize* coordinates.y));
 			wallShade.setScale(wallPointer->shadeScaleToSet);
+			wallCornersShade.setTexture(wallPointer->corners.variantShadeTable[wallCornerBools[0]][wallCornerBools[1]][wallCornerBools[2]][wallCornerBools[3]]);
+			wallCornersShade.setPosition(sf::Vector2f(blockBaseSize* coordinates.x, blockBaseSize* coordinates.y));
+			wallCornersShade.setScale(wallPointer->shadeScaleToSet);
 		}
 
 
@@ -598,6 +915,7 @@ struct renderContainerFixed : renderContainer {
 	}
 };
 
+// cause internal one does not work now, boy what does a man do to have nicer graphics
 void drawMap(sf::RenderTexture* window, renderLimit border,
 	sf::RenderTexture* shadeTexture, renderLimit shadeBorder) {
 
@@ -606,6 +924,7 @@ void drawMap(sf::RenderTexture* window, renderLimit border,
 			//std::cout << x << " " << y << "\n";
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isBackgroundVisible) {
 				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].background);
+				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].backgroundCorners);
 			}
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isFloorVisible) {
 				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].floor);
@@ -613,6 +932,7 @@ void drawMap(sf::RenderTexture* window, renderLimit border,
 			}
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isWallVisible) {
 				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].wall);
+				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].wallCorners);
 			}
 		}
 	}
@@ -627,6 +947,7 @@ void drawMap(sf::RenderTexture* window, renderLimit border,
 			}
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isWallVisible) {
 				shadeTexture->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].wallShade);
+				shadeTexture->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].wallCornersShade);
 			}
 		}
 	}

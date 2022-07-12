@@ -41,7 +41,7 @@ namespace fs = std::filesystem;
 
 
 
-const std::string version = "0.0.3.0";
+const std::string version = "0.0.3.1";
 
 
 

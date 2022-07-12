@@ -241,8 +241,9 @@ void loadPrimaryGraphics() {
 
 void loadBlockShapeAssets() {
 	// VERY TEMP to add reading from file
-	blockShapeVariants.resize(1);
-	blockShapeVariants[0].loadFromFile("gfx/blockShape/gfx/1.png");
+	blockShapeVariants.resize(2);
+	blockShapeVariants[0].loadFromFile("gfx/blockShape/gfx/none.png");
+	blockShapeVariants[1].loadFromFile("gfx/blockShape/gfx/1.png");
 	blockShapeCenterShader.loadFromFile("gfx/blockShape/shapeCenterShader.frag", sf::Shader::Fragment);
 	blockShapeCornerShader.loadFromFile("gfx/blockShape/shapeCornerShader.frag", sf::Shader::Fragment);
 	blockShapeTexture.create(blockBaseSize, blockBaseSize);

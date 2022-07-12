@@ -17,15 +17,15 @@ struct blockShapeVariant {
 
 		debugMsg(std::string("GL Debug: Loading textures with paths: " + path + " and extension: " + extension));
 
-		up.loadFromFile(std::string(path + "up" + extension));
-		down.loadFromFile(std::string(path + "down" + extension));
-		left.loadFromFile(std::string(path + "left" + extension));
-		right.loadFromFile(std::string(path + "right" + extension));
-		center.loadFromFile(std::string(path + "center" + extension));
-		upLeft.loadFromFile(std::string(path + "upLeft" + extension));
-		downLeft.loadFromFile(std::string(path + "downLeft" + extension));
-		upRight.loadFromFile(std::string(path + "upRight" + extension));
-		downRight.loadFromFile(std::string(path + "downRight" + extension));
+		up.loadFromFile(std::string(path + "Up" + extension));
+		down.loadFromFile(std::string(path + "Down" + extension));
+		left.loadFromFile(std::string(path + "Left" + extension));
+		right.loadFromFile(std::string(path + "Right" + extension));
+		center.loadFromFile(std::string(path + "Center" + extension));
+		upLeft.loadFromFile(std::string(path + "UpLeft" + extension));
+		downLeft.loadFromFile(std::string(path + "DownLeft" + extension));
+		upRight.loadFromFile(std::string(path + "UpRight" + extension));
+		downRight.loadFromFile(std::string(path + "DownRight" + extension));
 
 		debugMsg(std::string("GL Debug: Loaded!"));
 	}
