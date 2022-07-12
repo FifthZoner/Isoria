@@ -23,8 +23,8 @@ struct blockShapeVariant {
 		right.loadFromFile(std::string(path + "right" + extension));
 		center.loadFromFile(std::string(path + "center" + extension));
 		upLeft.loadFromFile(std::string(path + "upLeft" + extension));
-		downLeft.loadFromFile(std::string(path + "upRight" + extension));
-		upRight.loadFromFile(std::string(path + "downLeft" + extension));
+		downLeft.loadFromFile(std::string(path + "downLeft" + extension));
+		upRight.loadFromFile(std::string(path + "upRight" + extension));
 		downRight.loadFromFile(std::string(path + "downRight" + extension));
 
 		debugMsg(std::string("GL Debug: Loaded!"));
@@ -54,6 +54,7 @@ struct shapeCornerContainer {
 
 	// accessed by bools with order: up left -> up right -> down left -> down right
 	sf::Texture variantTable[2][2][2][2];
+	sf::Texture variantShadeTable[2][2][2][2];
 
 	// prepares corner textures for given variant stored in an array
 	void prepareCornerVariants(unsigned short shapeVariantNumber, sf::Texture* texture, bool doShadeTexture, sf::Texture* shadeTexture) {
@@ -65,11 +66,12 @@ struct shapeCornerContainer {
 			for (char b2 = 0; b2 < 2; b2++) {
 				for (char b3 = 0; b3 < 2; b3++) {
 					for (char b4 = 0; b4 < 2; b4++) {
-						blockShapeCornerShader.setUniform("addUpLeft", b1);
-						blockShapeCornerShader.setUniform("addUpRight", b2);
-						blockShapeCornerShader.setUniform("addDownLeft", b3);
-						blockShapeCornerShader.setUniform("addDownRight", b4);
-						//blockShapeCornerShader.setUniform("targetTexture", *texture);
+						blockShapeCornerShader.setUniform("isShadow", false);
+
+						blockShapeCornerShader.setUniform("addDownLeft", b1);
+						blockShapeCornerShader.setUniform("addDownRight", b2);
+						blockShapeCornerShader.setUniform("addUpLeft", b3);
+						blockShapeCornerShader.setUniform("addUpRight", b4);
 
 						blockShapeTexture.clear(sf::Color(0, 0, 0, 0));
 						blockShapeSprite.setTexture(*texture);
@@ -79,12 +81,13 @@ struct shapeCornerContainer {
 
 
 						if (doShadeTexture) {
-							//blockShapeCornerShader.setUniform("targetTexture", *shadeTexture);
+							blockShapeCornerShader.setUniform("isShadow", true);
+
 							blockShapeTexture.clear(sf::Color(0, 0, 0, 0));
 							blockShapeSprite.setTexture(*shadeTexture);
 							blockShapeTexture.draw(blockShapeSprite, &blockShapeCornerShader);
 							blockShapeTexture.display();
-							variantTable[b1][b2][b3][b4] = blockShapeTexture.getTexture();
+							variantShadeTable[b1][b2][b3][b4] = blockShapeTexture.getTexture();
 						}
 					}
 				}
@@ -97,6 +100,8 @@ struct shapeCornerContainer {
 struct shapeCenterContainer {
 	// accessed by bools with order: center -> top -> right -> down -> left
 	sf::Texture variantTable[2][2][2][2][2];
+	sf::Texture variantShadeTable[2][2][2][2][2];
+
 
 	void prepareCenterVariants(unsigned short shapeVariantNumber, sf::Texture* texture, bool doShadeTexture, sf::Texture* shadeTexture) {
 
@@ -108,6 +113,8 @@ struct shapeCenterContainer {
 				for (char b3 = 0; b3 < 2; b3++) {
 					for (char b4 = 0; b4 < 2; b4++) {
 						for (char b5 = 0; b5 < 2; b5++) {
+							blockShapeCenterShader.setUniform("isShadow", false);
+
 							blockShapeCenterShader.setUniform("addCenter", b1);
 							blockShapeCenterShader.setUniform("addDown", b2);
 							blockShapeCenterShader.setUniform("addRight", b3);
@@ -127,12 +134,13 @@ struct shapeCenterContainer {
 							variantTable[int(b1)][int(b2)][int(b3)][int(b4)][int(b5)] = blockShapeTexture.getTexture();
 
 							if (doShadeTexture) {
-								//blockShapeCenterShader.setUniform("targetTexture", *shadeTexture);
+								blockShapeCenterShader.setUniform("isShadow", true);
+
 								blockShapeTexture.clear(sf::Color(0, 0, 0, 0));
 								blockShapeSprite.setTexture(*shadeTexture);
 								blockShapeTexture.draw(blockShapeSprite, &blockShapeCenterShader);
 								blockShapeTexture.display();
-								variantTable[b1][b2][b3][b4][b5] = blockShapeTexture.getTexture();
+								variantShadeTable[b1][b2][b3][b4][b5] = blockShapeTexture.getTexture();
 							}
 						}
 					}

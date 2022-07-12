@@ -84,6 +84,8 @@ void initialHybridRenderingFill() {
 	getHybridRenderingBorders();
 	hybridRenderCurrent = hybridRenderBorder;
 
+	
+
 	for (unsigned short y = hybridRenderBorder.lower.y; y <= hybridRenderBorder.upper.y; y++) {
 		for (unsigned short x = hybridRenderBorder.lower.x; x <= hybridRenderBorder.upper.x; x++) {
 			currentMap->dimensions[currentDimension].grid[y][x].renderPointer = renderContainerQueue.front();

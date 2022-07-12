@@ -114,6 +114,8 @@ struct renderContainerFixed : renderContainer {
 	sf::Sprite wall = sf::Sprite();
 	sf::Sprite wallShade = sf::Sprite();
 
+
+
 	bool isBackgroundVisible = false;
 	bool isFloorVisible = false;
 	bool isWallVisible = false;
@@ -123,333 +125,125 @@ struct renderContainerFixed : renderContainer {
 		blockVariantStruct* floorPointer, blockVariantStruct* wallPointer) {
 
 
+		isWallVisible = wallPointer->isVisible;
+		isFloorVisible = floorPointer->isVisible;
+		isBackgroundVisible = backgroundPointer->isVisible;
+
 		// center->top->right->down->left
 		// up left -> up right -> down left -> down right
 
 		// here comes a monstrocity for now for floors only, sorry
-		bool floorCenterBools[5] = { false, false, false, false, false };
+		bool floorCenterBools[5] = { true, false, false, false, false };
 		bool floorCornerBools[4] = { false, false, false, false };
 
-
-		// do not open, it just works
-		if (1) {
-			if (coordinates.x > 0) {
-				if (coordinates.x < currentMap->dimensions[currentDimension].size.x - 1) {
-					if (coordinates.y > 0) {
-						if (coordinates.y < currentMap->dimensions[currentDimension].size.y - 1) {
-							// normal case
-								// center
-								floorCenterBools[0] = true;
-							
-							// top
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y - 1].floor->internalId == currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->internalId) {
-								floorCenterBools[1] = true;
-								std::cout << currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->internalId << "\n";
-							}
-							// right
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y].floor->internalId == currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->internalId) {
-								floorCenterBools[2] = true;
-							}
-							// down
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y + 1].floor->internalId == currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->internalId) {
-								floorCenterBools[3] = true;
-							}
-							// left
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y].floor->internalId == currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->internalId) {
-								floorCenterBools[4] = true;
-							}
-							// up left
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y - 1].floor->internalId == floorPointer->internalId) {
-								floorCornerBools[0] = true;
-							}
-							// up right
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y - 1].floor->internalId == floorPointer->internalId) {
-								floorCornerBools[1] = true;
-							}
-							// down left
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y + 1].floor->internalId == floorPointer->internalId) {
-								floorCornerBools[2] = true;
-							}
-							// down right
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y + 1].floor->internalId == floorPointer->internalId) {
-								floorCornerBools[3] = true;
-							}
-						}
-						else {
-							// at lower border
-								// center
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->isVisible) {
-								floorCenterBools[0] = true;
-							}
-							// top
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y - 1].floor->isVisible) {
-								floorCenterBools[1] = true;
-							}
-							// right
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y].floor->isVisible) {
-								floorCenterBools[2] = true;
-							}
-							// down
-							floorCenterBools[3] = true;
-
-							// left
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y].floor->isVisible) {
-								floorCenterBools[4] = true;
-							}
-							// up left
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y - 1].floor->isVisible) {
-								floorCornerBools[0] = true;
-							}
-							// up right
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y - 1].floor->isVisible) {
-								floorCornerBools[1] = true;
-							}
-							// down left
-							floorCornerBools[2] = true;
-
-							// down right
-							floorCornerBools[3] = true;
-						}
-					}
-					else {
-						// at upper border
-							// center
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->isVisible) {
-							floorCenterBools[0] = true;
-						}
-						// top
-						floorCenterBools[1] = true;
-
-						// right
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y].floor->isVisible) {
-							floorCenterBools[2] = true;
-						}
-						// down
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y + 1].floor->isVisible) {
-							floorCenterBools[3] = true;
-						}
-						// left
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y].floor->isVisible) {
-							floorCenterBools[4] = true;
-						}
-						// up left
-						floorCornerBools[0] = true;
-
-						// up right
-						floorCornerBools[1] = true;
-
-						// down left
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y + 1].floor->isVisible) {
-							floorCornerBools[2] = true;
-						}
-						// down right
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y + 1].floor->isVisible) {
-							floorCornerBools[3] = true;
-						}
-					}
-				}
-				else {
-					if (coordinates.y > 0) {
-						if (coordinates.y < currentMap->dimensions[currentDimension].size.y - 1) {
-							// on right wall
-								// center
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->isVisible) {
-								floorCenterBools[0] = true;
-							}
-							// top
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y - 1].floor->isVisible) {
-								floorCenterBools[1] = true;
-							}
-							// right
-							floorCenterBools[2] = true;
-
-							// down
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y + 1].floor->isVisible) {
-								floorCenterBools[3] = true;
-							}
-							// left
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y].floor->isVisible) {
-								floorCenterBools[4] = true;
-							}
-							// up left
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y - 1].floor->isVisible) {
-								floorCornerBools[0] = true;
-							}
-							// up right
-							floorCornerBools[1] = true;
-
-							// down left
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y + 1].floor->isVisible) {
-								floorCornerBools[2] = true;
-							}
-							// down right
-							floorCornerBools[3] = true;
-
-						}
-						else {
-							// on lower right corner
-								// center
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->isVisible) {
-								floorCenterBools[0] = true;
-							}
-							// top
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y - 1].floor->isVisible) {
-								floorCenterBools[1] = true;
-							}
-							// right
-							floorCenterBools[2] = true;
-
-							// down
-							floorCenterBools[3] = true;
-
-							// left
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y].floor->isVisible) {
-								floorCenterBools[4] = true;
-							}
-							// up left
-							if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y - 1].floor->isVisible) {
-								floorCornerBools[0] = true;
-							}
-							// up right
-							floorCornerBools[1] = true;
-
-							// down left
-							floorCornerBools[2] = true;
-
-							// down right
-							floorCornerBools[3] = true;
+		if (coordinates.x == 39) {
+			std::cout << floorPointer->datapackId << " " << floorPointer->internalId << "\n";
+		}
 
 
-						}
-					}
-					else {
-						// on upper right corner
-						// center
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->isVisible) {
-							floorCenterBools[0] = true;
-						}
-						// top
-						floorCenterBools[1] = true;
-
-						// right
-						floorCenterBools[2] = true;
-
-						// down
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y + 1].floor->isVisible) {
-							floorCenterBools[3] = true;
-						}
-						// left
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y].floor->isVisible) {
-							floorCenterBools[4] = true;
-						}
-						// up left
-						floorCornerBools[0] = true;
-
-						// up right
-						floorCornerBools[1] = true;
-
-						// down left
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x - 1][coordinates.y + 1].floor->isVisible) {
-							floorCornerBools[2] = true;
-						}
-						// down right
-						floorCornerBools[3] = true;
-
-					}
-				}
-			}
-			else {
+		// finally works
+		if (coordinates.x > 0) {
+			if (coordinates.x < currentMap->dimensions[currentDimension].size.x - 1) {
 				if (coordinates.y > 0) {
 					if (coordinates.y < currentMap->dimensions[currentDimension].size.y - 1) {
-						// on left wall
-						// center
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->isVisible) {
-							floorCenterBools[0] = true;
-						}
 						// top
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y - 1].floor->isVisible) {
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[1] = true;
 						}
+
 						// right
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y].floor->isVisible) {
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[2] = true;
 						}
+
 						// down
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y + 1].floor->isVisible) {
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[3] = true;
 						}
+
 						// left
-						floorCenterBools[4] = true;
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+							floorCenterBools[4] = true;
+						}
 
 						// up left
-						floorCornerBools[0] = true;
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+							floorCornerBools[0] = true;
+						}
 
 						// up right
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y - 1].floor->isVisible) {
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 							floorCornerBools[1] = true;
 						}
+
 						// down left
-						floorCornerBools[2] = true;
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+							floorCornerBools[2] = true;
+						}
 
 						// down right
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y + 1].floor->isVisible) {
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 							floorCornerBools[3] = true;
 						}
 					}
 					else {
-						// on lower left corner
-						// center
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->isVisible) {
-							floorCenterBools[0] = true;
-						}
+						// at lower border
+
 						// top
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y - 1].floor->isVisible) {
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[1] = true;
 						}
+
 						// right
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y].floor->isVisible) {
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 							floorCenterBools[2] = true;
 						}
+
 						// down
 						floorCenterBools[3] = true;
 
 						// left
-						floorCenterBools[4] = true;
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+							floorCenterBools[4] = true;
+						}
 
 						// up left
-						floorCornerBools[0] = true;
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+							floorCornerBools[0] = true;
+						}
 
 						// up right
-						if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y - 1].floor->isVisible) {
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 							floorCornerBools[1] = true;
 						}
+
 						// down left
 						floorCornerBools[2] = true;
 
 						// down right
 						floorCornerBools[3] = true;
-
 					}
 				}
 				else {
-					// on upper left corner
-					// center
-					if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y].floor->isVisible) {
-						floorCenterBools[0] = true;
-					}
+					// at upper border
+
 					// top
 					floorCenterBools[1] = true;
 
 					// right
-					if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y].floor->isVisible) {
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 						floorCenterBools[2] = true;
 					}
+
 					// down
-					if (currentMap->dimensions[currentDimension].grid[coordinates.x][coordinates.y + 1].floor->isVisible) {
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->internalId == floorPointer->internalId) {
 						floorCenterBools[3] = true;
 					}
+
 					// left
-					floorCenterBools[4] = true;
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+						floorCenterBools[4] = true;
+					}
 
 					// up left
 					floorCornerBools[0] = true;
@@ -458,16 +252,238 @@ struct renderContainerFixed : renderContainer {
 					floorCornerBools[1] = true;
 
 					// down left
-					floorCornerBools[2] = true;
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+						floorCornerBools[2] = true;
+					}
 
 					// down right
-					if (currentMap->dimensions[currentDimension].grid[coordinates.x + 1][coordinates.y + 1].floor->isVisible) {
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
 						floorCornerBools[3] = true;
 					}
+
+				}
+			}
+			else {
+				if (coordinates.y > 0) {
+					if (coordinates.y < currentMap->dimensions[currentDimension].size.y - 1) {
+						// on right wall
+
+						// top
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->internalId == floorPointer->internalId) {
+							floorCenterBools[1] = true;
+						}
+
+						// right
+						floorCenterBools[2] = true;
+
+						// down
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->internalId == floorPointer->internalId) {
+							floorCenterBools[3] = true;
+						}
+
+						// left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+							floorCenterBools[4] = true;
+						}
+
+						// up left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+							floorCornerBools[0] = true;
+						}
+
+						// up right
+						floorCornerBools[1] = true;
+
+						// down left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+							floorCornerBools[2] = true;
+						}
+
+						// down right
+						floorCornerBools[3] = true;
+
+					}
+					else {
+						// on lower right corner
+
+						// top
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->internalId == floorPointer->internalId) {
+							floorCenterBools[1] = true;
+						}
+
+						// right
+						floorCenterBools[2] = true;
+
+						// down
+						floorCenterBools[3] = true;
+
+						// left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+							floorCenterBools[4] = true;
+						}
+
+						// up left
+						if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+							floorCornerBools[0] = true;
+						}
+
+						// up right
+						floorCornerBools[1] = true;
+
+						// down left
+						floorCornerBools[2] = true;
+
+						// down right
+						floorCornerBools[3] = true;
+
+
+					}
+				}
+				else {
+					// on upper right corner
+
+					// top
+					floorCenterBools[1] = true;
+
+					// right
+					floorCenterBools[2] = true;
+
+					// down
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->internalId == floorPointer->internalId) {
+						floorCenterBools[3] = true;
+					}
+
+					// left
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+						floorCenterBools[4] = true;
+					}
+
+					// up left
+					floorCornerBools[0] = true;
+
+					// up right
+					floorCornerBools[1] = true;
+
+					// down left
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x - 1].floor->internalId == floorPointer->internalId) {
+						floorCornerBools[2] = true;
+					}
+
+					// down right
+					floorCornerBools[3] = true;
+
 				}
 			}
 		}
-		
+		else {
+			if (coordinates.y > 0) {
+				if (coordinates.y < currentMap->dimensions[currentDimension].size.y - 1) {
+					// on left wall
+
+					// top
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->internalId == floorPointer->internalId) {
+						floorCenterBools[1] = true;
+					}
+
+					// right
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
+						floorCenterBools[2] = true;
+					}
+
+					// down
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->internalId == floorPointer->internalId) {
+						floorCenterBools[3] = true;
+					}
+
+					// left
+					floorCenterBools[4] = true;
+
+					// up left
+					floorCornerBools[0] = true;
+
+					// up right
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
+						floorCornerBools[1] = true;
+					}
+
+					// down left
+					floorCornerBools[2] = true;
+
+					// down right
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
+						floorCornerBools[3] = true;
+					}
+
+				}
+				else {
+					// on lower left corner
+
+					// top
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->internalId == floorPointer->internalId) {
+						floorCenterBools[1] = true;
+					}
+
+					// right
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
+						floorCenterBools[2] = true;
+					}
+
+					// down
+					floorCenterBools[3] = true;
+
+					// left
+					floorCenterBools[4] = true;
+
+					// up left
+					floorCornerBools[0] = true;
+
+					// up right
+					if (currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
+						floorCornerBools[1] = true;
+					}
+
+					// down left
+					floorCornerBools[2] = true;
+
+					// down right
+					floorCornerBools[3] = true;
+
+				}
+			}
+			else {
+				// on upper left corner
+
+				// top
+				floorCenterBools[1] = true;
+
+				// right
+				if (currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
+					floorCenterBools[2] = true;
+				}
+
+				// down
+				if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->internalId == floorPointer->internalId) {
+					floorCenterBools[3] = true;
+				}
+
+				// left
+				floorCenterBools[4] = true;
+
+				// up left
+				floorCornerBools[0] = true;
+
+				// up right
+				floorCornerBools[1] = true;
+
+				// down left
+				floorCornerBools[2] = true;
+
+				// down right
+				if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].floor->internalId == floorPointer->internalId) {
+					floorCornerBools[3] = true;
+				}
+			}
+		}
 
 
 		//std::cout << coordinates.x << " " << coordinates.y << " " << backgroundPointer->isVisible << "\n";
@@ -481,14 +497,19 @@ struct renderContainerFixed : renderContainer {
 	
 		if (floorPointer->isVisible) {
 			floor.setTexture(floorPointer->center.variantTable[floorCenterBools[0]][floorCenterBools[1]][floorCenterBools[2]][floorCenterBools[3]][floorCenterBools[4]]);
-			//floor.setTexture(floorPointer->center.variantTable[1][0][1][0][0]);
 			floor.setPosition(sf::Vector2f(blockBaseSize * coordinates.x, blockBaseSize * coordinates.y));
 			floor.setScale(floorPointer->scaleToSet);
+			floorCorners.setTexture(floorPointer->corners.variantTable[floorCornerBools[0]][floorCornerBools[1]][floorCornerBools[2]][floorCornerBools[3]]);
+			floorCorners.setPosition(sf::Vector2f(blockBaseSize* coordinates.x, blockBaseSize* coordinates.y));
+			floorCorners.setScale(floorPointer->scaleToSet);
 			
 
-			floorShade.setTexture(floorPointer->shadeTexture);
+			floorShade.setTexture(floorPointer->center.variantShadeTable[floorCenterBools[0]][floorCenterBools[1]][floorCenterBools[2]][floorCenterBools[3]][floorCenterBools[4]]);
 			floorShade.setPosition(sf::Vector2f(blockBaseSize * coordinates.x, blockBaseSize * coordinates.y));
 			floorShade.setScale(floorPointer->shadeScaleToSet);
+			floorCornersShade.setTexture(floorPointer->corners.variantShadeTable[floorCornerBools[0]][floorCornerBools[1]][floorCornerBools[2]][floorCornerBools[3]]);
+			floorCornersShade.setPosition(sf::Vector2f(blockBaseSize* coordinates.x, blockBaseSize* coordinates.y));
+			floorCornersShade.setScale(floorPointer->shadeScaleToSet);
 		}
 		
 
@@ -506,10 +527,8 @@ struct renderContainerFixed : renderContainer {
 
 		// and checking visibility here
 		
-		isWallVisible = true;
-		isFloorVisible = true;
-		isBackgroundVisible = true;
 		
+		/*
 		if (wallPointer->isVisible and wallPointer->doesObstruct) {
 			isWallVisible = true;
 			isFloorVisible = false;
@@ -569,6 +588,11 @@ struct renderContainerFixed : renderContainer {
 				isBackgroundVisible = true;
 			}
 		}
+		*/
+		
+		
+		
+		
 		
 		
 	}
@@ -577,14 +601,15 @@ struct renderContainerFixed : renderContainer {
 void drawMap(sf::RenderTexture* window, renderLimit border,
 	sf::RenderTexture* shadeTexture, renderLimit shadeBorder) {
 
-	for (ushort y = border.lower.y; y < border.upper.y; y++) {
-		for (ushort x = border.lower.x; x < border.upper.x; x++) {
+	for (ushort y = border.lower.y; y <= border.upper.y; y++) {
+		for (ushort x = border.lower.x; x <= border.upper.x; x++) {
 			//std::cout << x << " " << y << "\n";
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isBackgroundVisible) {
 				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].background);
 			}
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isFloorVisible) {
 				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].floor);
+				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].floorCorners);
 			}
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isWallVisible) {
 				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].wall);
@@ -592,12 +617,13 @@ void drawMap(sf::RenderTexture* window, renderLimit border,
 		}
 	}
 
-	for (ushort y = shadeBorder.lower.y; y < shadeBorder.upper.y; y++) {
-		for (ushort x = shadeBorder.lower.x; x < shadeBorder.upper.x; x++) {
+	for (ushort y = shadeBorder.lower.y; y <= shadeBorder.upper.y; y++) {
+		for (ushort x = shadeBorder.lower.x; x <= shadeBorder.upper.x; x++) {
 			//std::cout << x << " " << y << "\n";
 
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isFloorVisible) {
 				shadeTexture->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].floorShade);
+				shadeTexture->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].floorCornersShade);
 			}
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isWallVisible) {
 				shadeTexture->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].wallShade);

@@ -49,8 +49,12 @@ void main( void ){
 	}
 
 	if (showTarget == true){
-		gl_FragColor = texture2D(targetTexture, position);
-		//gl_FragColor = vec4(1,1,1,cos(position.x));
+		if (isShadow == true){
+			gl_FragColor = texture2D(targetShadeTexture, position);
+		}
+		else{
+			gl_FragColor = texture2D(targetTexture, position);
+		}
 	}
 	else{
 		gl_FragColor = vec4(0,0,0,0);

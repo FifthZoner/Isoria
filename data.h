@@ -28,11 +28,11 @@ struct blockVariantStruct {
 	shapeCornerContainer corners;
 	shapeCenterContainer center;
 
+
 	void createShapes(unsigned short shapeVariant) {
 		blockShapeCenterShader.setUniform("targetTexture", texture);
 		if (doesHaveShade) {
 			blockShapeCenterShader.setUniform("targetShadeTexture", shadeTexture);
-
 		}
 
 		corners.prepareCornerVariants(shapeVariant, &texture, doesHaveShade, &shadeTexture);

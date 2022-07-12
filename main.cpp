@@ -666,7 +666,7 @@ void run1x1NewWorld() {
 						if (sfDebug) {
 							std::cout << "SF debug: Main menu new world start button clicked" << "\n";
 						}
-						generateMap("test", &mapGeneratorString, sf::Vector2i(100, 100));
+						generateMap("test", &mapGeneratorString, sf::Vector2i(40, 40));
 					}
 					break;
 				}
