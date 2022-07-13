@@ -303,6 +303,7 @@ bool sendMapProper(mapContainer* map, sf::TcpSocket* socket) {
 	unsigned short currentPart = 0;
 	short currentStringIndex = 0;
 	unsigned short packetsSent = 0;
+	bool wasVariantSent = true;
 	// dimension navigation
 	sf::Vector2i mapVec = sf::Vector2i(0, 0);
 	unsigned short currentLayer = 0;
@@ -363,10 +364,19 @@ bool sendMapProper(mapContainer* map, sf::TcpSocket* socket) {
 
 			// background
 			if (currentLayer == 0) {
+				
+				if (wasVariantSent) {
+					// gets converted number from datapack number and internal id
+					packet[current] = msConvert.backgrounds[map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].background->datapackId][map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].background->internalId];
+					wasVariantSent = false;
+				}
+				else {
+					packet[current] = map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].background->variantNumber;
+					wasVariantSent = true;
+					mapVec.x++;
+				}
 
-				// gets converted number from datapack number and internal id
-				packet[current] = msConvert.backgrounds[map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].background->datapackId][map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].background->internalId];
-				mapVec.x++;
+
 
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {
 					mapVec.x = 0;
@@ -383,10 +393,16 @@ bool sendMapProper(mapContainer* map, sf::TcpSocket* socket) {
 			// floor
 			else if (currentLayer == 1) {
 
-				// gets converted number from datapack number and internal id
-				packet[current] = msConvert.floors[map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].floor->datapackId][map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].floor->internalId];
-
-				mapVec.x++;
+				if (wasVariantSent) {
+					// gets converted number from datapack number and internal id
+					packet[current] = msConvert.floors[map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].floor->datapackId][map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].floor->internalId];
+					wasVariantSent = false;
+				}
+				else {
+					packet[current] = map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].floor->variantNumber;
+					wasVariantSent = true;
+					mapVec.x++;
+				}
 
 
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {
@@ -405,10 +421,16 @@ bool sendMapProper(mapContainer* map, sf::TcpSocket* socket) {
 			// wall
 			else {
 
-				// gets converted number from datapack number and internal id
-				packet[current] = msConvert.walls[map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].wall->datapackId][map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].wall->internalId];
-
-				mapVec.x++;
+				if (wasVariantSent) {
+					// gets converted number from datapack number and internal id
+					packet[current] = msConvert.walls[map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].wall->datapackId][map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].wall->internalId];
+					wasVariantSent = false;
+				}
+				else {
+					packet[current] = map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].wall->variantNumber;
+					wasVariantSent = true;
+					mapVec.x++;
+				}
 
 
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {

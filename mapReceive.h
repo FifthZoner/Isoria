@@ -610,6 +610,9 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 	unsigned short currentPart = 0;
 	unsigned short packetsGotten = 0;
 	bool isInfoReady = false;
+	bool wasVariantReceived = true;
+	unsigned int tempId = 0;
+
 
 	sf::Vector2i mapVec = sf::Vector2i(0, 0);
 
@@ -686,11 +689,17 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 		else {
 			// background
 			if (currentPart == 0) {
-				// new and better, temp variant
-				map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].createBackground(&pointer->datapacks[mrBackgroundConvert[packet[current]].datapackNumber].backgroundBlocks[mrBackgroundConvert[packet[current]].id].variants[rand() % pointer->datapacks[mrBackgroundConvert[packet[current]].datapackNumber].backgroundBlocks[mrBackgroundConvert[packet[current]].id].variants.size()]);
-
-
-				mapVec.x++;
+				if (wasVariantReceived) {
+					tempId = packet[current];
+					wasVariantReceived = false;
+				}
+				else {
+					// new and better
+					map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].createBackground(&pointer->datapacks[mrBackgroundConvert[tempId].datapackNumber].backgroundBlocks[mrBackgroundConvert[tempId].id].variants[packet[current]]);
+					wasVariantReceived = true;
+					mapVec.x++;
+				}
+				
 				//std::cout << mapVec.x << " " << map->dimensions[currentIndex].size.x << "\n";
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {
 					
@@ -706,11 +715,16 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 			}
 			// floor
 			else if (currentPart == 1) {
-				// new and better, temp variant
-				map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].createFloor(&pointer->datapacks[mrFloorConvert[packet[current]].datapackNumber].floorBlocks[mrFloorConvert[packet[current]].id].variants[rand() % pointer->datapacks[mrFloorConvert[packet[current]].datapackNumber].floorBlocks[mrFloorConvert[packet[current]].id].variants.size()]);
-
-
-				mapVec.x++;
+				if (wasVariantReceived) {
+					tempId = packet[current];
+					wasVariantReceived = false;
+				}
+				else {
+					// new and better
+					map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].createFloor(&pointer->datapacks[mrFloorConvert[tempId].datapackNumber].floorBlocks[mrFloorConvert[tempId].id].variants[packet[current]]);
+					wasVariantReceived = true;
+					mapVec.x++;
+				}
 
 
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {
@@ -726,10 +740,16 @@ bool mrGetMapContent(mapContainer* map, sf::TcpSocket* socket, datapackContainer
 			}
 			// wall
 			else {
-				// new and better, temp variant
-				map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].createWall(&pointer->datapacks[mrWallConvert[packet[current]].datapackNumber].wallBlocks[mrWallConvert[packet[current]].id].variants[rand() % pointer->datapacks[mrWallConvert[packet[current]].datapackNumber].wallBlocks[mrWallConvert[packet[current]].id].variants.size()]);
-
-				mapVec.x++;
+				if (wasVariantReceived) {
+					tempId = packet[current];
+					wasVariantReceived = false;
+				}
+				else {
+					// new and better
+					map->dimensions[currentIndex].grid[mapVec.y][mapVec.x].createWall(&pointer->datapacks[mrWallConvert[tempId].datapackNumber].wallBlocks[mrWallConvert[tempId].id].variants[packet[current]]);
+					wasVariantReceived = true;
+					mapVec.x++;
+				}
 
 				if (mapVec.x == map->dimensions[currentIndex].size.x) {
 					mapVec.x = 0;
