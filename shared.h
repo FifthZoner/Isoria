@@ -16,6 +16,7 @@ sf::RenderWindow gameWindow;
 
 const unsigned short blockBaseSize = 24;
 
+
 //				BOOLS
 bool sfDebug = false;
 bool debug = false;
@@ -98,12 +99,17 @@ const unsigned short maxClients = 8;
 // render distance for all to use
 sf::Vector2i mainRenderDistance = sf::Vector2i(0, 0);
 sf::Vector2i shadeRenderDistance = sf::Vector2i(0, 0);
+sf::Vector2i ChunkRenderDistance = sf::Vector2i(0, 0);
+sf::Vector2i chunkShadeRenderDistance = sf::Vector2i(0, 0);
 
 
 // hybrid renderer
 bool isHybridRenderServiceActive = false;
 bool isHybridRenderServiceReady = false;
 bool canHybridRenderServiceStartWorking = false;
+unsigned short chunkSize = 5;
+// fixed amount calculated for 16:9 screens with theoretical buffer of 3 on each side to be sure
+const unsigned short chunkAmount = 330;
 
 // block shape
 sf::Shader blockShapeCenterShader;

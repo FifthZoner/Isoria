@@ -59,7 +59,7 @@ public:
 				variants[n].doesHaveShade = false;
 				variants[n].internalId = idInDatapack;
 				variants[n].datapackId = idOfDatapack;
-				variants[n].scaleToSet = sf::Vector2f(float(baseBlockSize) / float(variants[n].texture.getSize().x), float(baseBlockSize) / float(variants[n].texture.getSize().y));
+				variants[n].scaleToSet = sf::Vector2f(float(blockBaseSize) / float(variants[n].texture.getSize().x), float(blockBaseSize) / float(variants[n].texture.getSize().y));
 				// temp
 				variants[n].doesObstruct = true;
 				variants[n].isVisible = true;
@@ -93,7 +93,7 @@ public:
 			variants[n].internalId = idInDatapack;
 			variants[n].datapackId = idOfDatapack;
 			variants[n].variantNumber = n;
-			variants[n].scaleToSet = sf::Vector2f(float(baseBlockSize) / float(variants[n].texture.getSize().x), float(baseBlockSize) / float(variants[n].texture.getSize().y));
+			variants[n].scaleToSet = sf::Vector2f(float(blockBaseSize) / float(variants[n].texture.getSize().x), float(blockBaseSize) / float(variants[n].texture.getSize().y));
 
 			// temp, to be read from file in the future
 			variants[n].doesObstruct = true;
@@ -106,7 +106,7 @@ public:
 			std::string path = paths[n].erase(paths[n].size() - 4, 4);
 			path += "Shade.png";
 			variants[n].shadeTexture.loadFromFile(path);
-			variants[n].shadeScaleToSet = sf::Vector2f(float(baseBlockSize) / float(variants[n].shadeTexture.getSize().x), float(baseBlockSize) / float(variants[n].shadeTexture.getSize().y));
+			variants[n].shadeScaleToSet = sf::Vector2f(float(blockBaseSize) / float(variants[n].shadeTexture.getSize().x), float(blockBaseSize) / float(variants[n].shadeTexture.getSize().y));
 
 
 
@@ -137,7 +137,7 @@ public:
 			variants[n].internalId = idInDatapack;
 			variants[n].datapackId = idOfDatapack;
 			variants[n].variantNumber = n;
-			variants[n].scaleToSet = sf::Vector2f(float(baseBlockSize) / float(variants[n].texture.getSize().x), float(baseBlockSize) / float(variants[n].texture.getSize().y));
+			variants[n].scaleToSet = sf::Vector2f(float(blockBaseSize) / float(variants[n].texture.getSize().x), float(blockBaseSize) / float(variants[n].texture.getSize().y));
 
 			// temp, to be read from file in the future
 			variants[n].doesObstruct = true;
@@ -150,7 +150,7 @@ public:
 			std::string path = paths[n].erase(paths[n].size() - 4, 4);
 			path += "Shade.png";
 			variants[n].shadeTexture.loadFromFile(path);
-			variants[n].shadeScaleToSet = sf::Vector2f(float(baseBlockSize) / float(variants[n].shadeTexture.getSize().x), float(baseBlockSize) / float(variants[n].shadeTexture.getSize().y));
+			variants[n].shadeScaleToSet = sf::Vector2f(float(blockBaseSize) / float(variants[n].shadeTexture.getSize().x), float(blockBaseSize) / float(variants[n].shadeTexture.getSize().y));
 
 
 			// gets shade file in format xxxxShade.(!)png(!)
@@ -296,6 +296,8 @@ struct cellContainer {
 	blockVariantStruct* floor = nullptr;
 	blockVariantStruct* wall = nullptr;
 	std::vector<unsigned short> entitiesPresent;
+
+	int* pointer;
 
 	void createBackground(blockVariantStruct* pointer) {
 		background = pointer;

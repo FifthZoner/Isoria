@@ -128,9 +128,9 @@ struct renderContainerFixed : renderContainer {
 		blockVariantStruct* floorPointer, blockVariantStruct* wallPointer) {
 
 
-		isWallVisible = wallPointer->isVisible;
-		isFloorVisible = floorPointer->isVisible;
-		isBackgroundVisible = backgroundPointer->isVisible;
+		isWallVisible = wallPointer->internalId;
+		isFloorVisible = floorPointer->internalId;
+		isBackgroundVisible = backgroundPointer->internalId;
 
 		// center->top->right->down->left
 		// up left -> up right -> down left -> down right
@@ -238,6 +238,26 @@ struct renderContainerFixed : renderContainer {
 						if (currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x + 1].wall->internalId == wallPointer->internalId) {
 							wallCornerBools[3] = true;
 						}
+
+
+						if (wallPointer->doesObstruct and
+							currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].wall->doesObstruct and
+							currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].wall->doesObstruct and
+							currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].wall->doesObstruct and
+							currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].wall->doesObstruct) {
+
+							isBackgroundVisible = false;
+							isFloorVisible = false;
+						}
+						else if (floorPointer->doesObstruct and
+							currentMap->dimensions[currentDimension].grid[coordinates.y + 1][coordinates.x].floor->doesObstruct and
+							currentMap->dimensions[currentDimension].grid[coordinates.y - 1][coordinates.x].floor->doesObstruct and
+							currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x + 1].floor->doesObstruct and
+							currentMap->dimensions[currentDimension].grid[coordinates.y][coordinates.x - 1].floor->doesObstruct) {
+
+							isBackgroundVisible = false;
+						}
+						
 
 					}
 					else {
@@ -912,44 +932,49 @@ struct renderContainerFixed : renderContainer {
 		
 		
 		
+		
+		
 	}
 };
 
 // cause internal one does not work now, boy what does a man do to have nicer graphics
-void drawMap(sf::RenderTexture* window, renderLimit border,
-	sf::RenderTexture* shadeTexture, renderLimit shadeBorder) {
+void drawMap(sf::RenderTexture* window, renderLimit border) {
 
-	for (ushort y = border.lower.y; y <= border.upper.y; y++) {
-		for (ushort x = border.lower.x; x <= border.upper.x; x++) {
+	for (unsigned short y = border.lower.y; y <= border.upper.y; y++) {
+		for (unsigned short x = border.lower.x; x <= border.upper.x; x++) {
 			//std::cout << x << " " << y << "\n";
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isBackgroundVisible) {
 				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].background);
-				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].backgroundCorners);
+				//window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].backgroundCorners);
 			}
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isFloorVisible) {
 				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].floor);
-				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].floorCorners);
+				//window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].floorCorners);
 			}
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isWallVisible) {
 				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].wall);
-				window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].wallCorners);
+				//window->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].wallCorners);
 			}
 		}
 	}
 
-	for (ushort y = shadeBorder.lower.y; y <= shadeBorder.upper.y; y++) {
-		for (ushort x = shadeBorder.lower.x; x <= shadeBorder.upper.x; x++) {
+	
+
+}
+
+void drawShadeMap(sf::RenderTexture* shadeTexture, renderLimit shadeBorder) {
+	for (unsigned short y = shadeBorder.lower.y; y <= shadeBorder.upper.y; y++) {
+		for (unsigned short x = shadeBorder.lower.x; x <= shadeBorder.upper.x; x++) {
 			//std::cout << x << " " << y << "\n";
 
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isFloorVisible) {
 				shadeTexture->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].floorShade);
-				shadeTexture->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].floorCornersShade);
+				//shadeTexture->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].floorCornersShade);
 			}
 			if (renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].isWallVisible) {
 				shadeTexture->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].wallShade);
-				shadeTexture->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].wallCornersShade);
+				//shadeTexture->draw(renderContainerVirtualTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer].wallCornersShade);
 			}
 		}
 	}
-
 }

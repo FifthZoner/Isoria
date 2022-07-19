@@ -8,7 +8,6 @@
 #include "math.h"
 
 
-
 // updates shader for given time with given time value
 void updateShadowAngle(unsigned short* value) {
 	// 0 - 24000
@@ -149,8 +148,8 @@ renderLimit getShadeRenderLimit(dimension* pointer) {
 // calculates and saves basic render distances to limit the amount of rendered blocks, makes maps of any reasonable size possible without causing massive framerate decreases
 void prepareRenderLimits() {
 
-	mainRenderDistance = sf::Vector2i(gameRes.x / 2 / blockBaseSize + 2, gameRes.y / 2 / blockBaseSize + 2);
-	shadeRenderDistance = sf::Vector2i(((gameRes.x / 2) + (angleMultiplier * 25)) / blockBaseSize + 2, ((gameRes.y / 2) + (angleMultiplier * 25)) / blockBaseSize + 1);
+	mainRenderDistance = sf::Vector2i(gameRes.x / 2 / blockBaseSize + 1, gameRes.y / 2 / blockBaseSize + 1);
+	shadeRenderDistance = sf::Vector2i(((gameRes.x / 2) + (angleMultiplier * 25)) / blockBaseSize, ((gameRes.y / 2) + (angleMultiplier * 25)) / blockBaseSize);
 
 	
 }
@@ -158,35 +157,31 @@ void prepareRenderLimits() {
 void render2x0(dimension* pointer, sf::RenderWindow* window) {
 
 	// will be split into threads for simultaneus shading and other things
-
+	globalShadowWindow.clear(sf::Color::Black);
 	mapMainTexture.clear();
-	globalShadowWindow.clear();
 
 	// pls work
 	//pointer->draw(&mapMainTexture, getRenderLimit(pointer), &globalShadowWindow, getShadeRenderLimit(pointer));
-	drawMap(&mapMainTexture, getRenderLimit(pointer), &globalShadowWindow, getShadeRenderLimit(pointer));
+	drawMap(&mapMainTexture, getRenderLimit(pointer));
+	drawShadeMap(&globalShadowWindow, getShadeRenderLimit(pointer));
 
 	mapMainTexture.setView(mapMainView);
 	globalShadowWindow.setView(shadeView);
 
-	//mainRender(pointer, getRenderLimit(pointer));
 
 	mapMainSprite.setTexture(mapMainTexture.getTexture());
 
 	// and here comes the shading to handle in another heretic thread
 
 	window->draw(mapMainSprite);
-
-	//shadeRender(pointer, getShadeRenderLimit(pointer));
-
+	
 	globalShadowWindow.display();
 
 	globalShader.setUniform("shade", globalShadowWindow.getTexture());
 
-
 	window->draw(mapMainSprite, &globalShader);
 
-	globalShadowWindow.clear(sf::Color::Black);
+	
 }
 
 // renders gameplay

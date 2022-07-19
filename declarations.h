@@ -64,6 +64,9 @@ const float hybridRenderTableMultiplier = 1.1;
 renderLimit hybridRenderBorder;
 renderLimit hybridRenderCurrent;
 
+std::queue<unsigned short> chunkQueue;
+renderLimit chunkBorder;
+renderLimit chunkCurrent;
 
 std::thread hybridRenderServiceThread;
 

@@ -20,7 +20,6 @@
 
 
 
-
 // gives a vector containing names of loaded datapacks
 std::vector<std::string> getDatapackNames(std::vector<std::string> names = {}) {
 
@@ -350,11 +349,12 @@ void graphicsRenderer() {
 	// hybrid render service start
 	hybridRenderServiceThread = std::thread(hybridRenderingService);
 
-
 	// main loop
 	sf::Clock gameClock;
 	double frameTime = 1000000.0 / framerate;
 
+	// for unlimited framerate
+	frameTime = 0;
 
 	while (gameWindow.isOpen() and letItBe) {
 
@@ -667,7 +667,7 @@ void run1x1NewWorld() {
 						if (sfDebug) {
 							std::cout << "SF debug: Main menu new world start button clicked" << "\n";
 						}
-						generateMap("test", &mapGeneratorString, sf::Vector2i(40, 40));
+						generateMap("test", &mapGeneratorString, sf::Vector2i(100, 100));
 					}
 					break;
 				}

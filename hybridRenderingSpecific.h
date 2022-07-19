@@ -7,12 +7,90 @@
 // imported to be used here too
 // do not input value or do it, it makes no difference and just makes code cleaner
 
-// debug values
-int cleaned = 0;
-int assigned = 0;
+class chunk {
+private:
+	std::vector <renderContainerFixed> virtualTable;
+	std::vector<std::vector<renderContainer*>> table;
+	sf::RenderTexture texture;
+	sf::RenderTexture shadeTexture;
+	sf::Sprite sprite;
+	sf::Sprite shadeSprite;
+	sf::View view;
+	
+public:
+	
 
-// creates viewing distance and render tables, they reduce amount of sprites from x * y so for example 1,000,000 to just 4,806 for full hd with offset 2
+	// this should create a chunk with correct values
+	void create(){
+		// resizes tables
+		texture.create(blockBaseSize * chunkSize, blockBaseSize * chunkSize);
+		shadeTexture.create(blockBaseSize * chunkSize, blockBaseSize * chunkSize);
+		virtualTable.resize(chunkSize * chunkSize);
+		table.resize(chunkSize);
+
+		// assigns necessary pointers for virtual functions
+		unsigned short n = 0;
+		for (unsigned short y = 0; y < chunkSize; y++) {
+			table[y].resize(chunkSize);
+			for (unsigned short x = 0; n < chunkSize; x++) {
+				table[y][x] = &virtualTable[n];
+				n++;
+			}
+		}
+	}
+
+	// this function updates the chunk with given blocks
+	void update(sf::Vector2i upperLeft, dimension* dimensionPtr) {
+
+		texture.clear(sf::Color::Black);
+		shadeTexture.clear(sf::Color::Black);
+
+		// creating and drawing
+		for (unsigned short y = 0; y < chunkSize; y++) {
+			for (unsigned short x = 0; x < chunkSize; x++) {
+				table[y][x]->create(sf::Vector2i(upperLeft.x + x, upperLeft.y + y), dimensionPtr->grid[upperLeft.y + y][upperLeft.x + x].background, dimensionPtr->grid[upperLeft.y + y][upperLeft.x + x].floor, dimensionPtr->grid[upperLeft.y + y][upperLeft.x + x].wall);
+				
+				if (table[y][x]->isBackgroundVisible) {
+					texture.draw(table[y][x]->background);
+					shadeTexture.draw(table[y][x]->background);
+				}
+				if (table[y][x]->isFloorVisible) {
+					texture.draw(table[y][x]->floor);
+					shadeTexture.draw(table[y][x]->floorShade);
+				}
+				if (table[y][x]->isWallVisible) {
+					texture.draw(table[y][x]->wall);
+					shadeTexture.draw(table[y][x]->wallShade);
+				}
+				
+			}
+		}
+		// position
+		view.setCenter(sf::Vector2f(blockBaseSize * float(upperLeft.x + float(chunkSize) / 2), blockBaseSize * float(upperLeft.y + float(chunkSize) / 2)));
+		texture.setView(view);
+		shadeTexture.setView(view);
+		
+		// displaying
+		texture.display();
+		shadeTexture.display();
+
+		// preparing sprites
+		sprite.setTexture(texture.getTexture());
+		sprite.setPosition(upperLeft.x * blockBaseSize, upperLeft.y * blockBaseSize);
+		shadeSprite.setTexture(shadeTexture.getTexture());
+		shadeSprite.setPosition(upperLeft.x * blockBaseSize, upperLeft.y * blockBaseSize);
+
+		// now this chunk SHOULD be ready to be displayed to map renderTextures
+	}
+};
+
+std::vector<chunk> chunks(chunkAmount);
+
+// creates viewing distance and render tables, they reduce amount of sprites
 void createRenderTables() {
+
+	// calculating chunk size
+	
 
 	// resizing the table
 	renderContainerTable.resize(((shadeRenderDistance.x * 2) + (hybridRenderOffset * 2)) * ((shadeRenderDistance.y * 2) + (hybridRenderOffset * 2)) * hybridRenderTableMultiplier);
@@ -21,9 +99,17 @@ void createRenderTables() {
 	// other
 	//currentDimensionPointer = &currentMap->dimensions[currentDimension];
 
+	// prepares chunk containers and queue for their assignment
+	for (short n = 0; n < chunkAmount; n++) {
+		chunks[n].create();
+		chunkQueue.push(n);
+	}
+
+
 	// filling the queue
 	for (unsigned short n = 0; n < renderContainerTable.size(); n++) {
 		renderContainerTable[n] = &renderContainerVirtualTable[n];
+		
 		renderContainerQueue.push(n);
 	}
 
@@ -63,6 +149,11 @@ void getHybridRenderingBorders() {
 	threadLock.unlock();
 }
 
+// gets borders for chunks
+void getChunkBorders() {
+
+}
+
 // assigns inital area with renderContainers only use this when no renderContainers are assigned
 void initialHybridRenderingFill() {
 
@@ -92,7 +183,6 @@ void initialHybridRenderingFill() {
 			renderContainerQueue.pop();
 			renderContainerTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer]->create(sf::Vector2i(x, y), currentMap->dimensions[currentDimension].grid[y][x].background,
 				currentMap->dimensions[currentDimension].grid[y][x].floor, currentMap->dimensions[currentDimension].grid[y][x].wall);
-			assigned++;
 		}
 	}
 
@@ -130,7 +220,6 @@ void hybridAssignVertical(unsigned short x, unsigned short lowerY, unsigned shor
 		renderContainerQueue.pop();
 		renderContainerTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer]->create(sf::Vector2i(x, y), currentMap->dimensions[currentDimension].grid[y][x].background,
 			currentMap->dimensions[currentDimension].grid[y][x].floor, currentMap->dimensions[currentDimension].grid[y][x].wall);
-		assigned++;
 	}
 }
 
@@ -142,7 +231,6 @@ void hybridAssignHorizontal(unsigned short y, unsigned short lowerX, unsigned sh
 		renderContainerQueue.pop();
 		renderContainerTable[currentMap->dimensions[currentDimension].grid[y][x].renderPointer]->create(sf::Vector2i(x, y), currentMap->dimensions[currentDimension].grid[y][x].background,
 			currentMap->dimensions[currentDimension].grid[y][x].floor, currentMap->dimensions[currentDimension].grid[y][x].wall);
-		assigned++;
 	}
 }
 
