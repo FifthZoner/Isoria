@@ -168,8 +168,6 @@ struct renderContainer {
 	// contains data to display sprites of all types, made to work with hybrid rendering with a fixed amount of these
 	// these are allowed to be bigger due to their amount
 
-	
-	
 	sf::Sprite background = sf::Sprite();
 	sf::Sprite floor = sf::Sprite();
 	sf::Sprite floorCorners = sf::Sprite();
@@ -291,13 +289,14 @@ std::vector<renderContainer*> renderContainerTable;
 // ultimate map storage solution that seems ... just too small, but works!
 struct cellContainer {
 	
+	// to be retired
 	unsigned short renderPointer = 0;
+
+	unsigned short chunkNumber = 0;
 	blockVariantStruct* background = nullptr;
 	blockVariantStruct* floor = nullptr;
 	blockVariantStruct* wall = nullptr;
 	std::vector<unsigned short> entitiesPresent;
-
-	int* pointer;
 
 	void createBackground(blockVariantStruct* pointer) {
 		background = pointer;

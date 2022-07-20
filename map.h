@@ -127,7 +127,6 @@ struct renderContainerFixed : renderContainer {
 	void create(sf::Vector2i coordinates, blockVariantStruct* backgroundPointer,
 		blockVariantStruct* floorPointer, blockVariantStruct* wallPointer) {
 
-
 		isWallVisible = wallPointer->internalId;
 		isFloorVisible = floorPointer->internalId;
 		isBackgroundVisible = backgroundPointer->internalId;
@@ -144,7 +143,7 @@ struct renderContainerFixed : renderContainer {
 		bool wallCenterBools[5] = { true, false, false, false, false };
 		bool wallCornerBools[4] = { false, false, false, false };
 
-
+		
 
 		// finally works
 		if (coordinates.x > 0) {

@@ -1,6 +1,7 @@
 #pragma once
 #include "declarations.h"
 #include "map.h"
+#include <math.h>
 
 // hybrid renderer updating service is supposed to be run in a seperate thread! 
 
@@ -9,66 +10,66 @@
 
 class chunk {
 private:
-	std::vector <renderContainerFixed> virtualTable;
+	std::vector<std::vector<renderContainerFixed>> virtualTable;
 	std::vector<std::vector<renderContainer*>> table;
 	sf::RenderTexture texture;
 	sf::RenderTexture shadeTexture;
 	sf::Sprite sprite;
 	sf::Sprite shadeSprite;
 	sf::View view;
+	bool isPrepared = false;
 	
 public:
-	
-
 	// this should create a chunk with correct values
 	void create(){
 		// resizes tables
 		texture.create(blockBaseSize * chunkSize, blockBaseSize * chunkSize);
 		shadeTexture.create(blockBaseSize * chunkSize, blockBaseSize * chunkSize);
-		virtualTable.resize(chunkSize * chunkSize);
+		virtualTable.resize(chunkSize);
 		table.resize(chunkSize);
 
 		// assigns necessary pointers for virtual functions
-		unsigned short n = 0;
 		for (unsigned short y = 0; y < chunkSize; y++) {
 			table[y].resize(chunkSize);
-			for (unsigned short x = 0; n < chunkSize; x++) {
-				table[y][x] = &virtualTable[n];
-				n++;
+			virtualTable[y].resize(chunkSize);
+			for (unsigned short x = 0; x < chunkSize; x++) {
+				table[y][x] = &virtualTable[y][x];
 			}
 		}
 	}
 
 	// this function updates the chunk with given blocks
-	void update(sf::Vector2i upperLeft, dimension* dimensionPtr) {
+	void update(sf::Vector2i upperLeft, dimension* dimensionPtr, unsigned short number) {
 
-		texture.clear(sf::Color::Black);
+		texture.clear(sf::Color::Green);
 		shadeTexture.clear(sf::Color::Black);
+		view.setSize(sf::Vector2f(chunkSize * blockBaseSize, chunkSize * blockBaseSize));
+		// position
+		view.setCenter(sf::Vector2f(float(blockBaseSize) * float(upperLeft.x + float(chunkSize) / 2), float(blockBaseSize) * float(upperLeft.y + float(chunkSize) / 2)));
+		texture.setView(view);
+		shadeTexture.setView(view);
 
 		// creating and drawing
 		for (unsigned short y = 0; y < chunkSize; y++) {
 			for (unsigned short x = 0; x < chunkSize; x++) {
-				table[y][x]->create(sf::Vector2i(upperLeft.x + x, upperLeft.y + y), dimensionPtr->grid[upperLeft.y + y][upperLeft.x + x].background, dimensionPtr->grid[upperLeft.y + y][upperLeft.x + x].floor, dimensionPtr->grid[upperLeft.y + y][upperLeft.x + x].wall);
-				
-				if (table[y][x]->isBackgroundVisible) {
-					texture.draw(table[y][x]->background);
-					shadeTexture.draw(table[y][x]->background);
+				virtualTable[y][x].create(sf::Vector2i(upperLeft.x + x, upperLeft.y + y), dimensionPtr->grid[upperLeft.y + y][upperLeft.x + x].background, dimensionPtr->grid[upperLeft.y + y][upperLeft.x + x].floor, dimensionPtr->grid[upperLeft.y + y][upperLeft.x + x].wall);
+				currentMap->dimensions[currentDimension].grid[y + upperLeft.y][x + upperLeft.x].chunkNumber = number;
+
+				if (virtualTable[y][x].isBackgroundVisible) {
+					texture.draw(virtualTable[y][x].background);
 				}
-				if (table[y][x]->isFloorVisible) {
-					texture.draw(table[y][x]->floor);
-					shadeTexture.draw(table[y][x]->floorShade);
+				if (virtualTable[y][x].isFloorVisible) {
+					texture.draw(virtualTable[y][x].floor);
+					shadeTexture.draw(virtualTable[y][x].floorShade);
 				}
-				if (table[y][x]->isWallVisible) {
-					texture.draw(table[y][x]->wall);
-					shadeTexture.draw(table[y][x]->wallShade);
+				if (virtualTable[y][x].isWallVisible) {
+					texture.draw(virtualTable[y][x].wall);
+					shadeTexture.draw(virtualTable[y][x].wallShade);
 				}
 				
 			}
 		}
-		// position
-		view.setCenter(sf::Vector2f(blockBaseSize * float(upperLeft.x + float(chunkSize) / 2), blockBaseSize * float(upperLeft.y + float(chunkSize) / 2)));
-		texture.setView(view);
-		shadeTexture.setView(view);
+		
 		
 		// displaying
 		texture.display();
@@ -80,17 +81,54 @@ public:
 		shadeSprite.setTexture(shadeTexture.getTexture());
 		shadeSprite.setPosition(upperLeft.x * blockBaseSize, upperLeft.y * blockBaseSize);
 
+		isPrepared = true;
 		// now this chunk SHOULD be ready to be displayed to map renderTextures
+	}
+
+	// for preparing to be reassigned
+	void clear() {
+		isPrepared = false;
+	}
+
+	// draws the sprite to given renderTexture
+	void draw(sf::RenderTexture* targetTexture) {
+		if (isPrepared) {
+			targetTexture->draw(sprite);
+		}
+	}
+
+	// draws the shade sprite to given renderTexture
+	void drawShade(sf::RenderTexture* targetTexture) {
+		if (isPrepared) {
+			targetTexture->draw(shadeSprite);
+		}
 	}
 };
 
 std::vector<chunk> chunks(chunkAmount);
 
+// calculates required chunk size for the fixed amount of chunks with sime redundanties
+void getChunkSize() {
+	sf::Vector2i value = sf::Vector2i(5, 5);
+	
+	value.x = ceil(float(gameRes.x) / float(chunkScreenRatio.x) / float(blockBaseSize));
+	value.y = ceil(float(gameRes.y) / float(chunkScreenRatio.y) / float(blockBaseSize));
+
+	if (value.x >= value.y) {
+		chunkSize = value.x;
+	}
+	else {
+		chunkSize = value.y;
+	}
+
+	debugMsg(std::string("HR Debug: Chunk size calculated at: " + std::to_string(chunkSize)));
+}
+
 // creates viewing distance and render tables, they reduce amount of sprites
 void createRenderTables() {
 
 	// calculating chunk size
-	
+	getChunkSize();
 
 	// resizing the table
 	renderContainerTable.resize(((shadeRenderDistance.x * 2) + (hybridRenderOffset * 2)) * ((shadeRenderDistance.y * 2) + (hybridRenderOffset * 2)) * hybridRenderTableMultiplier);
@@ -149,9 +187,44 @@ void getHybridRenderingBorders() {
 	threadLock.unlock();
 }
 
-// gets borders for chunks
+// calculates chunk rendering borders
 void getChunkBorders() {
+	threadLock.lock();
+	sf::Vector2i coord = getViewCoodrinates();
 
+	// initial coords
+	chunkBorder.lower.x = coord.x - chunkRenderDistanceConverted.x;
+	chunkBorder.lower.y = coord.y - chunkRenderDistanceConverted.y;
+	chunkBorder.upper.x = coord.x + chunkRenderDistanceConverted.x;
+	chunkBorder.upper.y = coord.y + chunkRenderDistanceConverted.y;
+
+	// border check
+	if (chunkBorder.lower.x < 0) {
+		chunkBorder.lower.x = 0;
+	}
+
+	if (chunkBorder.lower.y < 0) {
+		chunkBorder.lower.y = 0;
+	}
+
+	if (chunkBorder.upper.x >= currentMap->dimensions[currentDimension].size.x) {
+		chunkBorder.upper.x = currentMap->dimensions[currentDimension].size.x - 1;
+	}
+
+	if (chunkBorder.upper.y >= currentMap->dimensions[currentDimension].size.y) {
+		chunkBorder.upper.y = currentMap->dimensions[currentDimension].size.y - 1;
+	}
+
+	// convert to chunk left upper corners
+	chunkBorder.lower.x = chunkBorder.lower.x - (chunkBorder.lower.x % chunkSize);
+	chunkBorder.lower.y = chunkBorder.lower.y - (chunkBorder.lower.y % chunkSize);
+	chunkBorder.upper.x = chunkBorder.upper.x - (chunkBorder.upper.x % chunkSize);
+	chunkBorder.upper.y = chunkBorder.upper.y - (chunkBorder.upper.y % chunkSize);
+
+	threadLock.unlock();
+
+
+	//std::cout << "Current chunk borders: " << chunkBorder.lower.x << " " << chunkBorder.lower.y << " " << chunkBorder.upper.x << " " << chunkBorder.upper.y << "\n";
 }
 
 // assigns inital area with renderContainers only use this when no renderContainers are assigned
@@ -169,13 +242,20 @@ void initialHybridRenderingFill() {
 	}
 */
 	
+	getChunkBorders();
+	chunkCurrent = chunkBorder;
 
+	// ah yes, much nicer than with bare renderContainers
+	for (unsigned short y = chunkBorder.lower.y; y <= chunkBorder.upper.y; y += chunkSize) {
+		for (unsigned short x = chunkBorder.lower.x; x <= chunkBorder.upper.x; x += chunkSize) {
+			chunks[chunkQueue.front()].update(sf::Vector2i(x, y), &currentMap->dimensions[currentDimension], chunkQueue.front());
+			chunkQueue.pop();
+		}
+	}
 
-
+	// to be retired
 	getHybridRenderingBorders();
 	hybridRenderCurrent = hybridRenderBorder;
-
-	
 
 	for (unsigned short y = hybridRenderBorder.lower.y; y <= hybridRenderBorder.upper.y; y++) {
 		for (unsigned short x = hybridRenderBorder.lower.x; x <= hybridRenderBorder.upper.x; x++) {
@@ -233,6 +313,7 @@ void hybridAssignHorizontal(unsigned short y, unsigned short lowerX, unsigned sh
 			currentMap->dimensions[currentDimension].grid[y][x].floor, currentMap->dimensions[currentDimension].grid[y][x].wall);
 	}
 }
+
 
 // performs area move of containers
 void moveHybridRender() {
@@ -303,6 +384,109 @@ void moveHybridRender() {
 	//std::cout << "Current buffer size: " << renderContainerQueue.size() << "\n";
 }
 
+//		MOVING FUNCTIONS
+// will only give pointers back to queue as that might actually prevent crashes more than causing them
+
+// vertical clear
+void chunkClearVertical(unsigned short x, unsigned short lowerY, unsigned short upperY) {
+	//std::cout << "V Clear: " << x << " " << lowerY << " " << upperY << "\n";
+	for (unsigned short y = lowerY; y <= upperY; y+= chunkSize) {
+		chunkQueue.push(currentMap->dimensions[currentDimension].grid[y][x].chunkNumber);
+		chunks[currentMap->dimensions[currentDimension].grid[y][x].chunkNumber].clear();
+		//cleaned++;
+	}
+}
+
+// horizontal clear
+void chunkClearHorizontal(unsigned short y, unsigned short lowerX, unsigned short upperX) {
+	//std::cout << "H Clear: " << y << " " << lowerX << " " << upperX << "\n";
+	for (unsigned short x = lowerX; x <= upperX; x+= chunkSize) {
+		chunkQueue.push(currentMap->dimensions[currentDimension].grid[y][x].chunkNumber);
+		chunks[currentMap->dimensions[currentDimension].grid[y][x].chunkNumber].clear();
+
+		//cleaned++;
+	}
+}
+
+// vertical assign
+void chunkAssignVertical(unsigned short x, unsigned short lowerY, unsigned short upperY) {
+	//std::cout << "V Assign: " << x << " " << lowerY << " " << upperY << "\n";
+	for (unsigned short y = lowerY; y <= upperY; y+= chunkSize) {
+		chunks[chunkQueue.front()].update(sf::Vector2i(x, y), &currentMap->dimensions[currentDimension], chunkQueue.front());
+		chunkQueue.pop();
+	}
+}
+
+// horizontal assign
+void chunkAssignHorizontal(unsigned short y, unsigned short lowerX, unsigned short upperX) {
+	//std::cout << "H Assign: " << y << " " << lowerX << " " << upperX << "\n";
+	for (unsigned short x = lowerX; x <= upperX; x+= chunkSize) {
+		chunks[chunkQueue.front()].update(sf::Vector2i(x, y), &currentMap->dimensions[currentDimension], chunkQueue.front());
+		chunkQueue.pop();
+	}
+}
+
+// performs area move of chunks
+void moveChunks() {
+
+	std::cout << "Currently used chunks: " << chunks.size() - chunkQueue.size() << " out of: " << chunks.size() << "\n";
+
+	// works
+	if (chunkBorder.upper.x > chunkCurrent.upper.x) {
+		while (chunkBorder.upper.x > chunkCurrent.upper.x) {
+			chunkAssignVertical(chunkCurrent.upper.x + chunkSize, chunkCurrent.lower.y, chunkCurrent.upper.y);
+			chunkCurrent.upper.x+= chunkSize;
+		}
+	}
+	else if (chunkBorder.upper.x < chunkCurrent.upper.x) {
+		while (chunkBorder.upper.x < chunkCurrent.upper.x) {
+			chunkClearVertical(chunkCurrent.upper.x, chunkCurrent.lower.y, chunkCurrent.upper.y);
+			chunkCurrent.upper.x-= chunkSize;
+		}
+	}
+
+	if (chunkBorder.lower.x > chunkCurrent.lower.x) {
+		while (chunkBorder.lower.x > chunkCurrent.lower.x) {
+			chunkClearVertical(chunkCurrent.lower.x, chunkCurrent.lower.y, chunkCurrent.upper.y);
+			chunkCurrent.lower.x+= chunkSize;
+		}
+	}
+	else if (chunkBorder.lower.x < chunkCurrent.lower.x) {
+		while (chunkBorder.lower.x < chunkCurrent.lower.x) {
+			chunkAssignVertical(chunkCurrent.lower.x - chunkSize, chunkCurrent.lower.y, chunkCurrent.upper.y);
+			chunkCurrent.lower.x-= chunkSize;
+		}
+	}
+	// works
+	if (chunkBorder.upper.y > chunkCurrent.upper.y) {
+		while (chunkBorder.upper.y > chunkCurrent.upper.y) {
+			chunkAssignHorizontal(chunkCurrent.upper.y + chunkSize, chunkCurrent.lower.x, chunkCurrent.upper.x);
+			chunkCurrent.upper.y+= chunkSize;
+		}
+	}
+	else if (chunkBorder.upper.y < chunkCurrent.upper.y) {
+		while (chunkBorder.upper.y < chunkCurrent.upper.y) {
+			chunkClearHorizontal(chunkCurrent.upper.y, chunkCurrent.lower.x, chunkCurrent.upper.x);
+			chunkCurrent.upper.y-= chunkSize;
+		}
+	}
+
+	if (chunkBorder.lower.y > chunkCurrent.lower.y) {
+		while (chunkBorder.lower.y > chunkCurrent.lower.y) {
+			chunkClearHorizontal(chunkCurrent.lower.y, chunkCurrent.lower.x, chunkCurrent.upper.x);
+			chunkCurrent.lower.y+= chunkSize;
+		}
+	}
+	else if (chunkBorder.lower.y < chunkCurrent.lower.y) {
+		while (chunkBorder.lower.y < chunkCurrent.lower.y) {
+			chunkAssignHorizontal(chunkCurrent.lower.y - chunkSize, chunkCurrent.lower.x, chunkCurrent.upper.x);
+			chunkCurrent.lower.y-= chunkSize;
+		}
+	}
+
+	std::cout << "Currently used chunks: " << chunks.size() - chunkQueue.size() << " out of: " << chunks.size() << "\n";
+}
+
 // main hybrid renderer function to be started before starting the game
 void hybridRenderingService() {
 
@@ -324,7 +508,16 @@ void hybridRenderingService() {
 	// checks if borders moved
 	while (letItBe) {
 
-		
+		getChunkBorders();
+
+		if (chunkCurrent.lower.x != chunkBorder.lower.x or chunkCurrent.upper.x != chunkBorder.upper.x
+			or chunkCurrent.lower.y != chunkBorder.lower.y or chunkCurrent.upper.y != chunkBorder.upper.y) {
+
+			// moving things
+			moveChunks();
+		}
+
+		// to be retired
 		getHybridRenderingBorders();
 		
 
@@ -336,6 +529,15 @@ void hybridRenderingService() {
 		}
 		else {
 			sf::sleep(sf::microseconds(100));
+		}
+	}
+}
+
+void drawChunks(sf::RenderTexture* renderTexture, sf::RenderTexture* shadeRenderTexture) {
+	for (unsigned short y = chunkBorder.lower.y; y <= chunkBorder.upper.y; y += chunkSize) {
+		for (unsigned short x = chunkBorder.lower.x; x <= chunkBorder.upper.x; x += chunkSize) {
+			chunks[currentMap->dimensions[currentDimension].grid[y][x].chunkNumber].draw(renderTexture);
+			chunks[currentMap->dimensions[currentDimension].grid[y][x].chunkNumber].drawShade(shadeRenderTexture);
 		}
 	}
 }

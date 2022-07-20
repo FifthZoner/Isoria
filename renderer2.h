@@ -6,6 +6,7 @@
 #include "misc.h"
 #include "declarations.h"
 #include "math.h"
+#include "hybridRenderingSpecific.h"
 
 
 // updates shader for given time with given time value
@@ -162,8 +163,11 @@ void render2x0(dimension* pointer, sf::RenderWindow* window) {
 
 	// pls work
 	//pointer->draw(&mapMainTexture, getRenderLimit(pointer), &globalShadowWindow, getShadeRenderLimit(pointer));
-	drawMap(&mapMainTexture, getRenderLimit(pointer));
-	drawShadeMap(&globalShadowWindow, getShadeRenderLimit(pointer));
+	// 
+	//drawMap(&mapMainTexture, getRenderLimit(pointer));
+	drawChunks(&mapMainTexture, &globalShadowWindow);
+
+	//drawShadeMap(&globalShadowWindow, getShadeRenderLimit(pointer));
 
 	mapMainTexture.setView(mapMainView);
 	globalShadowWindow.setView(shadeView);

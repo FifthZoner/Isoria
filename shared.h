@@ -108,8 +108,14 @@ bool isHybridRenderServiceActive = false;
 bool isHybridRenderServiceReady = false;
 bool canHybridRenderServiceStartWorking = false;
 unsigned short chunkSize = 5;
-// fixed amount calculated for 16:9 screens with theoretical buffer of 3 on each side to be sure
-const unsigned short chunkAmount = 330;
+// fixed amount calculated for 16:9 screens
+const sf::Vector2i chunkScreenRatio = sf::Vector2i(16, 9);
+// this includes shadows so don't set it too low
+const unsigned short chunkOffset = 3;
+const unsigned short chunkRenderOffset = 2;
+const unsigned short chunkAmount = (chunkScreenRatio.x + (2 * chunkOffset)) * (chunkScreenRatio.y + (2 * chunkOffset));
+const sf::Vector2i chunkRenderDistance = sf::Vector2i((chunkScreenRatio.x / 2) + chunkRenderOffset, (chunkScreenRatio.y / 2) + chunkRenderOffset);
+const sf::Vector2i chunkRenderDistanceConverted = sf::Vector2i(chunkRenderDistance.x * chunkSize, chunkRenderDistance.y * chunkSize);
 
 // block shape
 sf::Shader blockShapeCenterShader;
