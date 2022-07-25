@@ -5,6 +5,8 @@
 
 // hybrid renderer updating service is supposed to be run in a seperate thread! 
 
+std::mutex fixLock;
+
 // imported to be used here too
 // do not input value or do it, it makes no difference and just makes code cleaner
 
@@ -189,40 +191,44 @@ void getHybridRenderingBorders() {
 
 // calculates chunk rendering borders
 void getChunkBorders() {
+
+	renderLimit temp;
+
 	threadLock.lock();
 	sf::Vector2i coord = getViewCoodrinates();
 
 	// initial coords
-	chunkBorder.lower.x = coord.x - chunkRenderDistanceConverted.x;
-	chunkBorder.lower.y = coord.y - chunkRenderDistanceConverted.y;
-	chunkBorder.upper.x = coord.x + chunkRenderDistanceConverted.x;
-	chunkBorder.upper.y = coord.y + chunkRenderDistanceConverted.y;
+	temp.lower.x = coord.x - chunkRenderDistanceConverted.x;
+	temp.lower.y = coord.y - chunkRenderDistanceConverted.y;
+	temp.upper.x = coord.x + chunkRenderDistanceConverted.x;
+	temp.upper.y = coord.y + chunkRenderDistanceConverted.y;
 
 	// border check
-	if (chunkBorder.lower.x < 0) {
-		chunkBorder.lower.x = 0;
+	if (temp.lower.x < 0) {
+		temp.lower.x = 0;
 	}
 
-	if (chunkBorder.lower.y < 0) {
-		chunkBorder.lower.y = 0;
+	if (temp.lower.y < 0) {
+		temp.lower.y = 0;
 	}
 
-	if (chunkBorder.upper.x >= currentMap->dimensions[currentDimension].size.x) {
-		chunkBorder.upper.x = currentMap->dimensions[currentDimension].size.x - 1;
+	if (temp.upper.x >= currentMap->dimensions[currentDimension].size.x) {
+		temp.upper.x = currentMap->dimensions[currentDimension].size.x - 1;
 	}
 
-	if (chunkBorder.upper.y >= currentMap->dimensions[currentDimension].size.y) {
-		chunkBorder.upper.y = currentMap->dimensions[currentDimension].size.y - 1;
+	if (temp.upper.y >= currentMap->dimensions[currentDimension].size.y) {
+		temp.upper.y = currentMap->dimensions[currentDimension].size.y - 1;
 	}
 
 	// convert to chunk left upper corners
-	chunkBorder.lower.x = chunkBorder.lower.x - (chunkBorder.lower.x % chunkSize);
-	chunkBorder.lower.y = chunkBorder.lower.y - (chunkBorder.lower.y % chunkSize);
-	chunkBorder.upper.x = chunkBorder.upper.x - (chunkBorder.upper.x % chunkSize);
-	chunkBorder.upper.y = chunkBorder.upper.y - (chunkBorder.upper.y % chunkSize);
+	temp.lower.x = temp.lower.x - (temp.lower.x % chunkSize);
+	temp.lower.y = temp.lower.y - (temp.lower.y % chunkSize);
+	temp.upper.x = temp.upper.x - (temp.upper.x % chunkSize);
+	temp.upper.y = temp.upper.y - (temp.upper.y % chunkSize);
+
+	chunkBorder = temp;
 
 	threadLock.unlock();
-
 
 	//std::cout << "Current chunk borders: " << chunkBorder.lower.x << " " << chunkBorder.lower.y << " " << chunkBorder.upper.x << " " << chunkBorder.upper.y << "\n";
 }
@@ -534,10 +540,17 @@ void hybridRenderingService() {
 }
 
 void drawChunks(sf::RenderTexture* renderTexture, sf::RenderTexture* shadeRenderTexture) {
-	for (unsigned short y = chunkBorder.lower.y; y <= chunkBorder.upper.y; y += chunkSize) {
-		for (unsigned short x = chunkBorder.lower.x; x <= chunkBorder.upper.x; x += chunkSize) {
-			chunks[currentMap->dimensions[currentDimension].grid[y][x].chunkNumber].draw(renderTexture);
-			chunks[currentMap->dimensions[currentDimension].grid[y][x].chunkNumber].drawShade(shadeRenderTexture);
+
+	renderLimit tempLimit = chunkBorder;
+	
+	for (unsigned short y = tempLimit.lower.y; y <= tempLimit.upper.y; y += chunkSize) {
+		for (unsigned short x = tempLimit.lower.x; x <= tempLimit.upper.x; x += chunkSize) {
+
+			// fix to a bug that plagued me for something like a week
+			//if (x < currentMap->dimensions[currentDimension].size.x and y < currentMap->dimensions[currentDimension].size.y) {
+				chunks[currentMap->dimensions[currentDimension].grid[y][x].chunkNumber].draw(renderTexture);
+				chunks[currentMap->dimensions[currentDimension].grid[y][x].chunkNumber].drawShade(shadeRenderTexture);
+			//}
 		}
 	}
 }

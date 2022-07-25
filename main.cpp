@@ -354,7 +354,7 @@ void graphicsRenderer() {
 	double frameTime = 1000000.0 / framerate;
 
 	// for unlimited framerate
-	frameTime = 0;
+	//frameTime = 0;
 
 	while (gameWindow.isOpen() and letItBe) {
 
