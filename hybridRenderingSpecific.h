@@ -498,45 +498,49 @@ void hybridRenderingService() {
 
 	debugMsg("HR Debug: Hybrid rendering service prepared! Waiting for map...\n");
 
-	while (!canHybridRenderServiceStartWorking) {
+	while (!canHybridRenderServiceStartWorking and letItBe) {
 		sf::sleep(sf::microseconds(100));
 	}
 
-	debugMsg("HR Debug: Hybrid rendering service active! Preparing containers...\n");
+	if (letItBe) {
+		debugMsg("HR Debug: Hybrid rendering service active! Preparing containers...\n");
 
-	// prepares the map for playing
-	initialHybridRenderingFill();
+		// prepares the map for playing
+		initialHybridRenderingFill();
 
-	debugMsg("HR Debug: Hybrid rendering service ready!\n");
+		debugMsg("HR Debug: Hybrid rendering service ready!\n");
 
-	isHybridRenderServiceReady = true;
+		isHybridRenderServiceReady = true;
 
-	// checks if borders moved
-	while (letItBe) {
+		// checks if borders moved
+		while (letItBe) {
 
-		getChunkBorders();
+			getChunkBorders();
 
-		if (chunkCurrent.lower.x != chunkBorder.lower.x or chunkCurrent.upper.x != chunkBorder.upper.x
-			or chunkCurrent.lower.y != chunkBorder.lower.y or chunkCurrent.upper.y != chunkBorder.upper.y) {
+			if (chunkCurrent.lower.x != chunkBorder.lower.x or chunkCurrent.upper.x != chunkBorder.upper.x
+				or chunkCurrent.lower.y != chunkBorder.lower.y or chunkCurrent.upper.y != chunkBorder.upper.y) {
 
-			// moving things
-			moveChunks();
-		}
+				// moving things
+				moveChunks();
+			}
 
-		// to be retired
-		getHybridRenderingBorders();
-		
+			// to be retired
+			getHybridRenderingBorders();
 
-		if (hybridRenderCurrent.lower.x != hybridRenderBorder.lower.x or hybridRenderCurrent.upper.x != hybridRenderBorder.upper.x
-			or hybridRenderCurrent.lower.y != hybridRenderBorder.lower.y or hybridRenderCurrent.upper.y != hybridRenderBorder.upper.y) {
 
-			// moving things
-			moveHybridRender();
-		}
-		else {
-			sf::sleep(sf::microseconds(100));
+			if (hybridRenderCurrent.lower.x != hybridRenderBorder.lower.x or hybridRenderCurrent.upper.x != hybridRenderBorder.upper.x
+				or hybridRenderCurrent.lower.y != hybridRenderBorder.lower.y or hybridRenderCurrent.upper.y != hybridRenderBorder.upper.y) {
+
+				// moving things
+				moveHybridRender();
+			}
+			else {
+				sf::sleep(sf::microseconds(100));
+			}
 		}
 	}
+
+	debugMsg("HR Debug: Ending hybrid rendering thread");
 }
 
 void drawChunks(sf::RenderTexture* renderTexture, sf::RenderTexture* shadeRenderTexture) {

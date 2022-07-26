@@ -30,7 +30,7 @@ bool* stIsFrozen;
 bool* stIsRunning;
 unsigned short freezeInstances = 0;
 
-bool stopListener = true;
+bool stopMaster = false;
 
 ushort connectedSockets = 0;
 ushort maxSockets = 1;
@@ -187,7 +187,7 @@ bool stSocketThread(mapContainer* map, clientStruct* pointer, unsigned short num
 
 //		LISTENER
 
-ushort getSocketToUse() {
+unsigned short getSocketToUse() {
 	for (ushort n = 0; n < maxSockets; n++) {
 		if (!clientThreads[n].isUsed) {
 			return n;
@@ -196,9 +196,11 @@ ushort getSocketToUse() {
 }
 
 void stListenerThread(mapContainer* map, std::vector<std::string> names, datapackContainer* datapackPtr, unsigned short port) {
-	ushort socketToUse = NULL;
+	unsigned short socketToUse = NULL;
 	sf::TcpSocket portSocket;
 	char auth[1];
+
+	
 
 	gameWindow.setActive(false);
 
@@ -214,18 +216,19 @@ void stListenerThread(mapContainer* map, std::vector<std::string> names, datapac
 					std::cout << "ST Debug: Accepting connection at: " << socketToUse << "\n";
 				}
 				if (clientThreads[socketToUse].wasUsed) {
+					std::cout << "HERE\n";
 					clientThreads[socketToUse].wasUsed = false;
 					clientThreads[socketToUse].thread.join();
 				}
 				// gives the client port number
-				auth[0] = socketToUse;
+				auth[0] = socketToUse + 1;
 				if (portSocket.send(auth, 1)) {
 					if (stDebug) {
 						std::cout << "[ CRITICAL ] ST Debug: Could not communicate with client! \n";
 					}
 				}
 				else {
-					clientThreads[socketToUse].thread = std::thread(stSocketThread, map, &clientThreads[socketToUse], socketToUse, names, datapackPtr, port);
+					clientThreads[socketToUse].thread = std::thread(stSocketThread, map, &clientThreads[socketToUse], socketToUse + 1, names, datapackPtr, port);
 					clientThreads[socketToUse].isUsed = true;
 					clientThreads[socketToUse].wasUsed = true;
 				}
@@ -239,7 +242,8 @@ void stListenerThread(mapContainer* map, std::vector<std::string> names, datapac
 	}
 
 	for (unsigned short n = 0; n < clientCap; n++) {
-		if (clientThreads[n].isUsed) {
+		//std::cout << clientThreads[n].wasUsed << " " << clientThreads[n].isUsed << "\n";
+		if (clientThreads[n].wasUsed) {
 			clientThreads[n].thread.join();
 			if (stDebug) {
 				std::cout << "ST Debug: Ended client thread " << n << "\n";
@@ -253,6 +257,8 @@ void stListenerThread(mapContainer* map, std::vector<std::string> names, datapac
 
 bool stPrepareBaseFunctions(unsigned short port, mapContainer* map, std::vector<std::string> names, datapackContainer* datapackPtr) {
 	
+	
+	
 	listener.setBlocking(false);
 
 	
@@ -261,11 +267,12 @@ bool stPrepareBaseFunctions(unsigned short port, mapContainer* map, std::vector<
 		if (stDebug) {
 			std::cout << "[ CRITICAL ] ST Debug: Listener setup failed! \n";
 		}
-		stopListener = false;
+
 		return 0;
 	}
 	
 	masterThread = std::thread(stListenerThread, map, names, datapackPtr, port);
+	stopMaster = true;
 
 	return 1;
 }
@@ -275,6 +282,8 @@ void serverFunction(mapContainer* map, std::vector<std::string> names,
 	bool* serverStatusPtr, bool* isFrozenPtr, 
 	bool* isRunningPtr, datapackContainer* datapackPtr, ushort clientAmount = 8,
 	bool debug = true, unsigned short port = 21370) {
+
+	terminateServer = true;
 
 	stIsFrozen = isFrozenPtr;
 	stIsRunning = isRunningPtr;
@@ -295,17 +304,17 @@ void serverFunction(mapContainer* map, std::vector<std::string> names,
 
 		while (*isAllAlright) {
 
-
+			sf::sleep(sf::microseconds(1000));
 
 		}
 	}
 
-	if (stopListener) {
+	if (stopMaster) {
 		masterThread.join();
 	}
 
 	if (stDebug) {
-		std::cout << "ST Debug: Ending server thread... \n";
+		std::cout << "ST Debug: Ending server master thread... \n";
 	}
 	
 }

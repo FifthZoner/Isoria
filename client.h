@@ -179,6 +179,8 @@ struct clientClass {
 
 bool around(clientClass* ptr, bool external, bool* ctClientStatus, sf::IpAddress ip, unsigned short port, datapackContainer* datapackPtr, bool* startGame, bool* stIsFrozen, bool* stIsRunning) {
 	
+	terminateClient = true;
+
 	ptr->mainFunction(external, ctClientStatus, ip, port, datapackPtr, startGame, stIsFrozen, stIsRunning);
 
 	return 0;

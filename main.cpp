@@ -423,12 +423,12 @@ void graphicsRenderer() {
 
 	gameWindow.close();
 
-	if (isHybridRenderServiceActive) {
+	
 		isHybridRenderServiceActive = false;
 		isHybridRenderServiceReady = false;
 
 		hybridRenderServiceThread.join();
-	}
+
 
 	if (sfDebug) {
 		std::cout << "SF Debug: Ended render thread! \n";
@@ -976,14 +976,16 @@ int main() {
 	}
 
 	graphicsThread.join();
-
+	
 	// other threads
 	if (terminateServer) {
 		serverThread.join();
+		debugMsg("SF Debug: Stopped server thread");
 	}
 
 	if (terminateClient) {
 		client.thread.join();
+		debugMsg("SF Debug: Stopped client thread");
 	}
 
 	if (sfDebug) {
