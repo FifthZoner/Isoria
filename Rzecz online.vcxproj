@@ -170,9 +170,11 @@
     <ClInclude Include="loadDatapacks.h" />
     <ClInclude Include="loadMap.h" />
     <ClInclude Include="loadMapMisc.h" />
+    <ClInclude Include="localLight.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="mapGenerationMisc.h" />
     <ClInclude Include="mapGenerator.h" />
+    <ClInclude Include="mapObjects.h" />
     <ClInclude Include="misc.h" />
     <ClInclude Include="buttons.h" />
     <ClInclude Include="quickWrite.h" />
@@ -189,6 +191,7 @@
     <None Include="gfx\blockShape\shapeCenterShader.frag" />
     <None Include="gfx\blockShape\shapeCornerShader.frag" />
     <None Include="globalShader.frag" />
+    <None Include="localShader.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

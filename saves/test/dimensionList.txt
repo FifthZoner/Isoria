@@ -1,16 +1,16 @@
 Forest
-100 100
+500 500
 Forest: Fellowship of the Trees
-100 100
+500 500
 Forest: The Two Trees
-100 100
+500 500
 Forest: Return of the Tree
-100 100
+500 500
 Forest 5: Electric Bogaloo
-100 100
+500 500
 Forest: New Generation
-100 100
+500 500
 Forest: The Woodpecker Attacks
-100 100
+500 500
 Forest: Red Dead Treedemption
-100 100
+500 500

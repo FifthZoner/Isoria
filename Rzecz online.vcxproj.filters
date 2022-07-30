@@ -46,6 +46,9 @@
     <Filter Include="Input">
       <UniqueIdentifier>{5d564fe7-b0f3-411e-9db2-d9fa56f58c35}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\Shaders">
+      <UniqueIdentifier>{f3a157fe-8e61-46f7-96b8-9c828549fce9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -131,16 +134,25 @@
     <ClInclude Include="blockShapeMisc.h">
       <Filter>Graphics\Misc</Filter>
     </ClInclude>
+    <ClInclude Include="mapObjects.h">
+      <Filter>Map\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="localLight.h">
+      <Filter>Map\Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="globalShader.frag">
-      <Filter>Graphics\Misc</Filter>
+    <None Include="gfx\blockShape\shapeCornerShader.frag">
+      <Filter>Graphics\Shaders</Filter>
     </None>
     <None Include="gfx\blockShape\shapeCenterShader.frag">
-      <Filter>Graphics\Misc</Filter>
+      <Filter>Graphics\Shaders</Filter>
     </None>
-    <None Include="gfx\blockShape\shapeCornerShader.frag">
-      <Filter>Graphics\Misc</Filter>
+    <None Include="globalShader.frag">
+      <Filter>Graphics\Shaders</Filter>
+    </None>
+    <None Include="localShader.frag">
+      <Filter>Graphics\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

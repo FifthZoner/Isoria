@@ -2,5 +2,3 @@ base
 t
 o
 h
-test4
-test3

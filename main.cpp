@@ -667,7 +667,7 @@ void run1x1NewWorld() {
 						if (sfDebug) {
 							std::cout << "SF debug: Main menu new world start button clicked" << "\n";
 						}
-						generateMap("test", &mapGeneratorString, sf::Vector2i(100, 100));
+						generateMap("test", &mapGeneratorString, sf::Vector2i(500, 500));
 					}
 					break;
 				}
@@ -965,6 +965,8 @@ int main() {
 		std::cout << "[ INFO ] SF debug: LT - Launcher	       \n";
 		std::cout << "[ INFO ] SF debug: MS - Map Send         \n";
 		std::cout << "[ INFO ] SF debug: MR - Map Receive      \n";
+		std::cout << "[ INFO ] SF debug: HR - Hybrid Rendering \n";
+		std::cout << "[ INFO ] SF debug: R2 - Stage 2 Renderer \n";
 		std::cout << "[ INFO ] SF debug: MG - Map Generation \n\n";
 	}
 
