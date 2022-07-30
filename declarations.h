@@ -10,6 +10,7 @@
 #include "keyboard.h"
 #include "buttons.h"
 #include "graphics.h"
+#include "mapObjects.h"
 
 // moved declarations here to have them apply everywhere
 

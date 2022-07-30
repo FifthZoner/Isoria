@@ -10,6 +10,7 @@
 #include <mutex>
 #include <thread>
 #include <unordered_map>
+#include <fstream>
 
 //		MAP MAIN GRAPHICS
 
@@ -69,7 +70,7 @@ bool isMouseMiddleClicked = false;
 //		MOUSE CLICK VALUES
 // whether main or secondary button was clicked, false - main, true - secondary
 bool clickSwitch = false;
-ushort clickNumber;
+unsigned short clickNumber;
 bool isButtonClicked = false;
 
 //				THREADS
@@ -167,8 +168,9 @@ sf::RectangleShape shaderShape;
 
 #define PI 3.141592
 
-
-
+// maps for replacing loaded definitions or textures by other datapacks to allow for non invasive datapack addons
+std::unordered_map<std::string, std::string> textureReplaceMap;
+std::unordered_map<std::string, std::string> definitionReplaceMap;
 
 void debugMsg(std::string msg) {
 	if (debug) {

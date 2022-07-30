@@ -1,0 +1,7 @@
+name
+Test tree for testing of tree-ish trees
+path 1
+base/added/gfx/testTree.png
+size 1 1
+cell 0 0
+0

@@ -12,11 +12,6 @@
 //  O O O O  O O O
 //  O O O O
 
-
-
-// this map will contain names of paths to replace and the paths that replace them for easy replacement
-std::unordered_map<std::string, std::string> objectReplaceMap;
-
 // stores a single frame of an object and it's info
 struct objectInfoVariantFrame {
 	bool doesHaveLight = false;
@@ -24,8 +19,18 @@ struct objectInfoVariantFrame {
 	sf::IntRect rectangle = sf::IntRect(0, 0, 0, 0);
 };
 
+struct objectGridStruct {
+	// not used for now, to be used when inventory or something introduced
+};
+
 // stores a variant of an object
 struct objectInfoVariant {
+
+	// this will only be used for debug and is normally not to be shown
+	std::string debugSubName = "N/A";
+
+	// grid that will containg things like different inputs, inventory slots, etc.
+	std::vector<std::vector<objectGridStruct>> grid;
 
 	std::vector<objectInfoVariantFrame> frameInfos;
 	sf::Texture texture;
@@ -39,6 +44,43 @@ struct objectInfoVariant {
 	// amount of ticks between changing frame to next
 	unsigned short frameTicks = 0;
 
+	// calculates parts of texture used for each frame, give amount of frames horizontally and amount of them in general
+	void assignRectangles(unsigned short width, unsigned short amount) {
+
+		frameInfos.resize(amount);
+
+		sf::Vector2f oneSize = sf::Vector2f(texture.getSize().x / width, texture.getSize().y / int(ceil(float(amount) / float(width))));
+
+		unsigned short row = 0;
+		unsigned short column = 0;
+		for (unsigned short n = 0; n < amount; n++) {
+			column++;
+
+			// if reached the end of the row moves to next one
+			if (column == width) {
+				row++;
+				column = 0;
+			}
+
+			frameInfos[n].rectangle = sf::IntRect(column * oneSize.x, row * oneSize.y, oneSize.x, oneSize.y);
+		}
+	}
+
+	// sets lights in a SINGLE FRAME
+	// lights are to be set to individual object grid cells
+	void setLights(std::vector<localLightSourceInfo> lights, unsigned short frameNumber) {
+		if (lights.size() > 0) {
+			frameInfos[frameNumber].lights = lights;
+			frameInfos[frameNumber].doesHaveLight = true;
+		}
+		
+	}
+};
+
+struct objectGridLoadingStruct {
+	sf::Vector2i coords = sf::Vector2i(0, 0);
+	bool doesHaveLight = false;
+	sf::Color color = sf::Color::Green;
 };
 
 // main object class
@@ -49,13 +91,85 @@ private:
 	std::vector<objectInfoVariant> variants;
 
 public:
+	std::string name = "N/A";
 
 	// the only function that needs to open object files
 	// before using it get amount of object definitions from files in their respective folders
 	void loadFromFile(std::string definitionPath) {
 		
+		std::ifstream file;
 
-		
+		std::vector<objectGridLoadingStruct> gridLoad;
+
+		sf::Vector2i size = sf::Vector2i(0, 0);
+
+		for (std::string input; file >> input;) {
+
+			if (input == "name") {
+				// name input and to next line cuz it's strange or somethin'
+				std::getline(file, input);
+				std::getline(file, input);
+				name = input;
+			}
+			else if (input == "path") {
+				// loading here
+				unsigned short variantAmount = 0;
+				file >> variantAmount;
+
+				variants.resize(variantAmount);
+
+				for (unsigned short n = 0; n < variantAmount; n++){
+					
+					
+					std::getline(file, input);
+					std::getline(file, input);
+					variants[n].texture.loadFromFile(input);
+					// gets extension and adds shade to name
+					std::string extension = input.erase(0, input.size() - input.find('.'));
+					std::string temp = input.erase(input.find('.'), extension.size());
+					temp += "Shade" + extension;
+					variants[n].shadeTexture.loadFromFile(temp);
+
+					file >> variants[n].frameTicks;
+
+					unsigned short amount = 0;
+					unsigned short width = 0;
+					file >> amount;
+					file >> width;
+					
+					variants[n].assignRectangles(width, amount);
+				}
+
+			}
+			else if (input == "size") {
+				// size for later
+				file >> size.x >> size.y;
+			}
+			else if (input == "cell") {
+				objectGridLoadingStruct temp;
+				file >> temp.coords.x >> temp.coords.y;
+				file >> temp.doesHaveLight;
+				if (temp.doesHaveLight) {
+					file >> temp.color.r >> temp.color.g >> temp.color.b >> temp.color.a;
+				}
+				gridLoad.push_back(temp);
+			}
+		}
+
+
+
+		for (unsigned short n = 0; n < variants.size(); n++) {
+			variants[n].debugSubName = name + "-" + std::to_string(n);
+			variants[n].grid.resize(size.y);
+
+			// grid resize
+			for (unsigned short y = 0; y < size.y; y++) {
+				variants[n].grid[y].resize(size.x);
+			}
+		}
+
+
+		file.close();
 	}
 };
 
@@ -89,6 +203,9 @@ public:
 
 		sprite.setOrigin(sf::Vector2f(pointer->offset));
 		shadeSprite.setOrigin(sf::Vector2f(pointer->offset));
+
+		sprite.setScale(pointer->scale);
+		shadeSprite.setScale(pointer->scale);
 
 		setFrame();
 	}
