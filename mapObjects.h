@@ -14,13 +14,13 @@
 
 // stores a single frame of an object and it's info
 struct objectInfoVariantFrame {
-	bool doesHaveLight = false;
-	std::vector<localLightSourceInfo> lights;
 	sf::IntRect rectangle = sf::IntRect(0, 0, 0, 0);
 };
 
 struct objectGridStruct {
-	// not used for now, to be used when inventory or something introduced
+	// will contain things like lights and inventory info
+	bool doesHaveLight = false;
+	localLightSourceInfo lightInfo;
 };
 
 // stores a variant of an object
@@ -37,9 +37,11 @@ struct objectInfoVariant {
 	sf::Texture shadeTexture;
 	sf::Vector2i offset = sf::Vector2i(0, 0);
 	sf::Vector2f scale = sf::Vector2f(1, 1);
+	sf::Vector2i size = sf::Vector2i(0, 0);
+	sf::Vector2i center = sf::Vector2i(0, 0);
 
 	bool isAnimated = false;
-	// this one means that the animation is not dependent on the state of the object, for example smelting something
+	// this one means that the animation is not dependent on the state of the object, for example smelting something, not yet introduced loading
 	bool isAnimationFree = true;
 	// amount of ticks between changing frame to next
 	unsigned short frameTicks = 0;
@@ -65,22 +67,14 @@ struct objectInfoVariant {
 			frameInfos[n].rectangle = sf::IntRect(column * oneSize.x, row * oneSize.y, oneSize.x, oneSize.y);
 		}
 	}
-
-	// sets lights in a SINGLE FRAME
-	// lights are to be set to individual object grid cells
-	void setLights(std::vector<localLightSourceInfo> lights, unsigned short frameNumber) {
-		if (lights.size() > 0) {
-			frameInfos[frameNumber].lights = lights;
-			frameInfos[frameNumber].doesHaveLight = true;
-		}
-		
-	}
 };
 
 struct objectGridLoadingStruct {
-	sf::Vector2i coords = sf::Vector2i(0, 0);
+	sf::Vector2i offset = sf::Vector2i(0, 0);
 	bool doesHaveLight = false;
 	sf::Color color = sf::Color::Green;
+	unsigned short variantNumber = 0;
+	std::vector<unsigned short> frameNumbers;
 };
 
 // main object class
@@ -96,76 +90,100 @@ public:
 	// the only function that needs to open object files
 	// before using it get amount of object definitions from files in their respective folders
 	void loadFromFile(std::string definitionPath) {
-		
 		std::ifstream file;
+		file.open(definitionPath);
 
-		std::vector<objectGridLoadingStruct> gridLoad;
+		if (file.is_open()) {
+			std::vector<objectGridLoadingStruct> gridLoad;
+			// all details regarding this loading are in a seperate text file
 
-		sf::Vector2i size = sf::Vector2i(0, 0);
+			for (std::string input; file >> input;) {
 
-		for (std::string input; file >> input;) {
-
-			if (input == "name") {
-				// name input and to next line cuz it's strange or somethin'
-				std::getline(file, input);
-				std::getline(file, input);
-				name = input;
-			}
-			else if (input == "path") {
-				// loading here
-				unsigned short variantAmount = 0;
-				file >> variantAmount;
-
-				variants.resize(variantAmount);
-
-				for (unsigned short n = 0; n < variantAmount; n++){
-					
-					
+				if (input == "name") {
+					// name input and to next line cuz it's strange or somethin'
 					std::getline(file, input);
 					std::getline(file, input);
-					variants[n].texture.loadFromFile(input);
-					// gets extension and adds shade to name
-					std::string extension = input.erase(0, input.size() - input.find('.'));
-					std::string temp = input.erase(input.find('.'), extension.size());
-					temp += "Shade" + extension;
-					variants[n].shadeTexture.loadFromFile(temp);
+					name = input;
+				}
+				else if (input == "path") {
+					// loading here
+					unsigned short variantAmount = 0;
+					file >> variantAmount;
 
-					file >> variants[n].frameTicks;
+					variants.resize(variantAmount);
 
-					unsigned short amount = 0;
-					unsigned short width = 0;
-					file >> amount;
-					file >> width;
-					
-					variants[n].assignRectangles(width, amount);
+					for (unsigned short n = 0; n < variantAmount; n++) {
+
+						// next line 'cause it's a dumb computer
+						std::getline(file, input);
+						std::getline(file, input);
+						variants[n].texture.loadFromFile(input);
+						// gets extension and adds shade to name
+						std::string path = input.erase(input.size() - 4, 4);
+						path += "Shade.png";
+						variants[n].shadeTexture.loadFromFile(path);
+						unsigned short amount = 0;
+						unsigned short width = 0;
+						file >> amount;
+						file >> variants[n].frameTicks;
+						// if frame length is 0 then it's not animated
+						if (variants[n].frameTicks) {
+							variants[n].isAnimated = true;
+						}
+						file >> width;
+
+						variants[n].assignRectangles(width, amount);
+					}
+
+				}
+				else if (input == "size") {
+					// size for later
+					unsigned short tempNumber;
+					file >> tempNumber >> variants[tempNumber].size.x >> variants[tempNumber].size.y;
+
+				}
+				else if (input == "cell") {
+
+					// data regarding non default (that is none) properties of individual cells of a variant
+					objectGridLoadingStruct temp;
+					file >> temp.variantNumber >> temp.offset.x >> temp.offset.y;
+					file >> temp.doesHaveLight;
+					if (temp.doesHaveLight) {
+						file >> temp.color.r >> temp.color.g >> temp.color.b >> temp.color.a;
+						unsigned short amount = 0;
+						file >> amount;
+						temp.frameNumbers.resize(amount);
+						for (unsigned short n = 0; n < amount; n++) {
+							file >> temp.frameNumbers[n];
+						}
+					}
+					gridLoad.push_back(temp);
+				}
+				else if (input == "offset") {
+
+					// object offset from grid, please don't go too crazy with it
+					unsigned short tempNumber = 0;
+					file >> tempNumber >> variants[tempNumber].offset.x >> variants[tempNumber].offset.y;
+				}
+			}
+
+			// things that must be done after all parameters were added
+			for (unsigned short n = 0; n < variants.size(); n++) {
+				variants[n].debugSubName = name + "-" + std::to_string(n);
+				variants[n].grid.resize(variants[n].size.y);
+
+				// grid resize
+				for (unsigned short y = 0; y < variants[n].size.y; y++) {
+					variants[n].grid[y].resize(variants[n].size.x);
 				}
 
-			}
-			else if (input == "size") {
-				// size for later
-				file >> size.x >> size.y;
-			}
-			else if (input == "cell") {
-				objectGridLoadingStruct temp;
-				file >> temp.coords.x >> temp.coords.y;
-				file >> temp.doesHaveLight;
-				if (temp.doesHaveLight) {
-					file >> temp.color.r >> temp.color.g >> temp.color.b >> temp.color.a;
-				}
-				gridLoad.push_back(temp);
+				// center for proper placement
+				variants[n].center.x = variants[n].size.x / 2;
+				variants[n].center.y = variants[n].size.y / 2;
 			}
 		}
-
-
-
-		for (unsigned short n = 0; n < variants.size(); n++) {
-			variants[n].debugSubName = name + "-" + std::to_string(n);
-			variants[n].grid.resize(size.y);
-
-			// grid resize
-			for (unsigned short y = 0; y < size.y; y++) {
-				variants[n].grid[y].resize(size.x);
-			}
+		else {
+			debugMsg(std::string("MO Debug: Failed to open object definition at: " + definitionPath));
 		}
 
 
@@ -201,8 +219,8 @@ public:
 		sprite.setTexture(pointer->texture);
 		shadeSprite.setTexture(pointer->shadeTexture);
 
-		sprite.setOrigin(sf::Vector2f(pointer->offset));
-		shadeSprite.setOrigin(sf::Vector2f(pointer->offset));
+		sprite.setOrigin(sf::Vector2f(pointer->offset.x - (pointer->center.x * blockBaseSize), pointer->offset.y - (pointer->center.y * blockBaseSize)));
+		shadeSprite.setOrigin(sf::Vector2f(pointer->offset.x - (pointer->center.x * blockBaseSize), pointer->offset.y - (pointer->center.y * blockBaseSize)));
 
 		sprite.setScale(pointer->scale);
 		shadeSprite.setScale(pointer->scale);

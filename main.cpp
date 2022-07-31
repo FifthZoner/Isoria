@@ -911,6 +911,15 @@ void nonGraphicLoop() {
 
 int main() {
 
+	// for testing without constant going through main menu
+
+	objectInfo test;
+	test.loadFromFile("data/base/added/objects/testTree.txt");
+
+
+
+
+
 	launcher(&datapacksPresent, &letItBe, &isMouseLeftClicked, &gameRes, &sfDebug);
 
 	if (!letItBe) {
